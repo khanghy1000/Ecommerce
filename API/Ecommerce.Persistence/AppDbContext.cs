@@ -27,6 +27,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 
         modelBuilder.Entity<Product>().Property(p => p.Name).HasMaxLength(255);
         modelBuilder.Entity<Product>().Property(p => p.Description).HasMaxLength(20000);
+        modelBuilder.Entity<Product>().Property(p => p.ShopId).HasMaxLength(36);
 
         modelBuilder.Entity<Category>().Property(c => c.Name).HasMaxLength(255);
         modelBuilder.Entity<Category>()
@@ -39,7 +40,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 
         modelBuilder.Entity<Coupon>().Property(c => c.Code).HasMaxLength(255);
         modelBuilder.Entity<Coupon>().Property(c => c.Description).HasMaxLength(1000);
-        
+
         modelBuilder.Entity<SalesOrder>().Property(so => so.UserId).HasMaxLength(36);
 
         modelBuilder.Entity<OrderProduct>().Property(op => op.Name).HasMaxLength(255);

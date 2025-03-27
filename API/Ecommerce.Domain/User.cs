@@ -8,5 +8,6 @@ public class User: IdentityUser
     public required string LastName { get; set; } 
     public string? ImageUrl { get; set; }
 
+    public ICollection<Product> CreatedProducts { get; set; } = [];
     public ICollection<CartItem> CartItems { get; set; } = [];
 }

@@ -11,7 +11,9 @@ public class Product : BaseEntity
     public decimal? DiscountPrice { get; set; }
     public required int Quantity { get; set; }
     public required ProductStatus ProductStatus { get; set; }
-    
+    public required string ShopId { get; set; }
+
+    public User Shop { get; set; } = null!;
     public ICollection<Category> Categories { get; set; } = [];
     public ICollection<Tag> Tags { get; set; } = [];
 }
