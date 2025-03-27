@@ -1,3 +1,6 @@
+using Ecommerce.Domain;
+using Ecommerce.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddCors();
+builder.Services.AddDbContext<AppDbContext>(opt =>
+{
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), o =>o.MapEnum<ProductStatus>("product_status"));
+});
 
 var app = builder.Build();
 
