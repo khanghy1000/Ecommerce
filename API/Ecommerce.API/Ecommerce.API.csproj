@@ -21,4 +21,9 @@
       <ProjectReference Include="..\Ecommerce.Application\Ecommerce.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Update="secrets.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
 </Project>
