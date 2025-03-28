@@ -8,6 +8,6 @@ public class OrderProduct : BaseEntity
     public required int Quantity { get; set; }
     public required decimal Subtotal { get; set; }
     public required int OrderId { get; set; }
-    
+
     public SalesOrder Order { get; set; } = null!;
 }

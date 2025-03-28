@@ -16,12 +16,14 @@ namespace Ecommerce.Persistence.Migrations
                 type: "character varying(36)",
                 maxLength: 36,
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_ShopId",
                 table: "Products",
-                column: "ShopId");
+                column: "ShopId"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Products_AspNetUsers_ShopId",
@@ -29,7 +31,8 @@ namespace Ecommerce.Persistence.Migrations
                 column: "ShopId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
 
         /// <inheritdoc />
@@ -37,15 +40,12 @@ namespace Ecommerce.Persistence.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_Products_AspNetUsers_ShopId",
-                table: "Products");
+                table: "Products"
+            );
 
-            migrationBuilder.DropIndex(
-                name: "IX_Products_ShopId",
-                table: "Products");
+            migrationBuilder.DropIndex(name: "IX_Products_ShopId", table: "Products");
 
-            migrationBuilder.DropColumn(
-                name: "ShopId",
-                table: "Products");
+            migrationBuilder.DropColumn(name: "ShopId", table: "Products");
         }
     }
 }

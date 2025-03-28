@@ -12,7 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddCors();
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), o =>o.MapEnum<ProductStatus>("product_status"));
+    opt.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        o => o.MapEnum<ProductStatus>("product_status")
+    );
 });
 
 var app = builder.Build();
@@ -26,11 +29,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(x => x
-    .AllowAnyHeader()
-    .AllowAnyMethod()
-    .AllowCredentials()
-    .WithOrigins("http://localhost:5173"));
+app.UseCors(x =>
+    x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:5173")
+);
 
 app.UseFileServer();
 

@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Ecommerce.Domain;
-using Microsoft.AspNetCore.Identity;
+﻿using Ecommerce.Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.Persistence;
 
@@ -30,7 +29,8 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         modelBuilder.Entity<Product>().Property(p => p.ShopId).HasMaxLength(36);
 
         modelBuilder.Entity<Category>().Property(c => c.Name).HasMaxLength(255);
-        modelBuilder.Entity<Category>()
+        modelBuilder
+            .Entity<Category>()
             .HasOne(c => c.Parent)
             .WithMany(c => c.InverseParent)
             .HasForeignKey(c => c.ParentId)
@@ -49,7 +49,9 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         modelBuilder.Entity<CartItem>().HasKey(ci => new { ci.UserId, ci.ProductId });
     }
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    public override Task<int> SaveChangesAsync(
+        CancellationToken cancellationToken = new CancellationToken()
+    )
     {
         AddTimestamps();
         return base.SaveChangesAsync(cancellationToken);
@@ -57,8 +59,11 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 
     private void AddTimestamps()
     {
-        var entities = ChangeTracker.Entries()
-            .Where(x => x is { Entity: BaseEntity, State: EntityState.Added or EntityState.Modified });
+        var entities = ChangeTracker
+            .Entries()
+            .Where(x =>
+                x is { Entity: BaseEntity, State: EntityState.Added or EntityState.Modified }
+            );
 
         foreach (var entity in entities)
         {

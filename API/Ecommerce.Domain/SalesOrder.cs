@@ -7,7 +7,7 @@ public class SalesOrder : BaseEntity
     public required decimal Total { get; set; }
     public required string UserId { get; set; }
     public int? CouponId { get; set; }
-    
+
     public User User { get; set; } = null!;
     public Coupon? Coupon { get; set; }
     public ICollection<OrderProduct> OrderProducts { get; set; } = [];

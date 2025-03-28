@@ -10,6 +10,6 @@ public class Coupon : BaseEntity
     public required bool Multiple { get; set; }
     public required DateTime StartDate { get; set; }
     public required DateTime EndDate { get; set; }
-    
+
     public ICollection<SalesOrder> SalesOrders { get; set; } = [];
 }
