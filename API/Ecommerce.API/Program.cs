@@ -1,4 +1,6 @@
+using Ecommerce.Application.Interfaces;
 using Ecommerce.Domain;
+using Ecommerce.Infrastructure.Photos;
 using Ecommerce.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -15,6 +17,7 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddCors();
+
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
     opt.UseNpgsql(
@@ -22,6 +25,9 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
         o => o.MapEnum<ProductStatus>("product_status")
     );
 });
+
+builder.Services.AddScoped<IPhotoService, PhotoService>();
+builder.Services.Configure<S3Settings>(builder.Configuration.GetSection("S3Settings"));
 
 var app = builder.Build();
 
