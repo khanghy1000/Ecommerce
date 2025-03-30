@@ -1,6 +1,7 @@
 using Ecommerce.Application.Interfaces;
 using Ecommerce.Domain;
 using Ecommerce.Infrastructure.Photos;
+using Ecommerce.Infrastructure.Security;
 using Ecommerce.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.Configure<S3Settings>(builder.Configuration.GetSection("S3Settings"));
+builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 
 builder
     .Services.AddIdentityApiEndpoints<User>(opt =>
