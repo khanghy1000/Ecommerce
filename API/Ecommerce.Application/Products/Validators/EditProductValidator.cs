@@ -7,6 +7,7 @@ public class EditProductValidator : AbstractValidator<EditProduct.Command>
 {
     public EditProductValidator()
     {
+        RuleFor(x => x.Id).NotEmpty();
         RuleFor(x => x.ProductDto.Name).NotEmpty().MaximumLength(100);
         RuleFor(x => x.ProductDto.Description).NotEmpty();
         RuleFor(x => x.ProductDto.RegularPrice).NotEmpty().GreaterThan(0);
