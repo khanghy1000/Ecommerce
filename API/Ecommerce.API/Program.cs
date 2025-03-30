@@ -1,8 +1,13 @@
+using Ecommerce.API.Middleware;
+using Ecommerce.Application.Core;
 using Ecommerce.Application.Interfaces;
+using Ecommerce.Application.Products.Queries;
+using Ecommerce.Application.Products.Validators;
 using Ecommerce.Domain;
 using Ecommerce.Infrastructure.Photos;
 using Ecommerce.Infrastructure.Security;
 using Ecommerce.Persistence;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -30,7 +35,15 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.Configure<S3Settings>(builder.Configuration.GetSection("S3Settings"));
+builder.Services.AddMediatR(opt =>
+{
+    opt.RegisterServicesFromAssemblyContaining<ListProducts.Handler>();
+    opt.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
+builder.Services.AddValidatorsFromAssemblyContaining<CreateProductValidator>();
+builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 builder.Services.AddScoped<IUserAccessor, UserAccessor>();
+builder.Services.AddTransient<ExceptionMiddleware>();
 
 builder
     .Services.AddIdentityApiEndpoints<User>(opt =>
@@ -51,6 +64,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors(x =>
     x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:5173")
