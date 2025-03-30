@@ -20,8 +20,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<User>().Property(u => u.FirstName).HasMaxLength(255);
-        modelBuilder.Entity<User>().Property(u => u.LastName).HasMaxLength(255);
+        modelBuilder.Entity<User>().Property(u => u.DisplayName).HasMaxLength(255);
         modelBuilder.Entity<User>().Property(u => u.ImageUrl).HasMaxLength(255);
 
         modelBuilder.Entity<Product>().Property(p => p.Name).HasMaxLength(255);
