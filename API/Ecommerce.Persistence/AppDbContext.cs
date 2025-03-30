@@ -10,7 +10,6 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
-    public DbSet<Tag> Tags { get; set; }
     public DbSet<Coupon> Coupons { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
     public DbSet<SalesOrder> SalesOrders { get; set; }
@@ -34,8 +33,6 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .WithMany(c => c.InverseParent)
             .HasForeignKey(c => c.ParentId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Tag>().Property(t => t.Name).HasMaxLength(255);
 
         modelBuilder.Entity<Coupon>().Property(c => c.Code).HasMaxLength(255);
         modelBuilder.Entity<Coupon>().Property(c => c.Description).HasMaxLength(1000);

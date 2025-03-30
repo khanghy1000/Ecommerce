@@ -44,18 +44,6 @@ public static class CreateProduct
                 }
             }
 
-            if (request.ProductDto.TagIds.Count > 0)
-            {
-                var tags = await dbContext
-                    .Tags.Where(t => request.ProductDto.TagIds.Contains(t.Id))
-                    .ToListAsync(cancellationToken);
-
-                foreach (var tag in tags)
-                {
-                    product.Tags.Add(tag);
-                }
-            }
-
             dbContext.Products.Add(product);
             var result = await dbContext.SaveChangesAsync(cancellationToken) > 0;
 

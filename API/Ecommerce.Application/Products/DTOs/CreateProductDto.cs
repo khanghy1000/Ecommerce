@@ -11,5 +11,4 @@ public class CreateProductDto
     public int Quantity { get; set; }
     public ProductStatus ProductStatus { get; set; }
     public List<int> CategoryIds { get; set; } = [];
-    public List<int> TagIds { get; set; } = [];
 }

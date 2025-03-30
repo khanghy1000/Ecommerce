@@ -16,5 +16,4 @@ public class ProductDto
     public string ShopImageUrl { get; set; } = "";
 
     public ICollection<Category> Categories { get; set; } = [];
-    public ICollection<Tag> Tags { get; set; } = [];
 }

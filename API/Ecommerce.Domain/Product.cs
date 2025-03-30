@@ -15,5 +15,4 @@ public class Product : BaseEntity
 
     public User Shop { get; set; } = null!;
     public ICollection<Category> Categories { get; set; } = [];
-    public ICollection<Tag> Tags { get; set; } = [];
 }

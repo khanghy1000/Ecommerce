@@ -27,7 +27,6 @@ public static class EditProduct
         {
             var product = await dbContext
                 .Products.Include(p => p.Categories)
-                .Include(p => p.Tags)
                 .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
             if (product == null)
@@ -45,19 +44,6 @@ public static class EditProduct
                 foreach (var category in categories)
                 {
                     product.Categories.Add(category);
-                }
-            }
-
-            product.Tags.Clear();
-            if (request.ProductDto.TagIds.Count > 0)
-            {
-                var tags = await dbContext
-                    .Tags.Where(t => request.ProductDto.TagIds.Contains(t.Id))
-                    .ToListAsync(cancellationToken);
-
-                foreach (var tag in tags)
-                {
-                    product.Tags.Add(tag);
                 }
             }
 
