@@ -2,6 +2,7 @@ using Ecommerce.Application.Interfaces;
 using Ecommerce.Domain;
 using Ecommerce.Infrastructure.Photos;
 using Ecommerce.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -29,6 +30,15 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.Configure<S3Settings>(builder.Configuration.GetSection("S3Settings"));
 
+builder
+    .Services.AddIdentityApiEndpoints<User>(opt =>
+    {
+        opt.User.RequireUniqueEmail = true;
+        // opt.SignIn.RequireConfirmedEmail = true;
+    })
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -50,5 +60,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGroup("api").WithTags("Identity").MapIdentityApi<User>();
 
 app.Run();
