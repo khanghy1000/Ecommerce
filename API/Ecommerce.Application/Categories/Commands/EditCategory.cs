@@ -75,10 +75,7 @@ public static class EditCategory
             category.Name = request.CategoryDto.Name ?? category.Name;
             category.ParentId = request.CategoryDto.ParentId;
 
-            var success = await dbContext.SaveChangesAsync(cancellationToken) > 0;
-
-            if (!success)
-                return Result<CategoryDto>.Failure("Failed to update the category", 400);
+            await dbContext.SaveChangesAsync(cancellationToken);
 
             var updatedCategory = await dbContext
                 .Categories.Include(c => c.Parent)

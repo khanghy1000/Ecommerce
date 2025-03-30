@@ -47,10 +47,8 @@ public static class EditProduct
                 }
             }
 
-            var result = await dbContext.SaveChangesAsync(cancellationToken) > 0;
-            return !result
-                ? Result<ProductDto>.Failure("Failed to update the product", 400)
-                : Result<ProductDto>.Success(mapper.Map<ProductDto>(product));
+            await dbContext.SaveChangesAsync(cancellationToken);
+            return Result<ProductDto>.Success(mapper.Map<ProductDto>(product));
         }
     }
 }
