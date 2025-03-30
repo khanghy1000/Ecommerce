@@ -27,5 +27,6 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.InverseParent));
         CreateMap<CreateCategoryDto, Category>();
         CreateMap<EditCategoryDto, Category>();
+        CreateMap<Category, CategoryIdAndNameDto>();
     }
 }

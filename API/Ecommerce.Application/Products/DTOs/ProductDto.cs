@@ -1,3 +1,4 @@
+using Ecommerce.Application.Categories.DTOs;
 using Ecommerce.Domain;
 
 namespace Ecommerce.Application.Products.DTOs;
@@ -15,5 +16,5 @@ public class ProductDto
     public string ShopName { get; set; } = "";
     public string ShopImageUrl { get; set; } = "";
 
-    public ICollection<Category> Categories { get; set; } = [];
+    public ICollection<CategoryIdAndNameDto> Categories { get; set; } = [];
 }
