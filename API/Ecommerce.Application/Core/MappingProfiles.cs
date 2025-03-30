@@ -1,4 +1,5 @@
 using AutoMapper;
+using Ecommerce.Application.Categories.DTOs;
 using Ecommerce.Application.Products.DTOs;
 using Ecommerce.Domain;
 
@@ -9,11 +10,22 @@ public class MappingProfiles : Profile
     public MappingProfiles()
     {
         string? currentUserId = null;
+        // Product mappings
         CreateMap<Product, Product>();
         CreateMap<Product, ProductDto>()
             .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop.DisplayName))
             .ForMember(dest => dest.ShopImageUrl, opt => opt.MapFrom(src => src.Shop.ImageUrl));
         CreateMap<CreateProductDto, Product>();
         CreateMap<EditProductDto, Product>();
+
+        // Category mappings
+        CreateMap<Category, CategoryDto>()
+            .ForMember(
+                dest => dest.ParentName,
+                opt => opt.MapFrom(src => src.Parent != null ? src.Parent.Name : null)
+            )
+            .ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.InverseParent));
+        CreateMap<CreateCategoryDto, Category>();
+        CreateMap<EditCategoryDto, Category>();
     }
 }
