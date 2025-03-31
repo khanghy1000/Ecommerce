@@ -54,48 +54,6 @@ public static class CustomIdentityApiEndpointRouteBuilderExtensions
 
         // NOTE: We cannot inject UserManager<TUser> directly because the TUser generic parameter is currently unsupported by RDG.
         // https://github.com/dotnet/aspnetcore/issues/47338
-        routeGroup.MapPost(
-            "/register",
-            async Task<Results<Ok, ValidationProblem>> (
-                [FromBody] RegisterRequest registration,
-                HttpContext context,
-                [FromServices] IServiceProvider sp
-            ) =>
-            {
-                var userManager = sp.GetRequiredService<UserManager<TUser>>();
-
-                if (!userManager.SupportsUserEmail)
-                {
-                    throw new NotSupportedException(
-                        $"{nameof(MapCustomIdentityApi)} requires a user store with email support."
-                    );
-                }
-
-                var userStore = sp.GetRequiredService<IUserStore<TUser>>();
-                var emailStore = (IUserEmailStore<TUser>)userStore;
-                var email = registration.Email;
-
-                if (string.IsNullOrEmpty(email) || !_emailAddressAttribute.IsValid(email))
-                {
-                    return CreateValidationProblem(
-                        IdentityResult.Failed(userManager.ErrorDescriber.InvalidEmail(email))
-                    );
-                }
-
-                var user = new TUser();
-                await userStore.SetUserNameAsync(user, email, CancellationToken.None);
-                await emailStore.SetEmailAsync(user, email, CancellationToken.None);
-                var result = await userManager.CreateAsync(user, registration.Password);
-
-                if (!result.Succeeded)
-                {
-                    return CreateValidationProblem(result);
-                }
-
-                await SendConfirmationEmailAsync(user, userManager, context, email);
-                return TypedResults.Ok();
-            }
-        );
 
         routeGroup.MapPost(
             "/login",
