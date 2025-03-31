@@ -2,6 +2,7 @@ using Ecommerce.Application.Core;
 using Ecommerce.Application.Products.Commands;
 using Ecommerce.Application.Products.DTOs;
 using Ecommerce.Application.Products.Queries;
+using Ecommerce.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,6 +59,43 @@ public class ProductsController : BaseApiController
     public async Task<ActionResult<Unit>> DeleteProduct(int id)
     {
         var result = await Mediator.Send(new DeleteProduct.Command { Id = id });
+        return HandleResult(result);
+    }
+
+    [HttpPost("{productId}/photos")]
+    public async Task<ActionResult<ProductPhoto>> AddProductPhoto(int productId, IFormFile file)
+    {
+        var result = await Mediator.Send(
+            new AddProductPhoto.Command { ProductId = productId, File = file }
+        );
+        return HandleResult(result);
+    }
+
+    [HttpDelete("{productId}/photos")]
+    public async Task<ActionResult<Unit>> DeleteProductPhoto(
+        int productId,
+        [FromQuery] string photoKey
+    )
+    {
+        var result = await Mediator.Send(
+            new DeleteProductPhoto.Command { ProductId = productId, Key = photoKey }
+        );
+        return HandleResult(result);
+    }
+
+    [HttpPut("{productId}/photos/order")]
+    public async Task<ActionResult<Unit>> UpdateProductPhotoDisplayOrder(
+        int productId,
+        List<UpdateProductPhotoDisplayOrderDto> photoOrderDto
+    )
+    {
+        var result = await Mediator.Send(
+            new UpdateProductPhotoDisplayOrder.Command
+            {
+                ProductId = productId,
+                PhotoOrders = photoOrderDto,
+            }
+        );
         return HandleResult(result);
     }
 }
