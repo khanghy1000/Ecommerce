@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Ecommerce.API.Middleware;
 using Ecommerce.Application.Core;
 using Ecommerce.Application.Interfaces;
@@ -8,6 +9,7 @@ using Ecommerce.Infrastructure.Photos;
 using Ecommerce.Infrastructure.Security;
 using Ecommerce.Persistence;
 using FluentValidation;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -21,8 +23,19 @@ if (builder.Environment.IsDevelopment())
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder
+    .Services.AddControllers()
+    .AddJsonOptions(opt =>
+    {
+        opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
+builder.Services.Configure<JsonOptions>(opt =>
+{
+    opt.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 builder.Services.AddOpenApi();
-builder.Services.AddControllers();
 builder.Services.AddCors();
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
