@@ -29,10 +29,7 @@ public static class ListProducts
             CancellationToken cancellationToken
         )
         {
-            var query = dbContext
-                .Products.Include(x => x.Categories)
-                .Include(x => x.Shop)
-                .AsQueryable();
+            var query = dbContext.Products.AsQueryable();
 
             if (!string.IsNullOrEmpty(request.Keyword))
             {
@@ -62,12 +59,13 @@ public static class ListProducts
             var products = await query
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
+                .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
             return Result<PagedList<ProductDto>>.Success(
                 new PagedList<ProductDto>
                 {
-                    Items = mapper.Map<List<ProductDto>>(products),
+                    Items = products,
                     TotalCount = await query.CountAsync(cancellationToken),
                     PageSize = request.PageSize,
                     PageNumber = request.PageNumber,
