@@ -20,6 +20,8 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasPostgresExtension("fuzzystrmatch");
+
         modelBuilder.Entity<User>().Property(u => u.DisplayName).HasMaxLength(255);
         modelBuilder.Entity<User>().Property(u => u.ImageUrl).HasMaxLength(255);
 
