@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NpgsqlTypes;
 
 namespace Ecommerce.Domain;
 
@@ -11,6 +11,8 @@ public class Product : BaseEntity
     public decimal? DiscountPrice { get; set; }
     public required int Quantity { get; set; }
     public required ProductStatus ProductStatus { get; set; }
+
+    public NpgsqlTsVector SearchVector { get; set; } = null!;
     public required string ShopId { get; set; }
 
     public User Shop { get; set; } = null!;

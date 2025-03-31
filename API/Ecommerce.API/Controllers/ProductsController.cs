@@ -1,19 +1,35 @@
+using Ecommerce.Application.Core;
 using Ecommerce.Application.Products.Commands;
 using Ecommerce.Application.Products.DTOs;
 using Ecommerce.Application.Products.Queries;
-using Ecommerce.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.API.Controllers;
 
 public class ProductsController : BaseApiController
 {
     [HttpGet]
-    public async Task<ActionResult<List<ProductDto>>> GetProducts()
+    public async Task<ActionResult<PagedList<ProductDto>>> ListProducts(
+        string? keyword,
+        int pageSize = 20,
+        int pageNumber = 1,
+        string sortBy = "name",
+        string sortDirection = "asc",
+        [FromQuery] List<int>? categoryIds = null
+    )
     {
-        var products = await Mediator.Send(new ListProducts.Query());
+        var products = await Mediator.Send(
+            new ListProducts.Query
+            {
+                Keyword = keyword,
+                PageSize = pageSize,
+                PageNumber = pageNumber,
+                SortBy = sortBy.ToLower(),
+                SortDirection = sortDirection.ToLower(),
+                CategoryIds = categoryIds,
+            }
+        );
         return HandleResult(products);
     }
 

@@ -29,6 +29,12 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         modelBuilder.Entity<Product>().Property(p => p.Description).HasMaxLength(20000);
         modelBuilder.Entity<Product>().Property(p => p.ShopId).HasMaxLength(36);
 
+        modelBuilder
+            .Entity<Product>()
+            .HasGeneratedTsVectorColumn(p => p.SearchVector, "vietnamese", p => new { p.Name })
+            .HasIndex(p => p.SearchVector)
+            .HasMethod("GIN");
+
         modelBuilder.Entity<Category>().Property(c => c.Name).HasMaxLength(255);
         modelBuilder
             .Entity<Category>()
