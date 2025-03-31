@@ -15,7 +15,7 @@ namespace Ecommerce.Persistence.Migrations
         {
             migrationBuilder
                 .AlterDatabase()
-                .Annotation("Npgsql:Enum:product_status", "active,deleted,inactive");
+                .Annotation("Npgsql:Enum:product_status", "active,inactive");
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
