@@ -19,8 +19,24 @@ public class BaseApiController : ControllerBase
         return result.IsSuccess switch
         {
             true when result.Value != null => Ok(result.Value),
-            false when result.Code == 404 => NotFound(),
-            _ => BadRequest(result.Error),
+            false when result.Code == 404 => NotFound(
+                new ProblemDetails
+                {
+                    Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5",
+                    Title = result.Error ?? "Not Found",
+                    Status = 404,
+                    Instance = HttpContext.Request.Path,
+                }
+            ),
+            _ => BadRequest(
+                new ProblemDetails
+                {
+                    Type = "https://tools.ietf.org/html/rfc9110#section-15.5.6",
+                    Title = result.Error ?? "Bad Request",
+                    Status = 400,
+                    Instance = HttpContext.Request.Path,
+                }
+            ),
         };
     }
 }
