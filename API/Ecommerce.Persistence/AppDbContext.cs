@@ -6,8 +6,6 @@ namespace Ecommerce.Persistence;
 
 public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(options)
 {
-    // TODO: Add reviews, shipping, payment.
-
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
