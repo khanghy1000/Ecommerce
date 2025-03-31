@@ -29,7 +29,7 @@ public static class EditCategory
             );
 
             if (category == null)
-                return Result<CategoryDto>.Failure("Category not found", 404);
+                return Result<CategoryDto>.Failure("Category not found", 400);
 
             // Check for circular reference if updating parent ID
             if (
@@ -44,7 +44,7 @@ public static class EditCategory
                 );
 
                 if (!parentExists)
-                    return Result<CategoryDto>.Failure("Parent category not found", 404);
+                    return Result<CategoryDto>.Failure("Parent category not found", 400);
 
                 // Prevent setting a category as its own parent
                 if (request.CategoryDto.ParentId == category.Id)
