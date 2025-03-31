@@ -11,7 +11,7 @@ public class ProductDto
     public decimal RegularPrice { get; set; }
     public decimal? DiscountPrice { get; set; }
     public int Quantity { get; set; }
-    public ProductStatus ProductStatus { get; set; }
+    public bool Active { get; set; }
     public string ShopId { get; set; } = "";
     public string ShopName { get; set; } = "";
     public string ShopImageUrl { get; set; } = "";

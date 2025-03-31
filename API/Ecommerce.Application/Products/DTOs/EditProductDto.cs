@@ -9,6 +9,6 @@ public class EditProductDto
     public decimal RegularPrice { get; set; }
     public decimal? DiscountPrice { get; set; }
     public int Quantity { get; set; }
-    public ProductStatus ProductStatus { get; set; }
+    public bool Active { get; set; }
     public List<int> CategoryIds { get; set; } = [];
 }

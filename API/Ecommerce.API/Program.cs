@@ -41,10 +41,7 @@ builder.Services.AddCors();
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
-    opt.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        o => o.MapEnum<ProductStatus>("product_status")
-    );
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddScoped<IPhotoService, PhotoService>();

@@ -26,8 +26,5 @@ public class EditProductValidator : AbstractValidator<EditProduct.Command>
         RuleFor(x => x.ProductDto.Quantity)
             .GreaterThanOrEqualTo(0)
             .WithMessage("Quantity must be greater than or equal to 0.");
-        RuleFor(x => x.ProductDto.ProductStatus)
-            .IsInEnum()
-            .WithMessage("Product status is required and must be 'Active' or 'Inactive'.");
     }
 }
