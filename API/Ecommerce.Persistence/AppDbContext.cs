@@ -8,6 +8,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 {
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<ProductPhoto> ProductPhotos { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<Coupon> Coupons { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
@@ -32,6 +33,9 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .HasGeneratedTsVectorColumn(p => p.SearchVector, "vietnamese", p => new { p.Name })
             .HasIndex(p => p.SearchVector)
             .HasMethod("GIN");
+
+        modelBuilder.Entity<ProductPhoto>().Property(p => p.Key).HasMaxLength(255);
+        modelBuilder.Entity<ProductPhoto>().Property(p => p.ProductId).HasMaxLength(36);
 
         modelBuilder.Entity<Category>().Property(c => c.Name).HasMaxLength(255);
         modelBuilder
