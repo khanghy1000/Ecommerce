@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Ecommerce.API.Extentions;
 using Ecommerce.API.Middleware;
 using Ecommerce.Application.Core;
 using Ecommerce.Application.Interfaces;
@@ -90,6 +91,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapGroup("api").WithTags("Identity").MapIdentityApi<User>();
+app.MapGroup("api").WithTags("Identity").MapCustomIdentityApi<User>();
 
 app.Run();
