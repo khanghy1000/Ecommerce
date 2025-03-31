@@ -7,7 +7,11 @@ public class EditCategoryCommandValidator : AbstractValidator<EditCategory.Comma
 {
     public EditCategoryCommandValidator()
     {
-        RuleFor(x => x.Id).NotEmpty();
-        RuleFor(x => x.CategoryDto.Name).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.Id).NotEmpty().WithMessage("Category ID is required.");
+        RuleFor(x => x.CategoryDto.Name)
+            .NotEmpty()
+            .WithMessage("Category name is required.")
+            .MaximumLength(100)
+            .WithMessage("Category name should not exceed 100 characters.");
     }
 }

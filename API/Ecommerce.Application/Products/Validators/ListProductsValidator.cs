@@ -9,6 +9,7 @@ public class ListProductsValidator : AbstractValidator<ListProducts.Query>
     {
         RuleFor(x => x.PageSize)
             .GreaterThan(0)
+            .WithMessage("Page size must be between 1 and 50.")
             .LessThanOrEqualTo(50)
             .WithMessage("Page size must be between 1 and 50.");
         RuleFor(x => x.PageNumber)
