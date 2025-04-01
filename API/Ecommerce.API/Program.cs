@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Ecommerce.API;
 using Ecommerce.API.Extentions;
 using Ecommerce.API.Middleware;
 using Ecommerce.Application.Core;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using VNPAY.NET;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +66,21 @@ builder
     })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
+
+builder.Services.AddSingleton<IVnpay, Vnpay>(sp =>
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var vnpay = new Vnpay();
+    vnpay.Initialize(
+        configuration["Vnpay:TmnCode"]!,
+        configuration["Vnpay:HashSecret"]!,
+        configuration["Vnpay:BaseUrl"]!,
+        configuration["Vnpay:CallbackUrl"]!
+    );
+    return vnpay;
+});
+
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 var app = builder.Build();
 

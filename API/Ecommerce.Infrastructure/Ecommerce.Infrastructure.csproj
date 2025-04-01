@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="AWSSDK.S3" Version="3.7.415.28" />
+      <PackageReference Include="VNPAY.NET" Version="8.5.0" />
     </ItemGroup>
 
     <ItemGroup>
