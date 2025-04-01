@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Ecommerce.Application.Categories.DTOs;
 using Ecommerce.Application.Core;
 using Ecommerce.Persistence;
@@ -78,10 +79,10 @@ public static class EditCategory
             await dbContext.SaveChangesAsync(cancellationToken);
 
             var updatedCategory = await dbContext
-                .Categories.Include(c => c.Parent)
+                .Categories.ProjectTo<CategoryDto>(mapper.ConfigurationProvider)
                 .FirstAsync(c => c.Id == category.Id, cancellationToken);
 
-            return Result<CategoryDto>.Success(mapper.Map<CategoryDto>(updatedCategory));
+            return Result<CategoryDto>.Success(updatedCategory);
         }
     }
 }

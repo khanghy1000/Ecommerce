@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Ecommerce.Application.Categories.DTOs;
 using Ecommerce.Application.Core;
 using Ecommerce.Domain;
@@ -48,10 +49,10 @@ public static class CreateCategory
                 return Result<CategoryDto>.Failure("Failed to create the category", 400);
 
             var newCategory = await dbContext
-                .Categories.Include(c => c.Parent)
+                .Categories.ProjectTo<CategoryDto>(mapper.ConfigurationProvider)
                 .FirstAsync(c => c.Id == category.Id, cancellationToken);
 
-            return Result<CategoryDto>.Success(mapper.Map<CategoryDto>(newCategory));
+            return Result<CategoryDto>.Success(newCategory);
         }
     }
 }
