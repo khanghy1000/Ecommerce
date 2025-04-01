@@ -32,15 +32,15 @@ public static class CreateProduct
 
             product.Shop = user;
 
-            if (request.ProductDto.CategoryIds.Count > 0)
+            if (request.ProductDto.SubcategoryIds.Count > 0)
             {
-                var categories = await dbContext
-                    .Categories.Where(c => request.ProductDto.CategoryIds.Contains(c.Id))
+                var subcategories = await dbContext
+                    .Subcategories.Where(sc => request.ProductDto.SubcategoryIds.Contains(sc.Id))
                     .ToListAsync(cancellationToken);
 
-                foreach (var category in categories)
+                foreach (var subcategory in subcategories)
                 {
-                    product.Categories.Add(category);
+                    product.Subcategories.Add(subcategory);
                 }
             }
 

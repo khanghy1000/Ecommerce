@@ -10,5 +10,5 @@ public class EditProductDto
     public decimal? DiscountPrice { get; set; }
     public int Quantity { get; set; }
     public bool Active { get; set; }
-    public List<int> CategoryIds { get; set; } = [];
+    public List<int> SubcategoryIds { get; set; } = [];
 }

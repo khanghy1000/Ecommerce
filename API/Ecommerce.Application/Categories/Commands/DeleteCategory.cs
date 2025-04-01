@@ -21,25 +21,14 @@ public static class DeleteCategory
             if (category == null)
                 return Result<Unit>.Failure("Category not found", 404);
 
-            var hasChildren = await dbContext.Categories.AnyAsync(
-                c => c.ParentId == request.Id,
+            var hasSubcategories = await dbContext.Subcategories.AnyAsync(
+                sc => sc.CategoryId == request.Id,
                 cancellationToken
             );
 
-            if (hasChildren)
+            if (hasSubcategories)
                 return Result<Unit>.Failure(
-                    "Cannot delete category with child categories. Remove child categories first.",
-                    400
-                );
-
-            var hasProducts = await dbContext.ProductCategories.AnyAsync(
-                p => p.CategoryId == request.Id,
-                cancellationToken
-            );
-
-            if (hasProducts)
-                return Result<Unit>.Failure(
-                    "Cannot delete category that has products. Remove or reassign products first.",
+                    "Cannot delete category with subcategories. Remove subcategories first.",
                     400
                 );
 

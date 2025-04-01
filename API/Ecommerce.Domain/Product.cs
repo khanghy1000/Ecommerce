@@ -16,6 +16,6 @@ public class Product : BaseEntity
     public required string ShopId { get; set; }
 
     public User Shop { get; set; } = null!;
-    public ICollection<Category> Categories { get; set; } = [];
+    public ICollection<Subcategory> Subcategories { get; set; } = [];
     public ICollection<ProductPhoto> Photos { get; set; } = [];
 }

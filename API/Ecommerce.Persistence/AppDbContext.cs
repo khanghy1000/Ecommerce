@@ -8,8 +8,9 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 {
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<Subcategory> Subcategories { get; set; }
+    public DbSet<ProductSubCategory> ProductSubCategories { get; set; }
     public DbSet<ProductPhoto> ProductPhotos { get; set; }
-    public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<Coupon> Coupons { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
     public DbSet<SalesOrder> SalesOrders { get; set; }
@@ -38,18 +39,14 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         modelBuilder.Entity<ProductPhoto>().Property(p => p.ProductId).HasMaxLength(36);
 
         modelBuilder.Entity<Category>().Property(c => c.Name).HasMaxLength(255);
-        modelBuilder
-            .Entity<Category>()
-            .HasOne(c => c.Parent)
-            .WithMany(c => c.InverseParent)
-            .HasForeignKey(c => c.ParentId)
-            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Subcategory>().Property(c => c.Name).HasMaxLength(255);
 
         modelBuilder
             .Entity<Product>()
-            .HasMany(p => p.Categories)
+            .HasMany(p => p.Subcategories)
             .WithMany(c => c.Products)
-            .UsingEntity<ProductCategory>();
+            .UsingEntity<ProductSubCategory>();
 
         modelBuilder.Entity<Coupon>().Property(c => c.Code).HasMaxLength(255);
         modelBuilder.Entity<Coupon>().Property(c => c.Description).HasMaxLength(1000);

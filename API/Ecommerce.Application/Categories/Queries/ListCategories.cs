@@ -21,8 +21,7 @@ public static class ListCategories
         )
         {
             var categories = await dbContext
-                .Categories.Where(c => c.ParentId == null)
-                .ProjectTo<CategoryDto>(mapper.ConfigurationProvider)
+                .Categories.ProjectTo<CategoryDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
             return Result<List<CategoryDto>>.Success(categories);

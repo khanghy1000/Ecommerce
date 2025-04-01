@@ -26,7 +26,7 @@ public static class EditProduct
         )
         {
             var product = await dbContext
-                .Products.Include(p => p.Categories)
+                .Products.Include(p => p.Subcategories)
                 .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
             if (product == null)
@@ -34,16 +34,16 @@ public static class EditProduct
 
             mapper.Map(request.ProductDto, product);
 
-            product.Categories.Clear();
-            if (request.ProductDto.CategoryIds.Count > 0)
+            product.Subcategories.Clear();
+            if (request.ProductDto.SubcategoryIds.Count > 0)
             {
-                var categories = await dbContext
-                    .Categories.Where(c => request.ProductDto.CategoryIds.Contains(c.Id))
+                var subcategories = await dbContext
+                    .Subcategories.Where(sc => request.ProductDto.SubcategoryIds.Contains(sc.Id))
                     .ToListAsync(cancellationToken);
 
-                foreach (var category in categories)
+                foreach (var subcategory in subcategories)
                 {
-                    product.Categories.Add(category);
+                    product.Subcategories.Add(subcategory);
                 }
             }
 

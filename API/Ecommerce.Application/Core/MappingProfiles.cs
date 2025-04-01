@@ -20,16 +20,17 @@ public class MappingProfiles : Profile
         CreateMap<EditProductDto, Product>();
 
         // Category mappings
-        CreateMap<Category, CategoryDto>()
-            .ForMember(
-                dest => dest.ParentName,
-                opt => opt.MapFrom(src => src.Parent != null ? src.Parent.Name : null)
-            )
-            .ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.InverseParent));
+        CreateMap<Category, CategoryDto>();
         CreateMap<CreateCategoryDto, Category>();
         CreateMap<EditCategoryDto, Category>();
-        CreateMap<Category, CategoryIdNameDto>();
+        CreateMap<Category, CategoryWithoutChildDto>();
 
+        // Subcategory mappings
+        CreateMap<Subcategory, SubcategoryDto>()
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name));
+        CreateMap<Subcategory, SubcategoryNameDto>();
+
+        // CartItem mappings
         CreateMap<CartItem, CartItemDto>()
             .ForMember(dest => dest.MaxQuantity, opt => opt.MapFrom(src => src.Product.Quantity))
             .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))

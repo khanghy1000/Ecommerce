@@ -28,7 +28,7 @@ public class ProductsController : BaseApiController
                 PageNumber = pageNumber,
                 SortBy = sortBy.ToLower(),
                 SortDirection = sortDirection.ToLower(),
-                CategoryIds = categoryIds,
+                SubcategoryIds = categoryIds,
             }
         );
         return HandleResult(products);

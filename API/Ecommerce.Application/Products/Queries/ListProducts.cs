@@ -18,7 +18,7 @@ public static class ListProducts
         public int PageNumber { get; set; } = 1;
         public string SortBy { get; set; } = "name";
         public string SortDirection { get; set; } = "asc";
-        public List<int>? CategoryIds { get; set; }
+        public List<int>? SubcategoryIds { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
@@ -40,9 +40,11 @@ public static class ListProducts
                 );
             }
 
-            if (request.CategoryIds is { Count: > 0 })
+            if (request.SubcategoryIds is { Count: > 0 })
             {
-                query = query.Where(x => x.Categories.Any(c => request.CategoryIds.Contains(c.Id)));
+                query = query.Where(x =>
+                    x.Subcategories.Any(sc => request.SubcategoryIds.Contains(sc.Id))
+                );
             }
 
             query = request.SortBy switch

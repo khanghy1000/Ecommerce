@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Ecommerce.Domain;
 
 namespace Ecommerce.Application.Categories.DTOs;
 
@@ -6,7 +7,5 @@ public class CategoryDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = "";
-    public int? ParentId { get; set; }
-    public string? ParentName { get; set; }
-    public List<CategoryDto> Children { get; set; } = null!;
+    public List<SubcategoryNameDto> Subcategories { get; set; } = null!;
 }
