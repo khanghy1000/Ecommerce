@@ -23,14 +23,17 @@ public class CategoriesController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<ActionResult<CategoryDto>> CreateCategory(CreateCategoryDto category)
+    public async Task<ActionResult<CategoryIdNameDto>> CreateCategory(CreateCategoryDto category)
     {
         var result = await Mediator.Send(new CreateCategory.Command { CategoryDto = category });
         return HandleResult(result);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<CategoryDto>> EditCategory(int id, EditCategoryDto category)
+    public async Task<ActionResult<CategoryIdNameDto>> EditCategory(
+        int id,
+        EditCategoryDto category
+    )
     {
         var result = await Mediator.Send(
             new EditCategory.Command { Id = id, CategoryDto = category }

@@ -10,16 +10,16 @@ namespace Ecommerce.Application.Categories.Commands;
 
 public static class EditCategory
 {
-    public class Command : IRequest<Result<CategoryDto>>
+    public class Command : IRequest<Result<CategoryIdNameDto>>
     {
         public required int Id { get; set; }
         public required EditCategoryDto CategoryDto { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
-        : IRequestHandler<Command, Result<CategoryDto>>
+        : IRequestHandler<Command, Result<CategoryIdNameDto>>
     {
-        public async Task<Result<CategoryDto>> Handle(
+        public async Task<Result<CategoryIdNameDto>> Handle(
             Command request,
             CancellationToken cancellationToken
         )
@@ -30,7 +30,7 @@ public static class EditCategory
             );
 
             if (category == null)
-                return Result<CategoryDto>.Failure("Category not found", 400);
+                return Result<CategoryIdNameDto>.Failure("Category not found", 400);
 
             // Check for circular reference if updating parent ID
             if (
@@ -45,11 +45,14 @@ public static class EditCategory
                 );
 
                 if (!parentExists)
-                    return Result<CategoryDto>.Failure("Parent category not found", 400);
+                    return Result<CategoryIdNameDto>.Failure("Parent category not found", 400);
 
                 // Prevent setting a category as its own parent
                 if (request.CategoryDto.ParentId == category.Id)
-                    return Result<CategoryDto>.Failure("A category cannot be its own parent", 400);
+                    return Result<CategoryIdNameDto>.Failure(
+                        "A category cannot be its own parent",
+                        400
+                    );
 
                 // Prevent circular references in category hierarchy
                 var potentialParentId = request.CategoryDto.ParentId;
@@ -64,7 +67,7 @@ public static class EditCategory
                         break;
 
                     if (parent.ParentId == category.Id)
-                        return Result<CategoryDto>.Failure(
+                        return Result<CategoryIdNameDto>.Failure(
                             "Circular reference detected in category hierarchy",
                             400
                         );
@@ -79,10 +82,10 @@ public static class EditCategory
             await dbContext.SaveChangesAsync(cancellationToken);
 
             var updatedCategory = await dbContext
-                .Categories.ProjectTo<CategoryDto>(mapper.ConfigurationProvider)
+                .Categories.ProjectTo<CategoryIdNameDto>(mapper.ConfigurationProvider)
                 .FirstAsync(c => c.Id == category.Id, cancellationToken);
 
-            return Result<CategoryDto>.Success(updatedCategory);
+            return Result<CategoryIdNameDto>.Success(updatedCategory);
         }
     }
 }

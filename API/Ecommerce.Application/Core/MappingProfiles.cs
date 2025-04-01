@@ -28,7 +28,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.InverseParent));
         CreateMap<CreateCategoryDto, Category>();
         CreateMap<EditCategoryDto, Category>();
-        CreateMap<Category, CategoryIdAndNameDto>();
+        CreateMap<Category, CategoryIdNameDto>();
 
         CreateMap<CartItem, CartItemDto>()
             .ForMember(dest => dest.MaxQuantity, opt => opt.MapFrom(src => src.Product.Quantity))
