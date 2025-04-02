@@ -6,7 +6,7 @@ using VNPAY.NET;
 using VNPAY.NET.Enums;
 using VNPAY.NET.Models;
 
-namespace Ecommerce.Infrastructure.Photos;
+namespace Ecommerce.Infrastructure.Payments;
 
 public class PaymentService(IHttpContextAccessor httpContextAccessor, IVnpay vnpay)
     : IPaymentService

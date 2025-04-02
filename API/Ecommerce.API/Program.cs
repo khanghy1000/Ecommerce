@@ -7,6 +7,7 @@ using Ecommerce.Application.Interfaces;
 using Ecommerce.Application.Products.Queries;
 using Ecommerce.Application.Products.Validators;
 using Ecommerce.Domain;
+using Ecommerce.Infrastructure.Payments;
 using Ecommerce.Infrastructure.Photos;
 using Ecommerce.Infrastructure.Security;
 using Ecommerce.Persistence;
