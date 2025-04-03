@@ -55,6 +55,11 @@ public class MappingProfiles : Profile
                             .Select(p => p.Key)
                             .FirstOrDefault() ?? ""
                     )
+            )
+            .ForMember(dest => dest.ShopId, opt => opt.MapFrom(src => src.Product.ShopId))
+            .ForMember(
+                dest => dest.ShopName,
+                opt => opt.MapFrom(src => src.Product.Shop.DisplayName)
             );
 
         CreateMap<Province, ProvinceDto>();

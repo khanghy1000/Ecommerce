@@ -12,4 +12,6 @@ public class CartItemDto
     public decimal? DiscountPrice { get; set; }
     public decimal Subtotal { get; set; }
     public string ProductImageUrl { get; set; } = "";
+    public string ShopId { get; set; } = "";
+    public string ShopName { get; set; } = "";
 }
