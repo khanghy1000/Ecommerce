@@ -1,6 +1,7 @@
 using AutoMapper;
 using Ecommerce.Application.CartItems.DTOs;
 using Ecommerce.Application.Categories.DTOs;
+using Ecommerce.Application.Locations.DTOs;
 using Ecommerce.Application.Products.DTOs;
 using Ecommerce.Domain;
 
@@ -55,5 +56,11 @@ public class MappingProfiles : Profile
                             .FirstOrDefault() ?? ""
                     )
             );
+
+        CreateMap<Province, ProvinceDto>();
+        CreateMap<District, DistrictDto>()
+            .ForMember(dest => dest.ProvinceName, opt => opt.MapFrom(src => src.Province.Name));
+        CreateMap<Ward, WardDto>()
+            .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.District.Name));
     }
 }
