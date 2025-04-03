@@ -1,4 +1,4 @@
-namespace Ecommerce.Infrastructure.Shipments;
+namespace Ecommerce.Infrastructure.Shipping;
 
 public class GHNSettings
 {

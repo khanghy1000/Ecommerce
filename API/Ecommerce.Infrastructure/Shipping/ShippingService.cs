@@ -1,12 +1,11 @@
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Ecommerce.Application.Interfaces;
 using Microsoft.Extensions.Options;
 
-namespace Ecommerce.Infrastructure.Shipments;
+namespace Ecommerce.Infrastructure.Shipping;
 
-public class ShipmentService(IOptions<GHNSettings> config) : IShipmentService
+public class ShippingService(IOptions<GHNSettings> config) : IShippingService
 {
     private readonly string _shopId = config.Value.ShopId;
     private readonly string _clientId = config.Value.ClientId;
@@ -20,62 +19,62 @@ public class ShipmentService(IOptions<GHNSettings> config) : IShipmentService
         WriteIndented = true,
     };
 
-    public async Task<GetShipmentDetailsResponse?> GetShipmentDetails(string shipmentOrderCode)
+    public async Task<GetShippingDetailsResponse?> GetShippingDetails(string shippingOrderCode)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/shipping-order/detail");
         request.Headers.Add("ShopId", _shopId);
         request.Headers.Add("Token", _token);
-        request.Content = JsonContent.Create(new { order_code = shipmentOrderCode });
+        request.Content = JsonContent.Create(new { order_code = shippingOrderCode });
 
         var response = await _httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<GetShipmentDetailsResponse>(
+        return await response.Content.ReadFromJsonAsync<GetShippingDetailsResponse>(
             _jsonSerializerOptions
         );
     }
 
-    public async Task<CreateShipmentResponse?> ReviewShipment(CreateShipmentRequest shipmentRequest)
+    public async Task<CreateShippingResponse?> ReviewShipping(CreateShippingRequest shippingRequest)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/shipping-order/preview");
         request.Headers.Add("ShopId", _shopId);
         request.Headers.Add("Token", _token);
-        request.Content = JsonContent.Create(shipmentRequest, options: _jsonSerializerOptions);
+        request.Content = JsonContent.Create(shippingRequest, options: _jsonSerializerOptions);
 
         var response = await _httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<CreateShipmentResponse>(
+        return await response.Content.ReadFromJsonAsync<CreateShippingResponse>(
             _jsonSerializerOptions
         );
     }
 
-    public async Task<CreateShipmentResponse?> CreateShipment(CreateShipmentRequest shipmentRequest)
+    public async Task<CreateShippingResponse?> CreateShipping(CreateShippingRequest shippingRequest)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/shipping-order/create");
         request.Headers.Add("ShopId", _shopId);
         request.Headers.Add("Token", _token);
-        request.Content = JsonContent.Create(shipmentRequest, options: _jsonSerializerOptions);
+        request.Content = JsonContent.Create(shippingRequest, options: _jsonSerializerOptions);
 
         var response = await _httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<CreateShipmentResponse>(
+        return await response.Content.ReadFromJsonAsync<CreateShippingResponse>(
             _jsonSerializerOptions
         );
     }
 
-    public async Task<CancelShipmentResponse?> CancelShipment(string shipmentOrderCode)
+    public async Task<CancelShippingResponse?> CancelShipping(string shippingOrderCode)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/switch-status/cancel");
         request.Headers.Add("ShopId", _shopId);
         request.Headers.Add("Token", _token);
-        request.Content = JsonContent.Create(new { order_codes = new[] { shipmentOrderCode } });
+        request.Content = JsonContent.Create(new { order_codes = new[] { shippingOrderCode } });
 
         var response = await _httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<CancelShipmentResponse>(
+        return await response.Content.ReadFromJsonAsync<CancelShippingResponse>(
             _jsonSerializerOptions
         );
     }

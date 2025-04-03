@@ -9,7 +9,7 @@ using Ecommerce.Domain;
 using Ecommerce.Infrastructure.Payments;
 using Ecommerce.Infrastructure.Photos;
 using Ecommerce.Infrastructure.Security;
-using Ecommerce.Infrastructure.Shipments;
+using Ecommerce.Infrastructure.Shipping;
 using Ecommerce.Persistence;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.Json;
@@ -83,7 +83,7 @@ builder.Services.AddSingleton<IVnpay, Vnpay>(sp =>
 
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.Configure<GHNSettings>(builder.Configuration.GetSection("GHN"));
-builder.Services.AddSingleton<IShipmentService, ShipmentService>();
+builder.Services.AddSingleton<IShippingService, ShippingService>();
 
 var app = builder.Build();
 

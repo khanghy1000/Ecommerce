@@ -1,14 +1,14 @@
 namespace Ecommerce.Application.Interfaces;
 
-public interface IShipmentService
+public interface IShippingService
 {
-    Task<GetShipmentDetailsResponse?> GetShipmentDetails(string shipmentOrderCode);
-    Task<CreateShipmentResponse?> ReviewShipment(CreateShipmentRequest shipmentRequest);
-    Task<CreateShipmentResponse?> CreateShipment(CreateShipmentRequest shipmentRequest);
-    Task<CancelShipmentResponse?> CancelShipment(string shipmentOrderCode);
+    Task<GetShippingDetailsResponse?> GetShippingDetails(string shippingOrderCode);
+    Task<CreateShippingResponse?> ReviewShipping(CreateShippingRequest shippingRequest);
+    Task<CreateShippingResponse?> CreateShipping(CreateShippingRequest shippingRequest);
+    Task<CancelShippingResponse?> CancelShipping(string shippingOrderCode);
 }
 
-public class CreateShipmentRequest
+public class CreateShippingRequest
 {
     // Mã người thanh toán phí dịch vụ.
     // 1: Người bán/Người gửi.
@@ -34,10 +34,10 @@ public class CreateShipmentRequest
     public required int Height { get; set; }
     public required int Weight { get; set; }
     public int ServiceTypeId { get; set; } // 2: Hàng nhẹ, 5: Hàng nặng
-    public required List<CreateShipmentRequestItem> Items { get; set; } = [];
+    public required List<CreateShippingRequestItem> Items { get; set; } = [];
 }
 
-public class CreateShipmentRequestItem
+public class CreateShippingRequestItem
 {
     public required string Name { get; set; }
     public required string Code { get; set; }
@@ -49,27 +49,27 @@ public class CreateShipmentRequestItem
     public required int Weight { get; set; }
 }
 
-public class CreateShipmentResponse
+public class CreateShippingResponse
 {
     public int Code { get; set; }
     public string Message { get; set; } = "";
-    public CreateShipmentResponseData? Data { get; set; }
+    public CreateShippingResponseData? Data { get; set; }
     public string? MessageDisplay { get; set; }
 }
 
-public class CreateShipmentResponseData
+public class CreateShippingResponseData
 {
     public string OrderCode { get; set; } = "";
     public string SortCode { get; set; } = "";
     public string TransType { get; set; } = "";
     public string WardEncode { get; set; } = "";
     public string DistrictEncode { get; set; } = "";
-    public CreateShipmentResponseDataFee? Fee { get; set; }
+    public CreateShippingResponseDataFee? Fee { get; set; }
     public int TotalFee { get; set; }
     public DateTime ExpectedDeliveryTime { get; set; }
 }
 
-public class CreateShipmentResponseDataFee
+public class CreateShippingResponseDataFee
 {
     public int MainService { get; set; }
     public int Insurance { get; set; }
@@ -81,28 +81,28 @@ public class CreateShipmentResponseDataFee
     public int CodFailedFee { get; set; }
 }
 
-public class CancelShipmentResponse
+public class CancelShippingResponse
 {
     public int Code { get; set; }
     public string Message { get; set; } = "";
-    public List<CancelShipmentResponseData>? Data { get; set; }
+    public List<CancelShippingResponseData>? Data { get; set; }
 }
 
-public class CancelShipmentResponseData
+public class CancelShippingResponseData
 {
     public string OrderCode { get; set; } = "";
     public bool Result { get; set; }
     public string Message { get; set; } = "";
 }
 
-public class GetShipmentDetailsResponse
+public class GetShippingDetailsResponse
 {
     public int Code { get; set; }
     public string Message { get; set; } = "";
-    public GetShipmentDetailsResponseData? Data { get; set; }
+    public GetShippingDetailsResponseData? Data { get; set; }
 }
 
-public class GetShipmentDetailsResponseData
+public class GetShippingDetailsResponseData
 {
     public int ShopId { get; set; }
     public int ClientId { get; set; }
@@ -111,20 +111,20 @@ public class GetShipmentDetailsResponseData
     public string ReturnAddress { get; set; } = "";
     public string ReturnWardCode { get; set; } = "";
     public int ReturnDistrictId { get; set; }
-    public GetShipmentDetailsResponseDataReturnLocation? ReturnLocation { get; set; }
+    public GetShippingDetailsResponseDataReturnLocation? ReturnLocation { get; set; }
     public string FromName { get; set; } = "";
     public string FromPhone { get; set; } = "";
     public string FromAddress { get; set; } = "";
     public string FromWardCode { get; set; } = "";
     public int FromDistrictId { get; set; }
-    public GetShipmentDetailsResponseDataFromLocation? FromLocation { get; set; }
+    public GetShippingDetailsResponseDataFromLocation? FromLocation { get; set; }
     public int DeliverStationId { get; set; }
     public string ToName { get; set; } = "";
     public string ToPhone { get; set; } = "";
     public string ToAddress { get; set; } = "";
     public string ToWardCode { get; set; } = "";
     public int ToDistrictId { get; set; }
-    public GetShipmentDetailsResponseDataToLocation? ToLocation { get; set; }
+    public GetShippingDetailsResponseDataToLocation? ToLocation { get; set; }
     public int Weight { get; set; }
     public int Length { get; set; }
     public int Width { get; set; }
@@ -154,7 +154,7 @@ public class GetShipmentDetailsResponseData
     public string EmployeeNote { get; set; } = "";
     public string SealCode { get; set; } = "";
     public DateTime PickupTime { get; set; }
-    public List<GetShipmentDetailsResponseDataItem> Items { get; set; } = [];
+    public List<GetShippingDetailsResponseDataItem> Items { get; set; } = [];
     public string Coupon { get; set; } = "";
     public string Id { get; set; } = "";
     public string OrderCode { get; set; } = "";
@@ -183,10 +183,10 @@ public class GetShipmentDetailsResponseData
     public DateTime ReturnTime { get; set; }
     public string FinishDate { get; set; } = "";
     public List<string> Tag { get; set; } = [];
-    public List<GetShipmentDetailsResponseDataLog> Log { get; set; } = [];
+    public List<GetShippingDetailsResponseDataLog> Log { get; set; } = [];
 }
 
-public class GetShipmentDetailsResponseDataFromLocation
+public class GetShippingDetailsResponseDataFromLocation
 {
     public double Lat { get; set; }
     public double Long { get; set; }
@@ -196,7 +196,7 @@ public class GetShipmentDetailsResponseDataFromLocation
     public string Wardcode { get; set; } = "";
 }
 
-public class GetShipmentDetailsResponseDataItem
+public class GetShippingDetailsResponseDataItem
 {
     public string Name { get; set; } = "";
     public string Code { get; set; } = "";
@@ -208,14 +208,14 @@ public class GetShipmentDetailsResponseDataItem
     public string Status { get; set; } = "";
 }
 
-public class GetShipmentDetailsResponseDataLog
+public class GetShippingDetailsResponseDataLog
 {
     public string Status { get; set; } = "";
     public string PaymentTypeId { get; set; } = "";
     public DateTime UpdatedDate { get; set; }
 }
 
-public class GetShipmentDetailsResponseDataReturnLocation
+public class GetShippingDetailsResponseDataReturnLocation
 {
     public double Lat { get; set; }
     public double Long { get; set; }
@@ -225,7 +225,7 @@ public class GetShipmentDetailsResponseDataReturnLocation
     public string Wardcode { get; set; } = "";
 }
 
-public class GetShipmentDetailsResponseDataToLocation
+public class GetShippingDetailsResponseDataToLocation
 {
     public double Lat { get; set; }
     public double Long { get; set; }
