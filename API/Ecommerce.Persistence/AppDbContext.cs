@@ -15,6 +15,9 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public DbSet<OrderProduct> OrderProducts { get; set; }
     public DbSet<SalesOrder> SalesOrders { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
+    public DbSet<Province> Provinces { get; set; }
+    public DbSet<District> Districts { get; set; }
+    public DbSet<Ward> Wards { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

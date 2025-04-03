@@ -12,6 +12,10 @@ public class ProductDto
     public decimal? DiscountPrice { get; set; }
     public int Quantity { get; set; }
     public bool Active { get; set; }
+    public int Length { get; set; }
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public int Weight { get; set; }
     public string ShopId { get; set; } = "";
     public string ShopName { get; set; } = "";
     public string ShopImageUrl { get; set; } = "";
