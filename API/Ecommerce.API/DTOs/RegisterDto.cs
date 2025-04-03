@@ -13,6 +13,17 @@ public class RegisterDto
 
     public string Password { get; set; } = "";
 
+    [Required]
+    [Phone]
+    public string PhoneNumber { get; set; } = "";
+
+    [Required]
+    [StringLength(255)]
+    public string Address { get; set; } = "";
+
+    [Required]
+    public int WardId { get; set; }
+
     [EnumDataType(typeof(UserRole), ErrorMessage = "Invalid role.")]
     public UserRole Role { get; set; } = UserRole.Buyer;
 }

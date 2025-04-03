@@ -4,6 +4,7 @@ using Ecommerce.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.API.Controllers;
 
@@ -34,6 +35,9 @@ public class IdentityController(
             UserName = registerDto.Email,
             Email = registerDto.Email,
             DisplayName = registerDto.DisplayName,
+            PhoneNumber = registerDto.PhoneNumber,
+            Address = registerDto.Address,
+            WardId = registerDto.WardId,
         };
 
         var result = await signInManager.UserManager.CreateAsync(user, registerDto.Password);
@@ -65,7 +69,11 @@ public class IdentityController(
         if (User.Identity?.IsAuthenticated == false)
             return NoContent();
 
-        var user = await signInManager.UserManager.GetUserAsync(User);
+        var user = await signInManager
+            .UserManager.Users.Include(u => u.Ward)
+            .ThenInclude(w => w.District)
+            .ThenInclude(d => d.Province)
+            .FirstOrDefaultAsync(u => u.Email == User.FindFirstValue(ClaimTypes.Email));
 
         if (user == null)
             return Unauthorized();
@@ -79,6 +87,14 @@ public class IdentityController(
                 user.Email,
                 user.Id,
                 user.ImageUrl,
+                user.PhoneNumber,
+                user.Address,
+                WardName = user.Ward?.Name,
+                DistrictName = user.Ward?.District.Name,
+                ProvinceName = user.Ward?.District.Province.Name,
+                user.WardId,
+                user.Ward?.DistrictId,
+                user.Ward?.District.ProvinceId,
                 Role = role.FirstOrDefault(),
             }
         );

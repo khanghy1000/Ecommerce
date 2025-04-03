@@ -27,6 +27,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 
         modelBuilder.Entity<User>().Property(u => u.DisplayName).HasMaxLength(255);
         modelBuilder.Entity<User>().Property(u => u.ImageUrl).HasMaxLength(255);
+        modelBuilder.Entity<User>().Property(u => u.Address).HasMaxLength(255);
 
         modelBuilder.Entity<Product>().Property(p => p.Name).HasMaxLength(255);
         modelBuilder.Entity<Product>().Property(p => p.Description).HasMaxLength(20000);
