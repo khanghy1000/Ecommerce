@@ -16,10 +16,6 @@ public class CreateShipmentRequest
     public required int PaymentTypeId { get; set; }
     public string? Note { get; set; }
     public required string RequiredNote { get; set; } // CHOTHUHANG, CHOXEMHANGKHONGTHU, KHONGCHOXEMHANG
-    public required string ReturnPhone { get; set; }
-    public required string ReturnAddress { get; set; }
-    public required object ReturnDistrictId { get; set; }
-    public required string ReturnWardCode { get; set; }
     public required string FromName { get; set; }
     public required string FromPhone { get; set; }
     public required string FromAddress { get; set; }
