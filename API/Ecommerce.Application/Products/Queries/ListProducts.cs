@@ -19,6 +19,8 @@ public static class ListProducts
         public string SortBy { get; set; } = "name";
         public string SortDirection { get; set; } = "asc";
         public List<int>? SubcategoryIds { get; set; }
+        public decimal? MinPrice { get; set; }
+        public decimal? MaxPrice { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
@@ -45,6 +47,16 @@ public static class ListProducts
                 query = query.Where(x =>
                     x.Subcategories.Any(sc => request.SubcategoryIds.Contains(sc.Id))
                 );
+            }
+
+            if (request.MinPrice.HasValue)
+            {
+                query = query.Where(x => x.RegularPrice >= request.MinPrice.Value);
+            }
+
+            if (request.MaxPrice.HasValue)
+            {
+                query = query.Where(x => x.RegularPrice <= request.MaxPrice.Value);
             }
 
             query = request.SortBy switch
@@ -76,3 +88,6 @@ public static class ListProducts
         }
     }
 }
+
+// recommend git commit message
+// feat: add ListProducts query with filtering, sorting, and pagination
