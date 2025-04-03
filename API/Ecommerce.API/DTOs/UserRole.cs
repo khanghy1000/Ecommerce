@@ -2,7 +2,7 @@ namespace Ecommerce.API.DTOs;
 
 public enum UserRole
 {
-    User,
+    Buyer,
     Shop,
     Admin,
 }

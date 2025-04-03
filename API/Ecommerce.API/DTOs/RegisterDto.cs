@@ -14,5 +14,5 @@ public class RegisterDto
     public string Password { get; set; } = "";
 
     [EnumDataType(typeof(UserRole), ErrorMessage = "Invalid role.")]
-    public UserRole Role { get; set; } = UserRole.User;
+    public UserRole Role { get; set; } = UserRole.Buyer;
 }
