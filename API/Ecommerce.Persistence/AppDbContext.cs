@@ -56,6 +56,10 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         modelBuilder.Entity<Coupon>().Property(c => c.Description).HasMaxLength(1000);
 
         modelBuilder.Entity<SalesOrder>().Property(so => so.UserId).HasMaxLength(36);
+        modelBuilder.Entity<SalesOrder>().Property(so => so.ShippingName).HasMaxLength(255);
+        modelBuilder.Entity<SalesOrder>().Property(so => so.ShippingPhone).HasMaxLength(20);
+        modelBuilder.Entity<SalesOrder>().Property(so => so.ShippingAddress).HasMaxLength(255);
+        modelBuilder.Entity<SalesOrder>().Property(so => so.ShippingOrderCode).HasMaxLength(36);
 
         modelBuilder.Entity<OrderProduct>().Property(op => op.Name).HasMaxLength(255);
 

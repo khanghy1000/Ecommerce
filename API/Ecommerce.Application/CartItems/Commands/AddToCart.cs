@@ -57,11 +57,9 @@ public static class AddToCart
                 dbContext.CartItems.Add(cartItem);
             }
 
-            var result = await dbContext.SaveChangesAsync(cancellationToken) > 0;
+            await dbContext.SaveChangesAsync(cancellationToken);
 
-            return result
-                ? Result<Unit>.Success(Unit.Value)
-                : Result<Unit>.Failure("Failed to add item to cart", 400);
+            return Result<Unit>.Success(Unit.Value);
         }
     }
 }

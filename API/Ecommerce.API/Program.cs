@@ -44,7 +44,14 @@ builder.Services.AddCors();
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    opt.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        o =>
+        {
+            o.MapEnum<SalesOrderStatus>("sales_order_status");
+            o.MapEnum<PaymentMethod>("payment_method");
+        }
+    );
 });
 
 builder.Services.AddScoped<IPhotoService, PhotoService>();

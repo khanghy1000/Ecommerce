@@ -33,7 +33,7 @@ public class CreateShippingRequest
     public required int Width { get; set; }
     public required int Height { get; set; }
     public required int Weight { get; set; }
-    public int ServiceTypeId { get; set; } // 2: Hàng nhẹ, 5: Hàng nặng
+    public int ServiceTypeId { get; set; } = 2; // 2: Hàng nhẹ, 5: Hàng nặng
     public required List<CreateShippingRequestItem> Items { get; set; } = [];
 }
 

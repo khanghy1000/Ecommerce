@@ -1,8 +1,10 @@
 using AutoMapper;
 using Ecommerce.Application.CartItems.DTOs;
 using Ecommerce.Application.Categories.DTOs;
+using Ecommerce.Application.Interfaces;
 using Ecommerce.Application.Locations.DTOs;
 using Ecommerce.Application.Products.DTOs;
+using Ecommerce.Application.SalesOrders.DTOs;
 using Ecommerce.Domain;
 
 namespace Ecommerce.Application.Core;
@@ -67,5 +69,36 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.ProvinceName, opt => opt.MapFrom(src => src.Province.Name));
         CreateMap<Ward, WardDto>()
             .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.District.Name));
+
+        CreateMap<CartItem, CreateShippingRequestItem>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Product.Name))
+            .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Product.Id))
+            .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
+            .ForMember(
+                dest => dest.Price,
+                opt =>
+                    opt.MapFrom(src => (int)(src.Product.DiscountPrice ?? src.Product.RegularPrice))
+            )
+            .ForMember(dest => dest.Length, opt => opt.MapFrom(src => src.Product.Length))
+            .ForMember(dest => dest.Width, opt => opt.MapFrom(src => src.Product.Width))
+            .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Product.Height))
+            .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Product.Weight));
+
+        CreateMap<OrderProduct, CreateShippingRequestItem>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Product.Name))
+            .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Product.Id))
+            .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
+            .ForMember(
+                dest => dest.Price,
+                opt =>
+                    opt.MapFrom(src => (int)(src.Product.DiscountPrice ?? src.Product.RegularPrice))
+            )
+            .ForMember(dest => dest.Length, opt => opt.MapFrom(src => src.Product.Length))
+            .ForMember(dest => dest.Width, opt => opt.MapFrom(src => src.Product.Width))
+            .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Product.Height))
+            .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Product.Weight));
+
+        CreateMap<SalesOrder, SalesOrderDto>();
+        CreateMap<OrderProduct, OrderProductDto>();
     }
 }

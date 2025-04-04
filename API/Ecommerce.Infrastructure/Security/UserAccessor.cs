@@ -3,6 +3,7 @@ using Ecommerce.Application.Interfaces;
 using Ecommerce.Domain;
 using Ecommerce.Persistence;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.Infrastructure.Security;
 
@@ -11,7 +12,12 @@ public class UserAccessor(IHttpContextAccessor httpContextAccessor, AppDbContext
 {
     public async Task<User> GetUserAsync()
     {
-        return await dbContext.Users.FindAsync(GetUserId())
+        var userId = GetUserId();
+        return await dbContext
+                .Users.Include(u => u.Ward)
+                .ThenInclude(w => w!.District)
+                .ThenInclude(d => d.Province)
+                .FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new UnauthorizedAccessException("No user is logged in");
     }
 
