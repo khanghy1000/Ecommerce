@@ -4,6 +4,7 @@ using Ecommerce.Application.Products.DTOs;
 using Ecommerce.Application.Products.Queries;
 using Ecommerce.Domain;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controllers;
@@ -11,6 +12,7 @@ namespace Ecommerce.API.Controllers;
 public class ProductsController : BaseApiController
 {
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<PagedList<ProductResponseDto>>> ListProducts(
         string? keyword,
         int pageSize = 20,
@@ -35,6 +37,7 @@ public class ProductsController : BaseApiController
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<ActionResult<ProductResponseDto>> GetProductById(int id)
     {
         var product = await Mediator.Send(new GetProductById.Query { Id = id });
@@ -42,6 +45,7 @@ public class ProductsController : BaseApiController
     }
 
     [HttpPost]
+    [Authorize(Roles = "Seller,Admin")]
     public async Task<ActionResult<ProductResponseDto>> CreateProduct(
         CreateProductRequestDto createProductRequestDto
     )
@@ -53,6 +57,7 @@ public class ProductsController : BaseApiController
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Seller,Admin", Policy = "IsProductOwner")]
     public async Task<ActionResult<ProductResponseDto>> EditProduct(
         int id,
         EditProductRequestDto editProductRequestDto
@@ -65,43 +70,44 @@ public class ProductsController : BaseApiController
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Seller,Admin", Policy = "IsProductOwner")]
     public async Task<ActionResult<Unit>> DeleteProduct(int id)
     {
         var result = await Mediator.Send(new DeleteProduct.Command { Id = id });
         return HandleResult(result);
     }
 
-    [HttpPost("{productId}/photos")]
-    public async Task<ActionResult<ProductPhoto>> AddProductPhoto(int productId, IFormFile file)
+    [HttpPost("{id}/photos")]
+    [Authorize(Roles = "Seller,Admin", Policy = "IsProductOwner")]
+    public async Task<ActionResult<ProductPhoto>> AddProductPhoto(int id, IFormFile file)
     {
         var result = await Mediator.Send(
-            new AddProductPhoto.Command { ProductId = productId, File = file }
+            new AddProductPhoto.Command { ProductId = id, File = file }
         );
         return HandleResult(result);
     }
 
-    [HttpDelete("{productId}/photos")]
-    public async Task<ActionResult<Unit>> DeleteProductPhoto(
-        int productId,
-        [FromQuery] string photoKey
-    )
+    [HttpDelete("{id}/photos")]
+    [Authorize(Roles = "Seller,Admin", Policy = "IsProductOwner")]
+    public async Task<ActionResult<Unit>> DeleteProductPhoto(int id, [FromQuery] string photoKey)
     {
         var result = await Mediator.Send(
-            new DeleteProductPhoto.Command { ProductId = productId, Key = photoKey }
+            new DeleteProductPhoto.Command { ProductId = id, Key = photoKey }
         );
         return HandleResult(result);
     }
 
-    [HttpPut("{productId}/photos/order")]
+    [HttpPut("{id}/photos/order")]
+    [Authorize(Roles = "Seller,Admin", Policy = "IsProductOwner")]
     public async Task<ActionResult<Unit>> UpdateProductPhotoDisplayOrder(
-        int productId,
+        int id,
         List<UpdateProductPhotoDisplayOrderRequestDto> photoOrderRequestDto
     )
     {
         var result = await Mediator.Send(
             new UpdateProductPhotoDisplayOrder.Command
             {
-                ProductId = productId,
+                ProductId = id,
                 PhotoOrders = photoOrderRequestDto,
             }
         );

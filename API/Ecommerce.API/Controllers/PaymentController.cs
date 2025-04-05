@@ -3,6 +3,7 @@ using Ecommerce.Application.Payments.Commands;
 using Ecommerce.Application.Payments.DTOs;
 using Ecommerce.Application.Payments.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VNPAY.NET.Enums;
 using VNPAY.NET.Models;
@@ -10,20 +11,9 @@ using VNPAY.NET.Utilities;
 
 namespace Ecommerce.API.Controllers;
 
+[AllowAnonymous]
 public class PaymentController() : BaseApiController
 {
-    // TODO: Remove this method
-    [HttpPost("CreatePaymentUrl")]
-    public async Task<ActionResult<string>> CreatePaymentUrl(
-        CreatePaymentUrlRequestDto createPaymentUrlRequestDto
-    )
-    {
-        var result = await Mediator.Send(
-            new CreatePaymentUrl.Command { CreatePaymentUrlRequestDto = createPaymentUrlRequestDto }
-        );
-        return HandleResult(result);
-    }
-
     /// Perform any necessary actions after payment. This URL needs to be declared with VNPAY to work (e.g., http://localhost:1234/api/Vnpay/IpnAction)
     [HttpGet("IpnAction")]
     public async Task<ActionResult<Unit>> IpnAction()

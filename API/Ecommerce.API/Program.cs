@@ -12,8 +12,10 @@ using Ecommerce.Infrastructure.Security;
 using Ecommerce.Infrastructure.Shipping;
 using Ecommerce.Persistence;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using VNPAY.NET;
@@ -28,7 +30,11 @@ if (builder.Environment.IsDevelopment())
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder
-    .Services.AddControllers()
+    .Services.AddControllers(opt =>
+    {
+        var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+        opt.Filters.Add(new AuthorizeFilter(policy));
+    })
     .AddJsonOptions(opt =>
     {
         opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -74,6 +80,18 @@ builder
     })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
+
+builder.Services.AddAuthorization(opt =>
+{
+    opt.AddPolicy(
+        "IsProductOwner",
+        policy =>
+        {
+            policy.Requirements.Add(new IsProductOwnerRequirement());
+        }
+    );
+});
+builder.Services.AddTransient<IAuthorizationHandler, IsProductOwnerRequirementHandler>();
 
 builder.Services.AddSingleton<IVnpay, Vnpay>(sp =>
 {

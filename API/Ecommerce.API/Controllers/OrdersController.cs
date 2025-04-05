@@ -1,6 +1,7 @@
 using Ecommerce.Application.SalesOrders.Commands;
 using Ecommerce.Application.SalesOrders.DTOs;
 using Ecommerce.Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controllers;
@@ -8,6 +9,7 @@ namespace Ecommerce.API.Controllers;
 public class OrdersController : BaseApiController
 {
     [HttpPost("checkout")]
+    [Authorize(Roles = "Buyer")]
     public async Task<ActionResult<CheckoutResponseDto>> Checkout(
         [FromBody] CheckoutRequestDto checkoutRequestDto
     )
@@ -19,6 +21,7 @@ public class OrdersController : BaseApiController
     }
 
     [HttpPost("checkout-review")]
+    [Authorize(Roles = "Buyer")]
     public async Task<ActionResult<CheckoutPriceReviewResponseDto>> CheckoutReview(
         [FromBody] CheckoutPriceReviewRequestDto checkoutPriceReviewRequestDto
     )

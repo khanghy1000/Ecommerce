@@ -2,6 +2,7 @@ using Ecommerce.Application.CartItems.Commands;
 using Ecommerce.Application.CartItems.DTOs;
 using Ecommerce.Application.CartItems.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RemoveFromCart = Ecommerce.Application.CartItems.Commands.RemoveFromCart;
 
@@ -10,6 +11,7 @@ namespace Ecommerce.API.Controllers;
 public class CartController : BaseApiController
 {
     [HttpGet]
+    [Authorize(Roles = "Buyer")]
     public async Task<ActionResult<List<CartItemResponseDto>>> GetCart()
     {
         var result = await Mediator.Send(new GetCartItems.Query());
@@ -17,6 +19,7 @@ public class CartController : BaseApiController
     }
 
     [HttpPost]
+    [Authorize(Roles = "Buyer")]
     public async Task<ActionResult<Unit>> AddToCart(AddToCartRequestDto addToCartRequestDto)
     {
         var result = await Mediator.Send(
@@ -26,6 +29,7 @@ public class CartController : BaseApiController
     }
 
     [HttpPut]
+    [Authorize(Roles = "Buyer")]
     public async Task<ActionResult<Unit>> UpdateCartItem(
         UpdateCartItemRequestDto updateCartItemRequestDto
     )
@@ -37,6 +41,7 @@ public class CartController : BaseApiController
     }
 
     [HttpDelete]
+    [Authorize(Roles = "Buyer")]
     public async Task<ActionResult<Unit>> RemoveFromCart(
         RemoveFromCartRequestDto removeFromCartRequestDto
     )

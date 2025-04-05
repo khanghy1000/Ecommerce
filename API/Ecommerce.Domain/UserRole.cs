@@ -1,4 +1,4 @@
-namespace Ecommerce.API.DTOs;
+namespace Ecommerce.Domain;
 
 public enum UserRole
 {

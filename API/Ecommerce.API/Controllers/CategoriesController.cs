@@ -2,6 +2,7 @@ using Ecommerce.Application.Categories.Commands;
 using Ecommerce.Application.Categories.DTOs;
 using Ecommerce.Application.Categories.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controllers;
@@ -9,6 +10,7 @@ namespace Ecommerce.API.Controllers;
 public class CategoriesController : BaseApiController
 {
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<List<CategoryResponseDto>>> GetCategories()
     {
         var categories = await Mediator.Send(new ListCategories.Query());
@@ -16,6 +18,7 @@ public class CategoriesController : BaseApiController
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<ActionResult<CategoryResponseDto>> GetCategoryById(int id)
     {
         var category = await Mediator.Send(new GetCategoryById.Query { Id = id });
@@ -23,6 +26,7 @@ public class CategoriesController : BaseApiController
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<CategoryWithoutChildResponseDto>> CreateCategory(
         CreateCategoryRequestDto createCategoryRequestDto
     )
@@ -34,6 +38,7 @@ public class CategoriesController : BaseApiController
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<CategoryWithoutChildResponseDto>> EditCategory(
         int id,
         EditCategoryRequestDto editCategoryRequestDto
@@ -46,6 +51,7 @@ public class CategoriesController : BaseApiController
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<Unit>> DeleteCategory(int id)
     {
         var result = await Mediator.Send(new DeleteCategory.Command { Id = id });
@@ -53,6 +59,7 @@ public class CategoriesController : BaseApiController
     }
 
     [HttpGet("subcategories/{id}")]
+    [AllowAnonymous]
     public async Task<ActionResult<SubcategoryResponseDto>> GetSubcategoryById(int id)
     {
         var subcategory = await Mediator.Send(new GetSubcategoryById.Query { Id = id });
@@ -60,6 +67,7 @@ public class CategoriesController : BaseApiController
     }
 
     [HttpPost("subcategories")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<SubcategoryResponseDto>> CreateSubcategory(
         CreateSubcategoryRequestDto createSubcategoryRequestDto
     )
@@ -74,6 +82,7 @@ public class CategoriesController : BaseApiController
     }
 
     [HttpPut("subcategories/{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<SubcategoryResponseDto>> EditSubcategory(
         int id,
         EditSubcategoryRequestDto editSubcategoryRequestDto
@@ -90,6 +99,7 @@ public class CategoriesController : BaseApiController
     }
 
     [HttpDelete("subcategories/{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<Unit>> DeleteSubcategory(int id)
     {
         var result = await Mediator.Send(new DeleteSubcategory.Command { Id = id });

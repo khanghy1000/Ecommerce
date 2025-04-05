@@ -1,9 +1,11 @@
 using Ecommerce.Application.Locations.DTOs;
 using Ecommerce.Application.Locations.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controllers;
 
+[AllowAnonymous]
 public class LocationsController : BaseApiController
 {
     [HttpGet("provinces")]
