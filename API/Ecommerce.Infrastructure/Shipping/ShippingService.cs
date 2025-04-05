@@ -27,11 +27,14 @@ public class ShippingService(IOptions<GHNSettings> config) : IShippingService
         request.Content = JsonContent.Create(new { order_code = shippingOrderCode });
 
         var response = await _httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-
-        return await response.Content.ReadFromJsonAsync<GetShippingDetailsResponse>(
+        var content = await response.Content.ReadFromJsonAsync<GetShippingDetailsResponse>(
             _jsonSerializerOptions
         );
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(content?.Message ?? "Failed to get shipping details");
+        }
+        return content;
     }
 
     public async Task<CreateShippingResponse?> ReviewShipping(CreateShippingRequest shippingRequest)
@@ -42,11 +45,14 @@ public class ShippingService(IOptions<GHNSettings> config) : IShippingService
         request.Content = JsonContent.Create(shippingRequest, options: _jsonSerializerOptions);
 
         var response = await _httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-
-        return await response.Content.ReadFromJsonAsync<CreateShippingResponse>(
+        var content = await response.Content.ReadFromJsonAsync<CreateShippingResponse>(
             _jsonSerializerOptions
         );
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(content?.Message ?? "Failed to get shipping preview");
+        }
+        return content;
     }
 
     public async Task<CreateShippingResponse?> CreateShipping(CreateShippingRequest shippingRequest)
@@ -57,11 +63,15 @@ public class ShippingService(IOptions<GHNSettings> config) : IShippingService
         request.Content = JsonContent.Create(shippingRequest, options: _jsonSerializerOptions);
 
         var response = await _httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-
-        return await response.Content.ReadFromJsonAsync<CreateShippingResponse>(
+        var content = await response.Content.ReadFromJsonAsync<CreateShippingResponse>(
             _jsonSerializerOptions
         );
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(content?.Message ?? "Failed to create shipping");
+        }
+        return content;
     }
 
     public async Task<CancelShippingResponse?> CancelShipping(string shippingOrderCode)
@@ -72,10 +82,13 @@ public class ShippingService(IOptions<GHNSettings> config) : IShippingService
         request.Content = JsonContent.Create(new { order_codes = new[] { shippingOrderCode } });
 
         var response = await _httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-
-        return await response.Content.ReadFromJsonAsync<CancelShippingResponse>(
+        var content = await response.Content.ReadFromJsonAsync<CancelShippingResponse>(
             _jsonSerializerOptions
         );
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(content?.Message ?? "Failed to cancel shipping");
+        }
+        return content;
     }
 }
