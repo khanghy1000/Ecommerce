@@ -37,7 +37,7 @@ public class PaymentController() : BaseApiController
     [HttpGet("Callback")]
     public async Task<ActionResult<PaymentResult>> Callback()
     {
-        var result = await Mediator.Send(new GetPaymentResult.Query());
+        var result = await Mediator.Send(new PaymentCallback.Query());
         return HandleResult(result);
     }
 }
