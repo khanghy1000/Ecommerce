@@ -2,7 +2,7 @@ using Ecommerce.Domain;
 
 namespace Ecommerce.Application.SalesOrders.DTOs;
 
-public class CheckoutPriceReviewRequestDto
+public class CheckoutPricePreviewRequestDto
 {
     public int? CouponId { get; set; }
     public string ShippingName { get; set; } = "";

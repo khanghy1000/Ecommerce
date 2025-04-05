@@ -3,7 +3,7 @@ namespace Ecommerce.Application.Interfaces;
 public interface IShippingService
 {
     Task<GetShippingDetailsResponse?> GetShippingDetails(string shippingOrderCode);
-    Task<CreateShippingResponse?> ReviewShipping(CreateShippingRequest shippingRequest);
+    Task<CreateShippingResponse?> PreviewShipping(CreateShippingRequest shippingRequest);
     Task<CreateShippingResponse?> CreateShipping(CreateShippingRequest shippingRequest);
     Task<CancelShippingResponse?> CancelShipping(string shippingOrderCode);
 }

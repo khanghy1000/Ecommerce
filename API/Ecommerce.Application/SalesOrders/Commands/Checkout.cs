@@ -98,7 +98,7 @@ public class Checkout
 
                 try
                 {
-                    var shippingResponse = await shippingService.ReviewShipping(shippingRequest);
+                    var shippingResponse = await shippingService.PreviewShipping(shippingRequest);
 
                     var fee = shippingResponse?.Data?.TotalFee;
                     if (fee == null)

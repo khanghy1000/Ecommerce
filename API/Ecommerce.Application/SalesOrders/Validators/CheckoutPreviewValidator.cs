@@ -3,26 +3,26 @@ using FluentValidation;
 
 namespace Ecommerce.Application.SalesOrders.Validators;
 
-public class CheckoutReviewValidator : AbstractValidator<CheckoutReview.Command>
+public class CheckoutPreviewValidator : AbstractValidator<CheckoutPreview.Command>
 {
-    public CheckoutReviewValidator()
+    public CheckoutPreviewValidator()
     {
-        RuleFor(x => x.CheckoutPriceReviewRequestDto.ShippingName)
+        RuleFor(x => x.CheckoutPricePreviewRequestDto.ShippingName)
             .NotEmpty()
             .WithMessage("Shipping name is required.")
             .MaximumLength(100)
             .WithMessage("Shipping name must not exceed 100 characters.");
-        RuleFor(x => x.CheckoutPriceReviewRequestDto.ShippingPhone)
+        RuleFor(x => x.CheckoutPricePreviewRequestDto.ShippingPhone)
             .NotEmpty()
             .WithMessage("Shipping phone is required.")
             .Matches(@"^\d{10,15}$")
             .WithMessage("Shipping phone must be between 10 and 15 digits.");
-        RuleFor(x => x.CheckoutPriceReviewRequestDto.ShippingAddress)
+        RuleFor(x => x.CheckoutPricePreviewRequestDto.ShippingAddress)
             .NotEmpty()
             .WithMessage("Shipping address is required.")
             .MaximumLength(200)
             .WithMessage("Shipping address must not exceed 200 characters.");
-        RuleFor(x => x.CheckoutPriceReviewRequestDto.ShippingWardId)
+        RuleFor(x => x.CheckoutPricePreviewRequestDto.ShippingWardId)
             .NotNull()
             .WithMessage("Shipping ward ID is required.");
     }

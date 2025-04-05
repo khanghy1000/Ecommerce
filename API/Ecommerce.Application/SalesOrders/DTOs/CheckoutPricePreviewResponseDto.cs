@@ -1,6 +1,6 @@
 namespace Ecommerce.Application.SalesOrders.DTOs;
 
-public class CheckoutPriceReviewResponseDto
+public class CheckoutPricePreviewResponseDto
 {
     public required decimal Subtotal { get; set; }
     public required decimal ShippingFee { get; set; }

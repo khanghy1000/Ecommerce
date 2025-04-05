@@ -37,7 +37,9 @@ public class ShippingService(IOptions<GHNSettings> config) : IShippingService
         return content;
     }
 
-    public async Task<CreateShippingResponse?> ReviewShipping(CreateShippingRequest shippingRequest)
+    public async Task<CreateShippingResponse?> PreviewShipping(
+        CreateShippingRequest shippingRequest
+    )
     {
         var request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/shipping-order/preview");
         request.Headers.Add("ShopId", _shopId);

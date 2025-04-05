@@ -20,16 +20,16 @@ public class OrdersController : BaseApiController
         return HandleResult(result);
     }
 
-    [HttpPost("checkout-review")]
+    [HttpPost("checkout-preview")]
     [Authorize(Roles = "Buyer")]
-    public async Task<ActionResult<CheckoutPriceReviewResponseDto>> CheckoutReview(
-        [FromBody] CheckoutPriceReviewRequestDto checkoutPriceReviewRequestDto
+    public async Task<ActionResult<CheckoutPricePreviewResponseDto>> CheckoutReview(
+        [FromBody] CheckoutPricePreviewRequestDto checkoutPricePreviewRequestDto
     )
     {
         var result = await Mediator.Send(
-            new CheckoutReview.Command
+            new CheckoutPreview.Command
             {
-                CheckoutPriceReviewRequestDto = checkoutPriceReviewRequestDto,
+                CheckoutPricePreviewRequestDto = checkoutPricePreviewRequestDto,
             }
         );
         return HandleResult(result);

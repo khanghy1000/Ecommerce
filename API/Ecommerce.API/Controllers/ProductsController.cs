@@ -19,7 +19,7 @@ public class ProductsController : BaseApiController
         int pageNumber = 1,
         string sortBy = "name",
         string sortDirection = "asc",
-        [FromQuery] List<int>? categoryIds = null
+        [FromQuery] List<int>? subCategoryIds = null
     )
     {
         var products = await Mediator.Send(
@@ -30,7 +30,7 @@ public class ProductsController : BaseApiController
                 PageNumber = pageNumber,
                 SortBy = sortBy.ToLower(),
                 SortDirection = sortDirection.ToLower(),
-                SubcategoryIds = categoryIds,
+                SubcategoryIds = subCategoryIds,
             }
         );
         return HandleResult(products);

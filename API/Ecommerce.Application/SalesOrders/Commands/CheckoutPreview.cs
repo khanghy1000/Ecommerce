@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.Application.SalesOrders.Commands;
 
-public class CheckoutReview
+public class CheckoutPreview
 {
-    public class Command : IRequest<Result<CheckoutPriceReviewResponseDto>>
+    public class Command : IRequest<Result<CheckoutPricePreviewResponseDto>>
     {
-        public required CheckoutPriceReviewRequestDto CheckoutPriceReviewRequestDto { get; set; }
+        public required CheckoutPricePreviewRequestDto CheckoutPricePreviewRequestDto { get; set; }
     }
 
     public class Handler(
@@ -21,9 +21,9 @@ public class CheckoutReview
         IUserAccessor userAccessor,
         IMapper mapper,
         IShippingService shippingService
-    ) : IRequestHandler<Command, Result<CheckoutPriceReviewResponseDto>>
+    ) : IRequestHandler<Command, Result<CheckoutPricePreviewResponseDto>>
     {
-        public async Task<Result<CheckoutPriceReviewResponseDto>> Handle(
+        public async Task<Result<CheckoutPricePreviewResponseDto>> Handle(
             Command request,
             CancellationToken cancellationToken
         )
@@ -36,12 +36,12 @@ public class CheckoutReview
                 .Wards.Include(w => w.District)
                 .ThenInclude(d => d.Province)
                 .FirstOrDefaultAsync(
-                    x => x.Id == request.CheckoutPriceReviewRequestDto.ShippingWardId,
+                    x => x.Id == request.CheckoutPricePreviewRequestDto.ShippingWardId,
                     cancellationToken
                 );
 
             if (shippingWard == null)
-                return Result<CheckoutPriceReviewResponseDto>.Failure("Ward not found", 400);
+                return Result<CheckoutPricePreviewResponseDto>.Failure("Ward not found", 400);
 
             var cartItems = await dbContext
                 .CartItems.Include(ci => ci.Product)
@@ -53,7 +53,7 @@ public class CheckoutReview
                 .ToListAsync(cancellationToken);
 
             if (cartItems.Count == 0)
-                return Result<CheckoutPriceReviewResponseDto>.Failure("Cart is empty", 400);
+                return Result<CheckoutPricePreviewResponseDto>.Failure("Cart is empty", 400);
 
             var groupedCartItems = cartItems.GroupBy(ci => ci.Product.Shop).ToList();
             var subtotal = (int)
@@ -79,9 +79,9 @@ public class CheckoutReview
                     FromWardName = shop.Ward!.Name,
                     FromDistrictName = shop.Ward.District.Name,
                     FromProvinceName = shop.Ward.District.Province.Name,
-                    ToName = request.CheckoutPriceReviewRequestDto.ShippingName,
-                    ToPhone = request.CheckoutPriceReviewRequestDto.ShippingPhone,
-                    ToAddress = request.CheckoutPriceReviewRequestDto.ShippingAddress,
+                    ToName = request.CheckoutPricePreviewRequestDto.ShippingName,
+                    ToPhone = request.CheckoutPricePreviewRequestDto.ShippingPhone,
+                    ToAddress = request.CheckoutPricePreviewRequestDto.ShippingAddress,
                     ToWardName = shippingWard.Name,
                     ToDistrictName = shippingWard.District.Name,
                     ToProvinceName = shippingWard.District.Province.Name,
@@ -95,11 +95,11 @@ public class CheckoutReview
 
                 try
                 {
-                    var shippingResponse = await shippingService.ReviewShipping(shippingRequest);
+                    var shippingResponse = await shippingService.PreviewShipping(shippingRequest);
 
                     var fee = shippingResponse?.Data?.TotalFee;
                     if (fee == null)
-                        return Result<CheckoutPriceReviewResponseDto>.Failure(
+                        return Result<CheckoutPricePreviewResponseDto>.Failure(
                             "Shipping fee not found",
                             400
                         );
@@ -107,12 +107,12 @@ public class CheckoutReview
                 }
                 catch (Exception ex)
                 {
-                    return Result<CheckoutPriceReviewResponseDto>.Failure(ex.Message, 500);
+                    return Result<CheckoutPricePreviewResponseDto>.Failure(ex.Message, 500);
                 }
             }
 
-            return Result<CheckoutPriceReviewResponseDto>.Success(
-                new CheckoutPriceReviewResponseDto
+            return Result<CheckoutPricePreviewResponseDto>.Success(
+                new CheckoutPricePreviewResponseDto
                 {
                     Subtotal = subtotal,
                     ShippingFee = shippingFee,
