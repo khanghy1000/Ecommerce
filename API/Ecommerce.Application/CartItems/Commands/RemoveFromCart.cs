@@ -11,7 +11,7 @@ public static class RemoveFromCart
 {
     public class Command : IRequest<Result<Unit>>
     {
-        public required RemoveFromCartDto ItemDto { get; set; }
+        public required RemoveFromCartRequestDto RemoveFromCartRequestDto { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IUserAccessor userAccessor)
@@ -22,7 +22,9 @@ public static class RemoveFromCart
             var user = await userAccessor.GetUserAsync();
 
             var cartItem = await dbContext.CartItems.FirstOrDefaultAsync(
-                ci => ci.ProductId == request.ItemDto.ProductId && ci.UserId == user.Id,
+                ci =>
+                    ci.ProductId == request.RemoveFromCartRequestDto.ProductId
+                    && ci.UserId == user.Id,
                 cancellationToken
             );
 

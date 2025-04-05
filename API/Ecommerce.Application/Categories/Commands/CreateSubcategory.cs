@@ -12,30 +12,30 @@ namespace Ecommerce.Application.Categories.Commands;
 
 public static class CreateSubcategory
 {
-    public class Command : IRequest<Result<SubcategoryDto>>
+    public class Command : IRequest<Result<SubcategoryResponseDto>>
     {
-        public required CreateSubcategoryDto SubcategoryDto { get; set; }
+        public required CreateSubcategoryRequestDto CreateSubcategoryRequestDto { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
-        : IRequestHandler<Command, Result<SubcategoryDto>>
+        : IRequestHandler<Command, Result<SubcategoryResponseDto>>
     {
-        public async Task<Result<SubcategoryDto>> Handle(
+        public async Task<Result<SubcategoryResponseDto>> Handle(
             Command request,
             CancellationToken cancellationToken
         )
         {
             var category = await dbContext.Categories.FirstOrDefaultAsync(
-                c => c.Id == request.SubcategoryDto.CategoryId,
+                c => c.Id == request.CreateSubcategoryRequestDto.CategoryId,
                 cancellationToken
             );
 
             if (category == null)
-                return Result<SubcategoryDto>.Failure("Category not found", 400);
+                return Result<SubcategoryResponseDto>.Failure("Category not found", 400);
 
             var subcategory = new Subcategory
             {
-                Name = request.SubcategoryDto.Name,
+                Name = request.CreateSubcategoryRequestDto.Name,
                 CategoryId = category.Id,
             };
 
@@ -43,13 +43,13 @@ public static class CreateSubcategory
             var success = await dbContext.SaveChangesAsync(cancellationToken) > 0;
 
             if (!success)
-                return Result<SubcategoryDto>.Failure("Failed to create subcategory", 400);
+                return Result<SubcategoryResponseDto>.Failure("Failed to create subcategory", 400);
 
             var newSubcategory = await dbContext
-                .Subcategories.ProjectTo<SubcategoryDto>(mapper.ConfigurationProvider)
+                .Subcategories.ProjectTo<SubcategoryResponseDto>(mapper.ConfigurationProvider)
                 .FirstAsync(c => c.Id == subcategory.Id, cancellationToken);
 
-            return Result<SubcategoryDto>.Success(newSubcategory);
+            return Result<SubcategoryResponseDto>.Success(newSubcategory);
         }
     }
 }

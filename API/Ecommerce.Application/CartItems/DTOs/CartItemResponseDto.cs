@@ -2,7 +2,7 @@ using Ecommerce.Application.Products.DTOs;
 
 namespace Ecommerce.Application.CartItems.DTOs;
 
-public class CartItemDto
+public class CartItemResponseDto
 {
     public int ProductId { get; set; }
     public int Quantity { get; set; }

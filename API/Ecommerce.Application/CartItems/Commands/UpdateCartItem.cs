@@ -11,7 +11,7 @@ public static class UpdateCartItem
 {
     public class Command : IRequest<Result<Unit>>
     {
-        public required UpdateCartItemDto ItemDto { get; set; }
+        public required UpdateCartItemRequestDto UpdateCartItemRequestDto { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IUserAccessor userAccessor)
@@ -22,7 +22,9 @@ public static class UpdateCartItem
             var user = await userAccessor.GetUserAsync();
 
             var cartItem = await dbContext.CartItems.FirstOrDefaultAsync(
-                ci => ci.ProductId == request.ItemDto.ProductId && ci.UserId == user.Id,
+                ci =>
+                    ci.ProductId == request.UpdateCartItemRequestDto.ProductId
+                    && ci.UserId == user.Id,
                 cancellationToken
             );
 
@@ -30,22 +32,22 @@ public static class UpdateCartItem
                 return Result<Unit>.Failure("Cart item not found", 404);
 
             var product = await dbContext.Products.FirstOrDefaultAsync(
-                p => p.Id == request.ItemDto.ProductId,
+                p => p.Id == request.UpdateCartItemRequestDto.ProductId,
                 cancellationToken
             );
             if (product == null)
                 return Result<Unit>.Failure("Product not found", 404);
 
-            if (product.Quantity < request.ItemDto.Quantity)
+            if (product.Quantity < request.UpdateCartItemRequestDto.Quantity)
                 return Result<Unit>.Failure("Not enough product in stock", 400);
 
-            if (request.ItemDto.Quantity <= 0)
+            if (request.UpdateCartItemRequestDto.Quantity <= 0)
             {
                 dbContext.CartItems.Remove(cartItem);
             }
             else
             {
-                cartItem.Quantity = request.ItemDto.Quantity;
+                cartItem.Quantity = request.UpdateCartItemRequestDto.Quantity;
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);

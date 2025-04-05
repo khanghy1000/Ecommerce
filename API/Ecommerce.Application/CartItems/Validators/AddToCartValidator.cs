@@ -7,9 +7,11 @@ public class AddToCartValidator : AbstractValidator<AddToCart.Command>
 {
     public AddToCartValidator()
     {
-        RuleFor(x => x.ItemDto.ProductId).NotEmpty().WithMessage("Product ID is required.");
+        RuleFor(x => x.AddToCartRequestDto.ProductId)
+            .NotEmpty()
+            .WithMessage("Product ID is required.");
 
-        RuleFor(x => x.ItemDto.Quantity)
+        RuleFor(x => x.AddToCartRequestDto.Quantity)
             .GreaterThan(0)
             .WithMessage("Quantity must be greater than 0.");
     }

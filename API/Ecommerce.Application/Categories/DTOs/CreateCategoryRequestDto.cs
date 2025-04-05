@@ -1,6 +1,6 @@
 namespace Ecommerce.Application.Categories.DTOs;
 
-public class CreateCategoryDto
+public class CreateCategoryRequestDto
 {
     public string Name { get; set; } = "";
 }

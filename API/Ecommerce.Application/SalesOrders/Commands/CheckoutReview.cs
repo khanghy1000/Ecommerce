@@ -13,7 +13,7 @@ public class CheckoutReview
 {
     public class Command : IRequest<Result<CheckoutPriceReviewResponseDto>>
     {
-        public required CheckoutPriceReviewDto PriceReviewDto { get; set; }
+        public required CheckoutPriceReviewRequestDto CheckoutPriceReviewRequestDto { get; set; }
     }
 
     public class Handler(
@@ -36,7 +36,7 @@ public class CheckoutReview
                 .Wards.Include(w => w.District)
                 .ThenInclude(d => d.Province)
                 .FirstOrDefaultAsync(
-                    x => x.Id == request.PriceReviewDto.ShippingWardId,
+                    x => x.Id == request.CheckoutPriceReviewRequestDto.ShippingWardId,
                     cancellationToken
                 );
 
@@ -79,9 +79,9 @@ public class CheckoutReview
                     FromWardName = shop.Ward!.Name,
                     FromDistrictName = shop.Ward.District.Name,
                     FromProvinceName = shop.Ward.District.Province.Name,
-                    ToName = request.PriceReviewDto.ShippingName,
-                    ToPhone = request.PriceReviewDto.ShippingPhone,
-                    ToAddress = request.PriceReviewDto.ShippingAddress,
+                    ToName = request.CheckoutPriceReviewRequestDto.ShippingName,
+                    ToPhone = request.CheckoutPriceReviewRequestDto.ShippingPhone,
+                    ToAddress = request.CheckoutPriceReviewRequestDto.ShippingAddress,
                     ToWardName = shippingWard.Name,
                     ToDistrictName = shippingWard.District.Name,
                     ToProvinceName = shippingWard.District.Province.Name,

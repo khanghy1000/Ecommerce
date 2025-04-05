@@ -1,7 +1,7 @@
 namespace Ecommerce.Application.Categories.DTOs;
 
-public class SubcategoryNameDto
+public class CreateSubcategoryRequestDto
 {
-    public int Id { get; set; }
     public required string Name { get; set; }
+    public int CategoryId { get; set; }
 }

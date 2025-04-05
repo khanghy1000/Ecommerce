@@ -11,12 +11,12 @@ namespace Ecommerce.Application.CartItems.Queries;
 
 public static class GetCartItems
 {
-    public class Query : IRequest<Result<List<CartItemDto>>> { }
+    public class Query : IRequest<Result<List<CartItemResponseDto>>> { }
 
     public class Handler(AppDbContext dbContext, IUserAccessor userAccessor, IMapper mapper)
-        : IRequestHandler<Query, Result<List<CartItemDto>>>
+        : IRequestHandler<Query, Result<List<CartItemResponseDto>>>
     {
-        public async Task<Result<List<CartItemDto>>> Handle(
+        public async Task<Result<List<CartItemResponseDto>>> Handle(
             Query request,
             CancellationToken cancellationToken
         )
@@ -25,10 +25,10 @@ public static class GetCartItems
 
             var cartItems = await dbContext
                 .CartItems.Where(ci => ci.UserId == user.Id)
-                .ProjectTo<CartItemDto>(mapper.ConfigurationProvider)
+                .ProjectTo<CartItemResponseDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
-            return Result<List<CartItemDto>>.Success(cartItems);
+            return Result<List<CartItemResponseDto>>.Success(cartItems);
         }
     }
 }

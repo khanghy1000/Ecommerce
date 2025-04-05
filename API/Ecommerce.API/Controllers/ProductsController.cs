@@ -11,7 +11,7 @@ namespace Ecommerce.API.Controllers;
 public class ProductsController : BaseApiController
 {
     [HttpGet]
-    public async Task<ActionResult<PagedList<ProductDto>>> ListProducts(
+    public async Task<ActionResult<PagedList<ProductResponseDto>>> ListProducts(
         string? keyword,
         int pageSize = 20,
         int pageNumber = 1,
@@ -35,23 +35,32 @@ public class ProductsController : BaseApiController
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ProductDto>> GetProductById(int id)
+    public async Task<ActionResult<ProductResponseDto>> GetProductById(int id)
     {
         var product = await Mediator.Send(new GetProductById.Query { Id = id });
         return HandleResult(product);
     }
 
     [HttpPost]
-    public async Task<ActionResult<ProductDto>> CreateProduct(CreateProductDto product)
+    public async Task<ActionResult<ProductResponseDto>> CreateProduct(
+        CreateProductRequestDto createProductRequestDto
+    )
     {
-        var result = await Mediator.Send(new CreateProduct.Command { ProductDto = product });
+        var result = await Mediator.Send(
+            new CreateProduct.Command { CreateProductRequestDto = createProductRequestDto }
+        );
         return HandleResult(result);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<ProductDto>> EditProduct(int id, EditProductDto product)
+    public async Task<ActionResult<ProductResponseDto>> EditProduct(
+        int id,
+        EditProductRequestDto editProductRequestDto
+    )
     {
-        var result = await Mediator.Send(new EditProduct.Command { Id = id, ProductDto = product });
+        var result = await Mediator.Send(
+            new EditProduct.Command { Id = id, EditProductRequestDto = editProductRequestDto }
+        );
         return HandleResult(result);
     }
 
@@ -86,14 +95,14 @@ public class ProductsController : BaseApiController
     [HttpPut("{productId}/photos/order")]
     public async Task<ActionResult<Unit>> UpdateProductPhotoDisplayOrder(
         int productId,
-        List<UpdateProductPhotoDisplayOrderDto> photoOrderDto
+        List<UpdateProductPhotoDisplayOrderRequestDto> photoOrderRequestDto
     )
     {
         var result = await Mediator.Send(
             new UpdateProductPhotoDisplayOrder.Command
             {
                 ProductId = productId,
-                PhotoOrders = photoOrderDto,
+                PhotoOrders = photoOrderRequestDto,
             }
         );
         return HandleResult(result);

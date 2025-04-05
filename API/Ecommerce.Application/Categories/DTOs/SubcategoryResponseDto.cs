@@ -1,6 +1,6 @@
 namespace Ecommerce.Application.Categories.DTOs;
 
-public class SubcategoryDto
+public class SubcategoryResponseDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }

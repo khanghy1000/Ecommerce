@@ -9,7 +9,7 @@ public class CreatePaymentUrl
 {
     public class Command : IRequest<Result<string>>
     {
-        public required CreatePaymentUrlDto CreatePaymentUrlDto { get; set; }
+        public required CreatePaymentUrlRequestDto CreatePaymentUrlRequestDto { get; set; }
     }
 
     public class Handler(IPaymentService paymentService) : IRequestHandler<Command, Result<string>>
@@ -22,8 +22,8 @@ public class CreatePaymentUrl
             try
             {
                 var result = await paymentService.CreatePaymentUrl(
-                    request.CreatePaymentUrlDto.Money,
-                    request.CreatePaymentUrlDto.Description
+                    request.CreatePaymentUrlRequestDto.Money,
+                    request.CreatePaymentUrlRequestDto.Description
                 );
                 return Result<string>.Success(result);
             }

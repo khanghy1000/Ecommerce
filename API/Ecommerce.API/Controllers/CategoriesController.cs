@@ -9,36 +9,38 @@ namespace Ecommerce.API.Controllers;
 public class CategoriesController : BaseApiController
 {
     [HttpGet]
-    public async Task<ActionResult<List<CategoryDto>>> GetCategories()
+    public async Task<ActionResult<List<CategoryResponseDto>>> GetCategories()
     {
         var categories = await Mediator.Send(new ListCategories.Query());
         return HandleResult(categories);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<CategoryDto>> GetCategoryById(int id)
+    public async Task<ActionResult<CategoryResponseDto>> GetCategoryById(int id)
     {
         var category = await Mediator.Send(new GetCategoryById.Query { Id = id });
         return HandleResult(category);
     }
 
     [HttpPost]
-    public async Task<ActionResult<CategoryWithoutChildDto>> CreateCategory(
-        CreateCategoryDto category
+    public async Task<ActionResult<CategoryWithoutChildResponseDto>> CreateCategory(
+        CreateCategoryRequestDto createCategoryRequestDto
     )
     {
-        var result = await Mediator.Send(new CreateCategory.Command { CategoryDto = category });
+        var result = await Mediator.Send(
+            new CreateCategory.Command { CreateCategoryRequestDto = createCategoryRequestDto }
+        );
         return HandleResult(result);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<CategoryWithoutChildDto>> EditCategory(
+    public async Task<ActionResult<CategoryWithoutChildResponseDto>> EditCategory(
         int id,
-        EditCategoryDto category
+        EditCategoryRequestDto editCategoryRequestDto
     )
     {
         var result = await Mediator.Send(
-            new EditCategory.Command { Id = id, CategoryDto = category }
+            new EditCategory.Command { Id = id, EditCategoryRequestDto = editCategoryRequestDto }
         );
         return HandleResult(result);
     }
@@ -51,31 +53,38 @@ public class CategoriesController : BaseApiController
     }
 
     [HttpGet("subcategories/{id}")]
-    public async Task<ActionResult<SubcategoryDto>> GetSubcategoryById(int id)
+    public async Task<ActionResult<SubcategoryResponseDto>> GetSubcategoryById(int id)
     {
         var subcategory = await Mediator.Send(new GetSubcategoryById.Query { Id = id });
         return HandleResult(subcategory);
     }
 
     [HttpPost("subcategories")]
-    public async Task<ActionResult<SubcategoryDto>> CreateSubcategory(
-        CreateSubcategoryDto subcategory
+    public async Task<ActionResult<SubcategoryResponseDto>> CreateSubcategory(
+        CreateSubcategoryRequestDto createSubcategoryRequestDto
     )
     {
         var result = await Mediator.Send(
-            new CreateSubcategory.Command { SubcategoryDto = subcategory }
+            new CreateSubcategory.Command
+            {
+                CreateSubcategoryRequestDto = createSubcategoryRequestDto,
+            }
         );
         return HandleResult(result);
     }
 
     [HttpPut("subcategories/{id}")]
-    public async Task<ActionResult<SubcategoryDto>> EditSubcategory(
+    public async Task<ActionResult<SubcategoryResponseDto>> EditSubcategory(
         int id,
-        EditSubcategoryDto subcategory
+        EditSubcategoryRequestDto editSubcategoryRequestDto
     )
     {
         var result = await Mediator.Send(
-            new EditSubcategory.Command { Id = id, SubcategoryDto = subcategory }
+            new EditSubcategory.Command
+            {
+                Id = id,
+                EditSubcategoryRequestDto = editSubcategoryRequestDto,
+            }
         );
         return HandleResult(result);
     }

@@ -10,26 +10,26 @@ namespace Ecommerce.Application.Categories.Queries;
 
 public static class GetSubcategoryById
 {
-    public class Query : IRequest<Result<SubcategoryDto>>
+    public class Query : IRequest<Result<SubcategoryResponseDto>>
     {
         public int Id { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
-        : IRequestHandler<Query, Result<SubcategoryDto>>
+        : IRequestHandler<Query, Result<SubcategoryResponseDto>>
     {
-        public async Task<Result<SubcategoryDto>> Handle(
+        public async Task<Result<SubcategoryResponseDto>> Handle(
             Query request,
             CancellationToken cancellationToken
         )
         {
             var subcategory = await dbContext
-                .Subcategories.ProjectTo<SubcategoryDto>(mapper.ConfigurationProvider)
+                .Subcategories.ProjectTo<SubcategoryResponseDto>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(sc => sc.Id == request.Id, cancellationToken);
 
             return subcategory == null
-                ? Result<SubcategoryDto>.Failure("Subcategory not found", 404)
-                : Result<SubcategoryDto>.Success(subcategory);
+                ? Result<SubcategoryResponseDto>.Failure("Subcategory not found", 404)
+                : Result<SubcategoryResponseDto>.Success(subcategory);
         }
     }
 }

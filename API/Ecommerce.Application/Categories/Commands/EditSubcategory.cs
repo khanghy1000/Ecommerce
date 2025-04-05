@@ -10,16 +10,16 @@ namespace Ecommerce.Application.Categories.Commands;
 
 public static class EditSubcategory
 {
-    public class Command : IRequest<Result<SubcategoryDto>>
+    public class Command : IRequest<Result<SubcategoryResponseDto>>
     {
         public required int Id { get; set; }
-        public required EditSubcategoryDto SubcategoryDto { get; set; }
+        public required EditSubcategoryRequestDto EditSubcategoryRequestDto { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
-        : IRequestHandler<Command, Result<SubcategoryDto>>
+        : IRequestHandler<Command, Result<SubcategoryResponseDto>>
     {
-        public async Task<Result<SubcategoryDto>> Handle(
+        public async Task<Result<SubcategoryResponseDto>> Handle(
             Command request,
             CancellationToken cancellationToken
         )
@@ -30,29 +30,29 @@ public static class EditSubcategory
             );
 
             if (subcategory == null)
-                return Result<SubcategoryDto>.Failure("Subcategory not found", 404);
+                return Result<SubcategoryResponseDto>.Failure("Subcategory not found", 404);
 
-            if (subcategory.CategoryId != request.SubcategoryDto.CategoryId)
+            if (subcategory.CategoryId != request.EditSubcategoryRequestDto.CategoryId)
             {
                 var categoryExists = await dbContext.Categories.AnyAsync(
-                    c => c.Id == request.SubcategoryDto.CategoryId,
+                    c => c.Id == request.EditSubcategoryRequestDto.CategoryId,
                     cancellationToken
                 );
 
                 if (!categoryExists)
-                    return Result<SubcategoryDto>.Failure("Target category not found", 400);
+                    return Result<SubcategoryResponseDto>.Failure("Target category not found", 400);
             }
 
-            subcategory.Name = request.SubcategoryDto.Name;
-            subcategory.CategoryId = request.SubcategoryDto.CategoryId;
+            subcategory.Name = request.EditSubcategoryRequestDto.Name;
+            subcategory.CategoryId = request.EditSubcategoryRequestDto.CategoryId;
 
             await dbContext.SaveChangesAsync(cancellationToken);
 
             var updatedSubcategory = await dbContext
-                .Subcategories.ProjectTo<SubcategoryDto>(mapper.ConfigurationProvider)
+                .Subcategories.ProjectTo<SubcategoryResponseDto>(mapper.ConfigurationProvider)
                 .FirstAsync(s => s.Id == subcategory.Id, cancellationToken);
 
-            return Result<SubcategoryDto>.Success(updatedSubcategory);
+            return Result<SubcategoryResponseDto>.Success(updatedSubcategory);
         }
     }
 }

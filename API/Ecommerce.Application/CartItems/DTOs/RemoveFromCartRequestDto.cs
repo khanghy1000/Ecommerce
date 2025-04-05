@@ -1,7 +1,6 @@
 namespace Ecommerce.Application.CartItems.DTOs;
 
-public class AddToCartDto
+public class RemoveFromCartRequestDto
 {
     public int ProductId { get; set; }
-    public int Quantity { get; set; }
 }

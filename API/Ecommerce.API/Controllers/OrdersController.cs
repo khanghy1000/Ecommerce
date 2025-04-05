@@ -9,20 +9,25 @@ public class OrdersController : BaseApiController
 {
     [HttpPost("checkout")]
     public async Task<ActionResult<CheckoutResponseDto>> Checkout(
-        [FromBody] CheckoutDto checkoutDto
+        [FromBody] CheckoutRequestDto checkoutRequestDto
     )
     {
-        var result = await Mediator.Send(new Checkout.Command { CheckoutDto = checkoutDto });
+        var result = await Mediator.Send(
+            new Checkout.Command { CheckoutRequestDto = checkoutRequestDto }
+        );
         return HandleResult(result);
     }
 
     [HttpPost("checkout-review")]
     public async Task<ActionResult<CheckoutPriceReviewResponseDto>> CheckoutReview(
-        [FromBody] CheckoutPriceReviewDto priceReviewDto
+        [FromBody] CheckoutPriceReviewRequestDto checkoutPriceReviewRequestDto
     )
     {
         var result = await Mediator.Send(
-            new CheckoutReview.Command { PriceReviewDto = priceReviewDto }
+            new CheckoutReview.Command
+            {
+                CheckoutPriceReviewRequestDto = checkoutPriceReviewRequestDto,
+            }
         );
         return HandleResult(result);
     }

@@ -9,13 +9,13 @@ public class EditSubcategoryValidator : AbstractValidator<EditSubcategory.Comman
     {
         RuleFor(x => x.Id).NotEmpty().WithMessage("Subcategory ID is required.");
 
-        RuleFor(x => x.SubcategoryDto.Name)
+        RuleFor(x => x.EditSubcategoryRequestDto.Name)
             .NotEmpty()
             .WithMessage("Subcategory name is required.")
             .MaximumLength(100)
             .WithMessage("Subcategory name should not exceed 100 characters.");
 
-        RuleFor(x => x.SubcategoryDto.CategoryId)
+        RuleFor(x => x.EditSubcategoryRequestDto.CategoryId)
             .NotEmpty()
             .WithMessage("Category ID is required.");
     }

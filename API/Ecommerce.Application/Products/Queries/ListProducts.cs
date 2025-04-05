@@ -11,7 +11,7 @@ namespace Ecommerce.Application.Products.Queries;
 
 public static class ListProducts
 {
-    public class Query : IRequest<Result<PagedList<ProductDto>>>
+    public class Query : IRequest<Result<PagedList<ProductResponseDto>>>
     {
         public string? Keyword { get; set; }
         public int PageSize { get; set; } = 20;
@@ -24,9 +24,9 @@ public static class ListProducts
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
-        : IRequestHandler<Query, Result<PagedList<ProductDto>>>
+        : IRequestHandler<Query, Result<PagedList<ProductResponseDto>>>
     {
-        public async Task<Result<PagedList<ProductDto>>> Handle(
+        public async Task<Result<PagedList<ProductResponseDto>>> Handle(
             Query request,
             CancellationToken cancellationToken
         )
@@ -73,11 +73,11 @@ public static class ListProducts
             var products = await query
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
+                .ProjectTo<ProductResponseDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
-            return Result<PagedList<ProductDto>>.Success(
-                new PagedList<ProductDto>
+            return Result<PagedList<ProductResponseDto>>.Success(
+                new PagedList<ProductResponseDto>
                 {
                     Items = products,
                     TotalCount = await query.CountAsync(cancellationToken),

@@ -8,7 +8,7 @@ public class EditCategoryCommandValidator : AbstractValidator<EditCategory.Comma
     public EditCategoryCommandValidator()
     {
         RuleFor(x => x.Id).NotEmpty().WithMessage("Category ID is required.");
-        RuleFor(x => x.CategoryDto.Name)
+        RuleFor(x => x.EditCategoryRequestDto.Name)
             .NotEmpty()
             .WithMessage("Category name is required.")
             .MaximumLength(100)

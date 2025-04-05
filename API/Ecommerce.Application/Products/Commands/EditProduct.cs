@@ -11,16 +11,16 @@ namespace Ecommerce.Application.Products.Commands;
 
 public static class EditProduct
 {
-    public class Command : IRequest<Result<ProductDto>>
+    public class Command : IRequest<Result<ProductResponseDto>>
     {
         public required int Id { get; set; }
-        public required EditProductDto ProductDto { get; set; }
+        public required EditProductRequestDto EditProductRequestDto { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
-        : IRequestHandler<Command, Result<ProductDto>>
+        : IRequestHandler<Command, Result<ProductResponseDto>>
     {
-        public async Task<Result<ProductDto>> Handle(
+        public async Task<Result<ProductResponseDto>> Handle(
             Command request,
             CancellationToken cancellationToken
         )
@@ -30,15 +30,17 @@ public static class EditProduct
                 .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
             if (product == null)
-                return Result<ProductDto>.Failure("Product not found", 404);
+                return Result<ProductResponseDto>.Failure("Product not found", 404);
 
-            mapper.Map(request.ProductDto, product);
+            mapper.Map(request.EditProductRequestDto, product);
 
             product.Subcategories.Clear();
-            if (request.ProductDto.SubcategoryIds.Count > 0)
+            if (request.EditProductRequestDto.SubcategoryIds.Count > 0)
             {
                 var subcategories = await dbContext
-                    .Subcategories.Where(sc => request.ProductDto.SubcategoryIds.Contains(sc.Id))
+                    .Subcategories.Where(sc =>
+                        request.EditProductRequestDto.SubcategoryIds.Contains(sc.Id)
+                    )
                     .ToListAsync(cancellationToken);
 
                 foreach (var subcategory in subcategories)
@@ -48,7 +50,7 @@ public static class EditProduct
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);
-            return Result<ProductDto>.Success(mapper.Map<ProductDto>(product));
+            return Result<ProductResponseDto>.Success(mapper.Map<ProductResponseDto>(product));
         }
     }
 }

@@ -14,10 +14,12 @@ public class PaymentController() : BaseApiController
 {
     // TODO: Remove this method
     [HttpPost("CreatePaymentUrl")]
-    public async Task<ActionResult<string>> CreatePaymentUrl(CreatePaymentUrlDto dto)
+    public async Task<ActionResult<string>> CreatePaymentUrl(
+        CreatePaymentUrlRequestDto createPaymentUrlRequestDto
+    )
     {
         var result = await Mediator.Send(
-            new CreatePaymentUrl.Command { CreatePaymentUrlDto = dto }
+            new CreatePaymentUrl.Command { CreatePaymentUrlRequestDto = createPaymentUrlRequestDto }
         );
         return HandleResult(result);
     }

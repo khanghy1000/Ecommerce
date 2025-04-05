@@ -2,7 +2,7 @@ using Ecommerce.Domain;
 
 namespace Ecommerce.Application.Products.DTOs;
 
-public class CreateProductDto
+public class EditProductRequestDto
 {
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";

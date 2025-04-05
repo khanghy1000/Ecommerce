@@ -10,16 +10,16 @@ namespace Ecommerce.Application.Categories.Commands;
 
 public static class EditCategory
 {
-    public class Command : IRequest<Result<CategoryWithoutChildDto>>
+    public class Command : IRequest<Result<CategoryWithoutChildResponseDto>>
     {
         public required int Id { get; set; }
-        public required EditCategoryDto CategoryDto { get; set; }
+        public required EditCategoryRequestDto EditCategoryRequestDto { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
-        : IRequestHandler<Command, Result<CategoryWithoutChildDto>>
+        : IRequestHandler<Command, Result<CategoryWithoutChildResponseDto>>
     {
-        public async Task<Result<CategoryWithoutChildDto>> Handle(
+        public async Task<Result<CategoryWithoutChildResponseDto>> Handle(
             Command request,
             CancellationToken cancellationToken
         )
@@ -30,17 +30,17 @@ public static class EditCategory
             );
 
             if (category == null)
-                return Result<CategoryWithoutChildDto>.Failure("Category not found", 400);
+                return Result<CategoryWithoutChildResponseDto>.Failure("Category not found", 400);
 
-            category.Name = request.CategoryDto.Name ?? category.Name;
+            category.Name = request.EditCategoryRequestDto.Name ?? category.Name;
 
             await dbContext.SaveChangesAsync(cancellationToken);
 
             var updatedCategory = await dbContext
-                .Categories.ProjectTo<CategoryWithoutChildDto>(mapper.ConfigurationProvider)
+                .Categories.ProjectTo<CategoryWithoutChildResponseDto>(mapper.ConfigurationProvider)
                 .FirstAsync(c => c.Id == category.Id, cancellationToken);
 
-            return Result<CategoryWithoutChildDto>.Success(updatedCategory);
+            return Result<CategoryWithoutChildResponseDto>.Success(updatedCategory);
         }
     }
 }

@@ -10,21 +10,21 @@ namespace Ecommerce.Application.Categories.Queries;
 
 public static class ListCategories
 {
-    public class Query : IRequest<Result<List<CategoryDto>>> { }
+    public class Query : IRequest<Result<List<CategoryResponseDto>>> { }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
-        : IRequestHandler<Query, Result<List<CategoryDto>>>
+        : IRequestHandler<Query, Result<List<CategoryResponseDto>>>
     {
-        public async Task<Result<List<CategoryDto>>> Handle(
+        public async Task<Result<List<CategoryResponseDto>>> Handle(
             Query request,
             CancellationToken cancellationToken
         )
         {
             var categories = await dbContext
-                .Categories.ProjectTo<CategoryDto>(mapper.ConfigurationProvider)
+                .Categories.ProjectTo<CategoryResponseDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
-            return Result<List<CategoryDto>>.Success(categories);
+            return Result<List<CategoryResponseDto>>.Success(categories);
         }
     }
 }

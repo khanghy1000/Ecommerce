@@ -10,30 +10,40 @@ namespace Ecommerce.API.Controllers;
 public class CartController : BaseApiController
 {
     [HttpGet]
-    public async Task<ActionResult<List<CartItemDto>>> GetCart()
+    public async Task<ActionResult<List<CartItemResponseDto>>> GetCart()
     {
         var result = await Mediator.Send(new GetCartItems.Query());
         return HandleResult(result);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Unit>> AddToCart(AddToCartDto itemDto)
+    public async Task<ActionResult<Unit>> AddToCart(AddToCartRequestDto addToCartRequestDto)
     {
-        var result = await Mediator.Send(new AddToCart.Command { ItemDto = itemDto });
+        var result = await Mediator.Send(
+            new AddToCart.Command { AddToCartRequestDto = addToCartRequestDto }
+        );
         return HandleResult(result);
     }
 
     [HttpPut]
-    public async Task<ActionResult<Unit>> UpdateCartItem(UpdateCartItemDto itemDto)
+    public async Task<ActionResult<Unit>> UpdateCartItem(
+        UpdateCartItemRequestDto updateCartItemRequestDto
+    )
     {
-        var result = await Mediator.Send(new UpdateCartItem.Command { ItemDto = itemDto });
+        var result = await Mediator.Send(
+            new UpdateCartItem.Command { UpdateCartItemRequestDto = updateCartItemRequestDto }
+        );
         return HandleResult(result);
     }
 
     [HttpDelete]
-    public async Task<ActionResult<Unit>> RemoveFromCart(RemoveFromCartDto itemDto)
+    public async Task<ActionResult<Unit>> RemoveFromCart(
+        RemoveFromCartRequestDto removeFromCartRequestDto
+    )
     {
-        var result = await Mediator.Send(new RemoveFromCart.Command { ItemDto = itemDto });
+        var result = await Mediator.Send(
+            new RemoveFromCart.Command { RemoveFromCartRequestDto = removeFromCartRequestDto }
+        );
         return HandleResult(result);
     }
 }

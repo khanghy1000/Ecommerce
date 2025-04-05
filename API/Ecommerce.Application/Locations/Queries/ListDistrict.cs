@@ -10,15 +10,15 @@ namespace Ecommerce.Application.Locations.Queries;
 
 public class ListDistrict
 {
-    public class Query : IRequest<Result<List<DistrictDto>>>
+    public class Query : IRequest<Result<List<DistrictResponseDto>>>
     {
         public int? ProvinceId { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
-        : IRequestHandler<Query, Result<List<DistrictDto>>>
+        : IRequestHandler<Query, Result<List<DistrictResponseDto>>>
     {
-        public async Task<Result<List<DistrictDto>>> Handle(
+        public async Task<Result<List<DistrictResponseDto>>> Handle(
             Query request,
             CancellationToken cancellationToken
         )
@@ -31,10 +31,10 @@ public class ListDistrict
 
             var districts = await query
                 .OrderBy(x => x.Name)
-                .ProjectTo<DistrictDto>(mapper.ConfigurationProvider)
+                .ProjectTo<DistrictResponseDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
-            return Result<List<DistrictDto>>.Success(districts);
+            return Result<List<DistrictResponseDto>>.Success(districts);
         }
     }
 }

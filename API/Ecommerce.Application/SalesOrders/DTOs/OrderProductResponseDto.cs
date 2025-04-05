@@ -1,6 +1,6 @@
 namespace Ecommerce.Application.SalesOrders.DTOs;
 
-public class OrderProductDto
+public class OrderProductResponseDto
 {
     public required string Name { get; set; } = null!;
     public required decimal Price { get; set; }

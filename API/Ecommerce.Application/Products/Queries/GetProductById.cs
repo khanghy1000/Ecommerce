@@ -10,27 +10,27 @@ namespace Ecommerce.Application.Products.Queries;
 
 public static class GetProductById
 {
-    public class Query : IRequest<Result<ProductDto>>
+    public class Query : IRequest<Result<ProductResponseDto>>
     {
         public int Id { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
-        : IRequestHandler<Query, Result<ProductDto>>
+        : IRequestHandler<Query, Result<ProductResponseDto>>
     {
-        public async Task<Result<ProductDto>> Handle(
+        public async Task<Result<ProductResponseDto>> Handle(
             Query request,
             CancellationToken cancellationToken
         )
         {
             var product = await dbContext
-                .Products.ProjectTo<ProductDto>(mapper.ConfigurationProvider)
+                .Products.ProjectTo<ProductResponseDto>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
             if (product == null)
-                return Result<ProductDto>.Failure("Product not found", 404);
+                return Result<ProductResponseDto>.Failure("Product not found", 404);
 
-            return Result<ProductDto>.Success(product);
+            return Result<ProductResponseDto>.Success(product);
         }
     }
 }

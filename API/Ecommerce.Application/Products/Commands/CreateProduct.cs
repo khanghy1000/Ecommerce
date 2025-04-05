@@ -13,29 +13,31 @@ namespace Ecommerce.Application.Products.Commands;
 
 public static class CreateProduct
 {
-    public class Command : IRequest<Result<ProductDto>>
+    public class Command : IRequest<Result<ProductResponseDto>>
     {
-        public required CreateProductDto ProductDto { get; set; }
+        public required CreateProductRequestDto CreateProductRequestDto { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper, IUserAccessor userAccessor)
-        : IRequestHandler<Command, Result<ProductDto>>
+        : IRequestHandler<Command, Result<ProductResponseDto>>
     {
-        public async Task<Result<ProductDto>> Handle(
+        public async Task<Result<ProductResponseDto>> Handle(
             Command request,
             CancellationToken cancellationToken
         )
         {
             var user = await userAccessor.GetUserAsync();
 
-            var product = mapper.Map<Product>(request.ProductDto);
+            var product = mapper.Map<Product>(request.CreateProductRequestDto);
 
             product.Shop = user;
 
-            if (request.ProductDto.SubcategoryIds.Count > 0)
+            if (request.CreateProductRequestDto.SubcategoryIds.Count > 0)
             {
                 var subcategories = await dbContext
-                    .Subcategories.Where(sc => request.ProductDto.SubcategoryIds.Contains(sc.Id))
+                    .Subcategories.Where(sc =>
+                        request.CreateProductRequestDto.SubcategoryIds.Contains(sc.Id)
+                    )
                     .ToListAsync(cancellationToken);
 
                 foreach (var subcategory in subcategories)
@@ -48,8 +50,8 @@ public static class CreateProduct
             var result = await dbContext.SaveChangesAsync(cancellationToken) > 0;
 
             return !result
-                ? Result<ProductDto>.Failure("Failed to create product", 400)
-                : Result<ProductDto>.Success(mapper.Map<ProductDto>(product));
+                ? Result<ProductResponseDto>.Failure("Failed to create product", 400)
+                : Result<ProductResponseDto>.Success(mapper.Map<ProductResponseDto>(product));
         }
     }
 }

@@ -12,35 +12,35 @@ namespace Ecommerce.Application.Categories.Commands;
 
 public static class CreateCategory
 {
-    public class Command : IRequest<Result<CategoryWithoutChildDto>>
+    public class Command : IRequest<Result<CategoryWithoutChildResponseDto>>
     {
-        public required CreateCategoryDto CategoryDto { get; set; }
+        public required CreateCategoryRequestDto CreateCategoryRequestDto { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
-        : IRequestHandler<Command, Result<CategoryWithoutChildDto>>
+        : IRequestHandler<Command, Result<CategoryWithoutChildResponseDto>>
     {
-        public async Task<Result<CategoryWithoutChildDto>> Handle(
+        public async Task<Result<CategoryWithoutChildResponseDto>> Handle(
             Command request,
             CancellationToken cancellationToken
         )
         {
-            var category = new Category { Name = request.CategoryDto.Name };
+            var category = new Category { Name = request.CreateCategoryRequestDto.Name };
 
             dbContext.Categories.Add(category);
             var success = await dbContext.SaveChangesAsync(cancellationToken) > 0;
 
             if (!success)
-                return Result<CategoryWithoutChildDto>.Failure(
+                return Result<CategoryWithoutChildResponseDto>.Failure(
                     "Failed to create the category",
                     400
                 );
 
             var newCategory = await dbContext
-                .Categories.ProjectTo<CategoryWithoutChildDto>(mapper.ConfigurationProvider)
+                .Categories.ProjectTo<CategoryWithoutChildResponseDto>(mapper.ConfigurationProvider)
                 .FirstAsync(c => c.Id == category.Id, cancellationToken);
 
-            return Result<CategoryWithoutChildDto>.Success(newCategory);
+            return Result<CategoryWithoutChildResponseDto>.Success(newCategory);
         }
     }
 }

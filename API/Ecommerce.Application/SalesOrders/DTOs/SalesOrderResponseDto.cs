@@ -2,7 +2,7 @@ using Ecommerce.Domain;
 
 namespace Ecommerce.Application.SalesOrders.DTOs;
 
-public class SalesOrderDto
+public class SalesOrderResponseDto
 {
     public int Id { get; set; }
     public DateTime OrderTime { get; set; }
@@ -16,5 +16,5 @@ public class SalesOrderDto
     public int ShippingWardId { get; set; }
     public PaymentMethod PaymentMethod { get; set; }
     public SalesOrderStatus Status { get; set; }
-    public ICollection<OrderProductDto> OrderProducts { get; set; } = [];
+    public ICollection<OrderProductResponseDto> OrderProducts { get; set; } = [];
 }

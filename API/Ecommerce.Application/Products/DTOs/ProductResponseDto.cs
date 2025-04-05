@@ -3,7 +3,7 @@ using Ecommerce.Domain;
 
 namespace Ecommerce.Application.Products.DTOs;
 
-public class ProductDto
+public class ProductResponseDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = "";
@@ -20,6 +20,6 @@ public class ProductDto
     public string ShopName { get; set; } = "";
     public string ShopImageUrl { get; set; } = "";
 
-    public ICollection<SubcategoryDto> Subcategories { get; set; } = [];
+    public ICollection<SubcategoryResponseDto> Subcategories { get; set; } = [];
     public ICollection<ProductPhoto> Photos { get; set; } = [];
 }

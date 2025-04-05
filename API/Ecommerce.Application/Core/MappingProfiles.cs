@@ -16,25 +16,25 @@ public class MappingProfiles : Profile
         string? currentUserId = null;
         // Product mappings
         CreateMap<Product, Product>();
-        CreateMap<Product, ProductDto>()
+        CreateMap<Product, ProductResponseDto>()
             .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop.DisplayName))
             .ForMember(dest => dest.ShopImageUrl, opt => opt.MapFrom(src => src.Shop.ImageUrl));
-        CreateMap<CreateProductDto, Product>();
-        CreateMap<EditProductDto, Product>();
+        CreateMap<CreateProductRequestDto, Product>();
+        CreateMap<EditProductRequestDto, Product>();
 
         // Category mappings
-        CreateMap<Category, CategoryDto>();
-        CreateMap<CreateCategoryDto, Category>();
-        CreateMap<EditCategoryDto, Category>();
-        CreateMap<Category, CategoryWithoutChildDto>();
+        CreateMap<Category, CategoryResponseDto>();
+        CreateMap<CreateCategoryRequestDto, Category>();
+        CreateMap<EditCategoryRequestDto, Category>();
+        CreateMap<Category, CategoryWithoutChildResponseDto>();
 
         // Subcategory mappings
-        CreateMap<Subcategory, SubcategoryDto>()
+        CreateMap<Subcategory, SubcategoryResponseDto>()
             .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name));
-        CreateMap<Subcategory, SubcategoryNameDto>();
+        CreateMap<Subcategory, SubcategoryIdNameResponseDto>();
 
         // CartItem mappings
-        CreateMap<CartItem, CartItemDto>()
+        CreateMap<CartItem, CartItemResponseDto>()
             .ForMember(dest => dest.MaxQuantity, opt => opt.MapFrom(src => src.Product.Quantity))
             .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
             .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.Product.RegularPrice))
@@ -64,10 +64,10 @@ public class MappingProfiles : Profile
                 opt => opt.MapFrom(src => src.Product.Shop.DisplayName)
             );
 
-        CreateMap<Province, ProvinceDto>();
-        CreateMap<District, DistrictDto>()
+        CreateMap<Province, ProvinceResponseDto>();
+        CreateMap<District, DistrictResponseDto>()
             .ForMember(dest => dest.ProvinceName, opt => opt.MapFrom(src => src.Province.Name));
-        CreateMap<Ward, WardDto>()
+        CreateMap<Ward, WardResponseDto>()
             .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.District.Name));
 
         CreateMap<CartItem, CreateShippingRequestItem>()
@@ -98,7 +98,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Product.Height))
             .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Product.Weight));
 
-        CreateMap<SalesOrder, SalesOrderDto>();
-        CreateMap<OrderProduct, OrderProductDto>();
+        CreateMap<SalesOrder, SalesOrderResponseDto>();
+        CreateMap<OrderProduct, OrderProductResponseDto>();
     }
 }

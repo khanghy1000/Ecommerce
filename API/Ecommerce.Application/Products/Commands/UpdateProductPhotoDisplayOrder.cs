@@ -13,7 +13,7 @@ public static class UpdateProductPhotoDisplayOrder
     public class Command : IRequest<Result<Unit>>
     {
         public required int ProductId { get; set; }
-        public required List<UpdateProductPhotoDisplayOrderDto> PhotoOrders { get; set; }
+        public required List<UpdateProductPhotoDisplayOrderRequestDto> PhotoOrders { get; set; }
     }
 
     public class Handler(AppDbContext dbContext) : IRequestHandler<Command, Result<Unit>>

@@ -11,15 +11,15 @@ namespace Ecommerce.Application.Locations.Queries;
 
 public class ListWards
 {
-    public class Query : IRequest<Result<List<WardDto>>>
+    public class Query : IRequest<Result<List<WardResponseDto>>>
     {
         public int? DistrictId { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IMapper mapper)
-        : IRequestHandler<Query, Result<List<WardDto>>>
+        : IRequestHandler<Query, Result<List<WardResponseDto>>>
     {
-        public async Task<Result<List<WardDto>>> Handle(
+        public async Task<Result<List<WardResponseDto>>> Handle(
             Query request,
             CancellationToken cancellationToken
         )
@@ -33,10 +33,10 @@ public class ListWards
 
             var wards = await query
                 .OrderBy(x => x.Name)
-                .ProjectTo<WardDto>(mapper.ConfigurationProvider)
+                .ProjectTo<WardResponseDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
-            return Result<List<WardDto>>.Success(wards);
+            return Result<List<WardResponseDto>>.Success(wards);
         }
     }
 }

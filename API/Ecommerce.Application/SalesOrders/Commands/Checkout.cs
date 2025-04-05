@@ -13,7 +13,7 @@ public class Checkout
 {
     public class Command : IRequest<Result<CheckoutResponseDto>>
     {
-        public required CheckoutDto CheckoutDto { get; set; }
+        public required CheckoutRequestDto CheckoutRequestDto { get; set; }
     }
 
     public class Handler(
@@ -37,7 +37,7 @@ public class Checkout
                 .Wards.Include(w => w.District)
                 .ThenInclude(d => d.Province)
                 .FirstOrDefaultAsync(
-                    x => x.Id == request.CheckoutDto.ShippingWardId,
+                    x => x.Id == request.CheckoutRequestDto.ShippingWardId,
                     cancellationToken
                 );
 
@@ -82,9 +82,9 @@ public class Checkout
                     FromWardName = shop.Ward!.Name,
                     FromDistrictName = shop.Ward.District.Name,
                     FromProvinceName = shop.Ward.District.Province.Name,
-                    ToName = request.CheckoutDto.ShippingName,
-                    ToPhone = request.CheckoutDto.ShippingPhone,
-                    ToAddress = request.CheckoutDto.ShippingAddress,
+                    ToName = request.CheckoutRequestDto.ShippingName,
+                    ToPhone = request.CheckoutRequestDto.ShippingPhone,
+                    ToAddress = request.CheckoutRequestDto.ShippingAddress,
                     ToWardName = shippingWard.Name,
                     ToDistrictName = shippingWard.District.Name,
                     ToProvinceName = shippingWard.District.Province.Name,
@@ -110,13 +110,13 @@ public class Checkout
                         Subtotal = subTotal,
                         ShippingFee = (int)fee,
                         Total = subTotal + (int)fee,
-                        ShippingName = request.CheckoutDto.ShippingName,
-                        ShippingPhone = request.CheckoutDto.ShippingPhone,
-                        ShippingAddress = request.CheckoutDto.ShippingAddress,
-                        ShippingWardId = request.CheckoutDto.ShippingWardId,
-                        PaymentMethod = request.CheckoutDto.PaymentMethod,
+                        ShippingName = request.CheckoutRequestDto.ShippingName,
+                        ShippingPhone = request.CheckoutRequestDto.ShippingPhone,
+                        ShippingAddress = request.CheckoutRequestDto.ShippingAddress,
+                        ShippingWardId = request.CheckoutRequestDto.ShippingWardId,
+                        PaymentMethod = request.CheckoutRequestDto.PaymentMethod,
                         Status =
-                            request.CheckoutDto.PaymentMethod == PaymentMethod.Cod
+                            request.CheckoutRequestDto.PaymentMethod == PaymentMethod.Cod
                                 ? SalesOrderStatus.PendingConfirmation
                                 : SalesOrderStatus.PendingPayment,
                     };
@@ -152,11 +152,11 @@ public class Checkout
                 }
             }
 
-            if (request.CheckoutDto.PaymentMethod != PaymentMethod.Vnpay)
+            if (request.CheckoutRequestDto.PaymentMethod != PaymentMethod.Vnpay)
                 return Result<CheckoutResponseDto>.Success(
                     new CheckoutResponseDto
                     {
-                        SalesOrders = mapper.Map<List<SalesOrderDto>>(createdSalesOrders),
+                        SalesOrders = mapper.Map<List<SalesOrderResponseDto>>(createdSalesOrders),
                     }
                 );
             try
@@ -172,7 +172,7 @@ public class Checkout
                     new CheckoutResponseDto
                     {
                         PaymentUrl = url,
-                        SalesOrders = mapper.Map<List<SalesOrderDto>>(createdSalesOrders),
+                        SalesOrders = mapper.Map<List<SalesOrderResponseDto>>(createdSalesOrders),
                     }
                 );
             }

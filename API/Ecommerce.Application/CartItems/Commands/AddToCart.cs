@@ -12,7 +12,7 @@ public static class AddToCart
 {
     public class Command : IRequest<Result<Unit>>
     {
-        public required AddToCartDto ItemDto { get; set; }
+        public required AddToCartRequestDto AddToCartRequestDto { get; set; }
     }
 
     public class Handler(AppDbContext dbContext, IUserAccessor userAccessor)
@@ -23,24 +23,24 @@ public static class AddToCart
             var user = await userAccessor.GetUserAsync();
 
             var product = await dbContext.Products.FirstOrDefaultAsync(
-                p => p.Id == request.ItemDto.ProductId,
+                p => p.Id == request.AddToCartRequestDto.ProductId,
                 cancellationToken
             );
 
             if (product == null)
                 return Result<Unit>.Failure("Product not found", 404);
 
-            if (product.Quantity < request.ItemDto.Quantity)
+            if (product.Quantity < request.AddToCartRequestDto.Quantity)
                 return Result<Unit>.Failure("Not enough product in stock", 400);
 
             var cartItem = await dbContext.CartItems.FirstOrDefaultAsync(
-                ci => ci.ProductId == request.ItemDto.ProductId && ci.UserId == user.Id,
+                ci => ci.ProductId == request.AddToCartRequestDto.ProductId && ci.UserId == user.Id,
                 cancellationToken
             );
 
             if (cartItem != null)
             {
-                cartItem.Quantity += request.ItemDto.Quantity;
+                cartItem.Quantity += request.AddToCartRequestDto.Quantity;
                 if (cartItem.Quantity > product.Quantity)
                 {
                     cartItem.Quantity = product.Quantity;
@@ -50,9 +50,9 @@ public static class AddToCart
             {
                 cartItem = new CartItem
                 {
-                    ProductId = request.ItemDto.ProductId,
+                    ProductId = request.AddToCartRequestDto.ProductId,
                     UserId = user.Id,
-                    Quantity = request.ItemDto.Quantity,
+                    Quantity = request.AddToCartRequestDto.Quantity,
                 };
                 dbContext.CartItems.Add(cartItem);
             }
