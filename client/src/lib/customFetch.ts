@@ -1,6 +1,3 @@
-import { toast } from 'react-toastify';
-import { ErrorResponse } from './types';
-
 const baseUrl =
   import.meta.env.VITE_BASE_API_URL || 'http://localhost:5213/api';
 
@@ -25,7 +22,7 @@ const getBody = <T>(c: Response | Request): Promise<T> => {
 async function customFetch<T>(
   path: string,
   options: RequestInit = {}
-): Promise<T> {
+): Promise<{ data: T; status: number }> {
   const defaultOptions: RequestInit = {
     method: 'GET',
     credentials: 'include',
@@ -36,25 +33,10 @@ async function customFetch<T>(
 
   const finalOptions = { ...defaultOptions, ...options };
 
-  try {
-    const response = await fetch(baseUrl + path, finalOptions);
-    const data = await getBody<T>(response);
+  const response = await fetch(baseUrl + path, finalOptions);
+  const data = await getBody<T>(response);
+  const status = response.status;
 
-    if (!response.ok) {
-      console.log(typeof data);
-      throw new Error(
-        (data as ErrorResponse).detail ??
-          `HTTP error! status: ${response.status}`
-      );
-    }
-
-    return data;
-  } catch (error) {
-    if (error instanceof Error) {
-      toast.error(error.message);
-    }
-    console.error('Fetch error:', error);
-    throw error;
-  }
+  return { data, status };
 }
 export { customFetch };
