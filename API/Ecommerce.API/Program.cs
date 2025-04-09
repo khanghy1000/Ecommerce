@@ -136,3 +136,5 @@ app.MapControllers();
 app.MapGroup("api").WithTags("Identity").MapCustomIdentityApi<User>();
 
 app.Run();
+
+public partial class Program { }
