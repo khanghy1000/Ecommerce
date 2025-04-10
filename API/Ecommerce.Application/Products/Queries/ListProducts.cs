@@ -76,6 +76,11 @@ public static class ListProducts
                 .ProjectTo<ProductResponseDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
+            foreach (var product in products)
+            {
+                product.Photos = product.Photos.OrderBy(x => x.DisplayOrder).ToList();
+            }
+
             return Result<PagedList<ProductResponseDto>>.Success(
                 new PagedList<ProductResponseDto>
                 {
@@ -88,6 +93,3 @@ public static class ListProducts
         }
     }
 }
-
-// recommend git commit message
-// feat: add ListProducts query with filtering, sorting, and pagination
