@@ -12,6 +12,7 @@ using Ecommerce.Infrastructure.Security;
 using Ecommerce.Infrastructure.Shipping;
 using Ecommerce.Persistence;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
@@ -91,6 +92,15 @@ builder.Services.AddAuthorization(opt =>
         }
     );
 });
+
+builder.Services.ConfigureApplicationCookie(opt =>
+{
+    opt.Cookie.HttpOnly = true;
+    opt.Cookie.SameSite = SameSiteMode.None;
+    opt.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    opt.ExpireTimeSpan = TimeSpan.FromDays(7);
+});
+
 builder.Services.AddTransient<IAuthorizationHandler, IsProductOwnerRequirementHandler>();
 
 builder.Services.AddSingleton<IVnpay, Vnpay>(sp =>
