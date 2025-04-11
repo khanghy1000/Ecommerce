@@ -9,7 +9,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Subcategory> Subcategories { get; set; }
-    public DbSet<ProductSubCategory> ProductSubCategories { get; set; }
+    public DbSet<ProductSubcategory> ProductSubcategories { get; set; }
     public DbSet<ProductPhoto> ProductPhotos { get; set; }
     public DbSet<Coupon> Coupons { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
@@ -50,7 +50,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .Entity<Product>()
             .HasMany(p => p.Subcategories)
             .WithMany(c => c.Products)
-            .UsingEntity<ProductSubCategory>();
+            .UsingEntity<ProductSubcategory>();
 
         modelBuilder.Entity<Coupon>().Property(c => c.Code).HasMaxLength(255);
         modelBuilder.Entity<Coupon>().Property(c => c.Description).HasMaxLength(1000);
