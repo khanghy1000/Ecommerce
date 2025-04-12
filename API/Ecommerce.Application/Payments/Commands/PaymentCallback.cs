@@ -1,3 +1,4 @@
+using AutoMapper;
 using Ecommerce.Application.Core;
 using Ecommerce.Application.Interfaces;
 using Ecommerce.Domain;
@@ -12,7 +13,7 @@ public class PaymentCallback
 {
     public class Query : IRequest<Result<PaymentResult>> { }
 
-    public class Handler(IPaymentService paymentService, AppDbContext dbContext)
+    public class Handler(IPaymentService paymentService, AppDbContext dbContext, IMapper mapper)
         : IRequestHandler<Query, Result<PaymentResult>>
     {
         public async Task<Result<PaymentResult>> Handle(
@@ -35,10 +36,10 @@ public class PaymentCallback
                 return Result<PaymentResult>.Failure("Failed to get payment result", 400);
             }
 
-            if (!result.IsSuccess)
-            {
-                return Result<PaymentResult>.Failure("Payment failed", 400);
-            }
+            result.Timestamp = DateTime.SpecifyKind(result.Timestamp, DateTimeKind.Utc);
+            var resultPayment = mapper.Map<Payment>(result);
+            dbContext.Payments.Add(resultPayment);
+            await dbContext.SaveChangesAsync(cancellationToken);
 
             var orderIds = result.Description.Split(";").ToList();
 
@@ -51,14 +52,26 @@ public class PaymentCallback
                 return Result<PaymentResult>.Failure("Sales orders not found", 400);
             }
 
+            if (!resultPayment.IsSuccess)
+            {
+                foreach (var salesOrder in salesOrders)
+                {
+                    salesOrder.Payments.Add(resultPayment);
+                    dbContext.SalesOrders.Update(salesOrder);
+                }
+
+                await dbContext.SaveChangesAsync(cancellationToken);
+                return Result<PaymentResult>.Failure("Payment failed", 400);
+            }
+
             foreach (var salesOrder in salesOrders)
             {
+                salesOrder.Payments.Add(resultPayment);
                 salesOrder.Status = SalesOrderStatus.PendingConfirmation;
                 dbContext.SalesOrders.Update(salesOrder);
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);
-
             return Result<PaymentResult>.Success(result);
         }
     }

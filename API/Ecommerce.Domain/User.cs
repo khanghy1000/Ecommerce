@@ -12,4 +12,5 @@ public class User : IdentityUser
     public Ward? Ward { get; set; }
     public ICollection<Product> CreatedProducts { get; set; } = [];
     public ICollection<CartItem> CartItems { get; set; } = [];
+    public ICollection<ProductReview> Reviews { get; set; } = [];
 }

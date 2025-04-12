@@ -21,4 +21,5 @@ public class SalesOrder : BaseEntity
     public Coupon? Coupon { get; set; }
     public ICollection<OrderProduct> OrderProducts { get; set; } = [];
     public Ward ShippingWard { get; set; } = null!;
+    public ICollection<Payment> Payments { get; set; } = [];
 }

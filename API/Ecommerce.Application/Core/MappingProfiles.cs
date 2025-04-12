@@ -100,5 +100,29 @@ public class MappingProfiles : Profile
 
         CreateMap<SalesOrder, SalesOrderResponseDto>();
         CreateMap<OrderProduct, OrderProductResponseDto>();
+
+        // In the MappingProfiles constructor:
+        CreateMap<VNPAY.NET.Models.PaymentResult, Payment>()
+            .ForMember(
+                dest => dest.ResponseCode,
+                opt => opt.MapFrom(src => src.PaymentResponse.Code)
+            )
+            .ForMember(
+                dest => dest.ResponseDescription,
+                opt => opt.MapFrom(src => src.PaymentResponse.Description)
+            )
+            .ForMember(
+                dest => dest.TransactionCode,
+                opt => opt.MapFrom(src => src.TransactionStatus.Code)
+            )
+            .ForMember(
+                dest => dest.TransactionDescription,
+                opt => opt.MapFrom(src => src.TransactionStatus.Description)
+            )
+            .ForMember(dest => dest.BankCode, opt => opt.MapFrom(src => src.BankingInfor.BankCode))
+            .ForMember(
+                dest => dest.BankTransactionId,
+                opt => opt.MapFrom(src => src.BankingInfor.BankTransactionId)
+            );
     }
 }

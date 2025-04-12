@@ -21,4 +21,5 @@ public class Product : BaseEntity
     public User Shop { get; set; } = null!;
     public ICollection<Subcategory> Subcategories { get; set; } = [];
     public ICollection<ProductPhoto> Photos { get; set; } = [];
+    public ICollection<ProductReview> Reviews { get; set; } = [];
 }

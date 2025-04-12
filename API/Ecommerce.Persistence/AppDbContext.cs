@@ -18,6 +18,8 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public DbSet<Province> Provinces { get; set; }
     public DbSet<District> Districts { get; set; }
     public DbSet<Ward> Wards { get; set; }
+    public DbSet<ProductReview> ProductReviews { get; set; }
+    public DbSet<Payment> Payments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -65,6 +67,19 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 
         modelBuilder.Entity<CartItem>().Property(ci => ci.UserId).HasMaxLength(36);
         modelBuilder.Entity<CartItem>().HasKey(ci => new { ci.UserId, ci.ProductId });
+
+        modelBuilder.Entity<ProductReview>().Property(pr => pr.UserId).HasMaxLength(36);
+        modelBuilder.Entity<ProductReview>().Property(pr => pr.Review).HasMaxLength(1000);
+
+        modelBuilder.Entity<Payment>().Property(p => p.Description).HasMaxLength(1000);
+        modelBuilder.Entity<Payment>().Property(p => p.PaymentMethod).HasMaxLength(255);
+        modelBuilder.Entity<Payment>().Property(p => p.ResponseCode).HasMaxLength(100);
+        modelBuilder.Entity<Payment>().Property(p => p.ResponseDescription).HasMaxLength(255);
+        modelBuilder.Entity<Payment>().Property(p => p.TransactionCode).HasMaxLength(100);
+        modelBuilder.Entity<Payment>().Property(p => p.TransactionDescription).HasMaxLength(255);
+        modelBuilder.Entity<Payment>().Property(p => p.BankCode).HasMaxLength(100);
+        modelBuilder.Entity<Payment>().Property(p => p.BankTransactionId).HasMaxLength(100);
+        modelBuilder.Entity<Payment>().Property(p => p.VnpayTransactionId).HasMaxLength(100);
     }
 
     public override Task<int> SaveChangesAsync(
