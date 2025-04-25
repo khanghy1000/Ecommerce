@@ -18,7 +18,19 @@ public class MappingProfiles : Profile
         CreateMap<Product, Product>();
         CreateMap<Product, ProductResponseDto>()
             .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop.DisplayName))
-            .ForMember(dest => dest.ShopImageUrl, opt => opt.MapFrom(src => src.Shop.ImageUrl));
+            .ForMember(dest => dest.ShopImageUrl, opt => opt.MapFrom(src => src.Shop.ImageUrl))
+            .ForMember(
+                dest => dest.DiscountPrice,
+                opt =>
+                    opt.MapFrom(src =>
+                        src.Discounts.Where(d =>
+                                d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
+                            )
+                            .OrderBy(d => d.DiscountPrice)
+                            .Select(d => (decimal?)d.DiscountPrice)
+                            .FirstOrDefault()
+                    )
+            );
         CreateMap<CreateProductRequestDto, Product>();
         CreateMap<EditProductRequestDto, Product>();
 
@@ -40,13 +52,28 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.Product.RegularPrice))
             .ForMember(
                 dest => dest.DiscountPrice,
-                opt => opt.MapFrom(src => src.Product.DiscountPrice)
+                opt =>
+                    opt.MapFrom(src =>
+                        src.Product.Discounts.Where(d =>
+                                d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
+                            )
+                            .OrderBy(d => d.DiscountPrice)
+                            .Select(d => (decimal?)d.DiscountPrice)
+                            .FirstOrDefault()
+                    )
             )
             .ForMember(
                 dest => dest.Subtotal,
                 opt =>
                     opt.MapFrom(src =>
-                        (src.Product.DiscountPrice ?? src.Product.RegularPrice) * src.Quantity
+                        (
+                            src.Product.Discounts.Where(d =>
+                                    d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
+                                )
+                                .OrderBy(d => d.DiscountPrice)
+                                .Select(d => (decimal?)d.DiscountPrice)
+                                .FirstOrDefault() ?? src.Product.RegularPrice
+                        ) * src.Quantity
                     )
             )
             .ForMember(
@@ -77,7 +104,16 @@ public class MappingProfiles : Profile
             .ForMember(
                 dest => dest.Price,
                 opt =>
-                    opt.MapFrom(src => (int)(src.Product.DiscountPrice ?? src.Product.RegularPrice))
+                    opt.MapFrom(src =>
+                        (int)(
+                            src.Product.Discounts.Where(d =>
+                                    d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
+                                )
+                                .OrderBy(d => d.DiscountPrice)
+                                .Select(d => (decimal?)d.DiscountPrice)
+                                .FirstOrDefault() ?? src.Product.RegularPrice
+                        )
+                    )
             )
             .ForMember(dest => dest.Length, opt => opt.MapFrom(src => src.Product.Length))
             .ForMember(dest => dest.Width, opt => opt.MapFrom(src => src.Product.Width))
@@ -91,7 +127,16 @@ public class MappingProfiles : Profile
             .ForMember(
                 dest => dest.Price,
                 opt =>
-                    opt.MapFrom(src => (int)(src.Product.DiscountPrice ?? src.Product.RegularPrice))
+                    opt.MapFrom(src =>
+                        (int)(
+                            src.Product.Discounts.Where(d =>
+                                    d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
+                                )
+                                .OrderBy(d => d.DiscountPrice)
+                                .Select(d => (decimal?)d.DiscountPrice)
+                                .FirstOrDefault() ?? src.Product.RegularPrice
+                        )
+                    )
             )
             .ForMember(dest => dest.Length, opt => opt.MapFrom(src => src.Product.Length))
             .ForMember(dest => dest.Width, opt => opt.MapFrom(src => src.Product.Width))

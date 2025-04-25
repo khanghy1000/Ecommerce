@@ -23,3 +23,18 @@ public class SalesOrder : BaseEntity
     public Ward ShippingWard { get; set; } = null!;
     public ICollection<Payment> Payments { get; set; } = [];
 }
+
+public enum SalesOrderStatus
+{
+    PendingPayment,
+    PendingConfirmation,
+    Tracking,
+    Delivered,
+    Cancelled,
+}
+
+public enum PaymentMethod
+{
+    Cod,
+    Vnpay,
+}

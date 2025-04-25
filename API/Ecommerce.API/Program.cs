@@ -57,6 +57,8 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
         {
             o.MapEnum<SalesOrderStatus>("sales_order_status");
             o.MapEnum<PaymentMethod>("payment_method");
+            o.MapEnum<CouponType>("coupon_type");
+            o.MapEnum<CouponDiscountType>("coupon_discount_type");
         }
     );
 });

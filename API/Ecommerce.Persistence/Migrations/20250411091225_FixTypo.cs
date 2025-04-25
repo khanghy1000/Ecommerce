@@ -12,34 +12,41 @@ namespace Ecommerce.Persistence.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_ProductSubCategories_Products_ProductId",
-                table: "ProductSubCategories");
+                table: "ProductSubCategories"
+            );
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ProductSubCategories_Subcategories_SubCategoryId",
-                table: "ProductSubCategories");
+                table: "ProductSubCategories"
+            );
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_ProductSubCategories",
-                table: "ProductSubCategories");
+                table: "ProductSubCategories"
+            );
 
             migrationBuilder.RenameTable(
                 name: "ProductSubCategories",
-                newName: "ProductSubcategories");
+                newName: "ProductSubcategories"
+            );
 
             migrationBuilder.RenameColumn(
                 name: "SubCategoryId",
                 table: "ProductSubcategories",
-                newName: "SubcategoryId");
+                newName: "SubcategoryId"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_ProductSubCategories_SubCategoryId",
                 table: "ProductSubcategories",
-                newName: "IX_ProductSubcategories_SubcategoryId");
+                newName: "IX_ProductSubcategories_SubcategoryId"
+            );
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_ProductSubcategories",
                 table: "ProductSubcategories",
-                columns: new[] { "ProductId", "SubcategoryId" });
+                columns: new[] { "ProductId", "SubcategoryId" }
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ProductSubcategories_Products_ProductId",
@@ -47,7 +54,8 @@ namespace Ecommerce.Persistence.Migrations
                 column: "ProductId",
                 principalTable: "Products",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ProductSubcategories_Subcategories_SubcategoryId",
@@ -55,7 +63,8 @@ namespace Ecommerce.Persistence.Migrations
                 column: "SubcategoryId",
                 principalTable: "Subcategories",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
 
         /// <inheritdoc />
@@ -63,34 +72,41 @@ namespace Ecommerce.Persistence.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_ProductSubcategories_Products_ProductId",
-                table: "ProductSubcategories");
+                table: "ProductSubcategories"
+            );
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ProductSubcategories_Subcategories_SubcategoryId",
-                table: "ProductSubcategories");
+                table: "ProductSubcategories"
+            );
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_ProductSubcategories",
-                table: "ProductSubcategories");
+                table: "ProductSubcategories"
+            );
 
             migrationBuilder.RenameTable(
                 name: "ProductSubcategories",
-                newName: "ProductSubCategories");
+                newName: "ProductSubCategories"
+            );
 
             migrationBuilder.RenameColumn(
                 name: "SubcategoryId",
                 table: "ProductSubCategories",
-                newName: "SubCategoryId");
+                newName: "SubCategoryId"
+            );
 
             migrationBuilder.RenameIndex(
                 name: "IX_ProductSubcategories_SubcategoryId",
                 table: "ProductSubCategories",
-                newName: "IX_ProductSubCategories_SubCategoryId");
+                newName: "IX_ProductSubCategories_SubCategoryId"
+            );
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_ProductSubCategories",
                 table: "ProductSubCategories",
-                columns: new[] { "ProductId", "SubCategoryId" });
+                columns: new[] { "ProductId", "SubCategoryId" }
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ProductSubCategories_Products_ProductId",
@@ -98,7 +114,8 @@ namespace Ecommerce.Persistence.Migrations
                 column: "ProductId",
                 principalTable: "Products",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ProductSubCategories_Subcategories_SubCategoryId",
@@ -106,7 +123,8 @@ namespace Ecommerce.Persistence.Migrations
                 column: "SubCategoryId",
                 principalTable: "Subcategories",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
     }
 }

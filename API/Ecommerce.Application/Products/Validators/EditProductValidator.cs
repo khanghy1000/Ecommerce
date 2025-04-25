@@ -19,10 +19,6 @@ public class EditProductValidator : AbstractValidator<EditProduct.Command>
         RuleFor(x => x.EditProductRequestDto.RegularPrice)
             .GreaterThan(0)
             .WithMessage("Regular price must be greater than 0.");
-        RuleFor(x => x.EditProductRequestDto.DiscountPrice)
-            .LessThan(x => x.EditProductRequestDto.RegularPrice)
-            .When(x => x.EditProductRequestDto.DiscountPrice.HasValue)
-            .WithMessage("Discount price must be less than regular price or null.");
         RuleFor(x => x.EditProductRequestDto.Quantity)
             .GreaterThanOrEqualTo(0)
             .WithMessage("Quantity must be greater than or equal to 0.");

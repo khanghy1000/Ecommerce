@@ -1,4 +1,5 @@
-﻿using NpgsqlTypes;
+﻿using Microsoft.EntityFrameworkCore.Diagnostics;
+using NpgsqlTypes;
 
 namespace Ecommerce.Domain;
 
@@ -8,7 +9,6 @@ public class Product : BaseEntity
     public required string Name { get; set; }
     public required string Description { get; set; }
     public required decimal RegularPrice { get; set; }
-    public decimal? DiscountPrice { get; set; }
     public required int Quantity { get; set; }
     public required bool Active { get; set; }
     public required int Length { get; set; }
@@ -22,4 +22,5 @@ public class Product : BaseEntity
     public ICollection<Subcategory> Subcategories { get; set; } = [];
     public ICollection<ProductPhoto> Photos { get; set; } = [];
     public ICollection<ProductReview> Reviews { get; set; } = [];
+    public ICollection<ProductDiscount> Discounts { get; set; } = [];
 }

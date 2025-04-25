@@ -20,6 +20,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public DbSet<Ward> Wards { get; set; }
     public DbSet<ProductReview> ProductReviews { get; set; }
     public DbSet<Payment> Payments { get; set; }
+    public DbSet<ProductDiscount> ProductDiscounts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -54,8 +55,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
             .WithMany(c => c.Products)
             .UsingEntity<ProductSubcategory>();
 
-        modelBuilder.Entity<Coupon>().Property(c => c.Code).HasMaxLength(255);
-        modelBuilder.Entity<Coupon>().Property(c => c.Description).HasMaxLength(1000);
+        modelBuilder.Entity<Coupon>().Property(c => c.Code).HasMaxLength(50);
 
         modelBuilder.Entity<SalesOrder>().Property(so => so.UserId).HasMaxLength(36);
         modelBuilder.Entity<SalesOrder>().Property(so => so.ShippingName).HasMaxLength(255);

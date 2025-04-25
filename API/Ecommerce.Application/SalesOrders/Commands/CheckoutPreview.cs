@@ -49,6 +49,8 @@ public class CheckoutPreview
                 .ThenInclude(u => u.Ward)
                 .ThenInclude(w => w!.District)
                 .ThenInclude(d => d.Province)
+                .Include(cartItem => cartItem.Product)
+                .ThenInclude(product => product.Discounts)
                 .Where(ci => ci.UserId == user.Id)
                 .ToListAsync(cancellationToken);
 
@@ -59,7 +61,14 @@ public class CheckoutPreview
             var subtotal = (int)
                 Math.Ceiling(
                     cartItems.Sum(ci =>
-                        (ci.Product.DiscountPrice ?? ci.Product.RegularPrice) * ci.Quantity
+                        (
+                            ci.Product.Discounts.Where(d =>
+                                    d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
+                                )
+                                .OrderBy(d => d.DiscountPrice)
+                                .Select(d => (decimal?)d.DiscountPrice)
+                                .FirstOrDefault() ?? ci.Product.RegularPrice
+                        ) * ci.Quantity
                     )
                 );
             int shippingFee = 0;

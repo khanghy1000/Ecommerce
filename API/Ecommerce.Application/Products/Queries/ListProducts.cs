@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Ecommerce.Application.Core;
@@ -62,8 +61,22 @@ public static class ListProducts
             query = request.SortBy switch
             {
                 "price" => request.SortDirection == "asc"
-                    ? query.OrderBy(x => x.DiscountPrice ?? x.RegularPrice)
-                    : query.OrderByDescending(x => x.DiscountPrice ?? x.RegularPrice),
+                    ? query.OrderBy(x =>
+                        x.Discounts.Where(d =>
+                                d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
+                            )
+                            .OrderBy(d => d.DiscountPrice)
+                            .Select(d => (decimal?)d.DiscountPrice)
+                            .FirstOrDefault() ?? x.RegularPrice
+                    )
+                    : query.OrderByDescending(x =>
+                        x.Discounts.Where(d =>
+                                d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
+                            )
+                            .OrderBy(d => d.DiscountPrice)
+                            .Select(d => (decimal?)d.DiscountPrice)
+                            .FirstOrDefault() ?? x.RegularPrice
+                    ),
                 "name" => request.SortDirection == "asc"
                     ? query.OrderBy(x => x.Name)
                     : query.OrderByDescending(x => x.Name),

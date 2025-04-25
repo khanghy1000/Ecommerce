@@ -68,7 +68,15 @@ public class Checkout
                 var subTotal = (int)
                     Math.Ceiling(
                         items.Sum(i =>
-                            i.Product.DiscountPrice ?? i.Product.RegularPrice * i.Quantity
+                            (
+                                i.Product.Discounts.Where(d =>
+                                        d.StartTime <= DateTime.UtcNow
+                                        && d.EndTime >= DateTime.UtcNow
+                                    )
+                                    .OrderBy(d => d.DiscountPrice)
+                                    .Select(d => (decimal?)d.DiscountPrice)
+                                    .FirstOrDefault() ?? i.Product.RegularPrice
+                            ) * i.Quantity
                         )
                     );
 
@@ -131,11 +139,25 @@ public class Checkout
                         var orderProduct = new OrderProduct
                         {
                             Name = item.Product.Name,
-                            Price = item.Product.DiscountPrice ?? item.Product.RegularPrice,
+                            Price =
+                                item.Product.Discounts.Where(d =>
+                                        d.StartTime <= DateTime.UtcNow
+                                        && d.EndTime >= DateTime.UtcNow
+                                    )
+                                    .OrderBy(d => d.DiscountPrice)
+                                    .Select(d => (decimal?)d.DiscountPrice)
+                                    .FirstOrDefault() ?? item.Product.RegularPrice,
                             Quantity = item.Quantity,
                             Subtotal =
-                                (item.Product.DiscountPrice ?? item.Product.RegularPrice)
-                                * item.Quantity,
+                                (
+                                    item.Product.Discounts.Where(d =>
+                                            d.StartTime <= DateTime.UtcNow
+                                            && d.EndTime >= DateTime.UtcNow
+                                        )
+                                        .OrderBy(d => d.DiscountPrice)
+                                        .Select(d => (decimal?)d.DiscountPrice)
+                                        .FirstOrDefault() ?? item.Product.RegularPrice
+                                ) * item.Quantity,
                             OrderId = order.Id,
                             ProductId = item.ProductId,
                         };
