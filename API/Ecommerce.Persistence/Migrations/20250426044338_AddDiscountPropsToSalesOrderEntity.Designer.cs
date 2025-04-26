@@ -4,6 +4,7 @@ using Ecommerce.Domain;
 using Ecommerce.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -13,9 +14,11 @@ using NpgsqlTypes;
 namespace Ecommerce.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250426044338_AddDiscountPropsToSalesOrderEntity")]
+    partial class AddDiscountPropsToSalesOrderEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,7 +44,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("SalesOrdersId");
 
-                    b.ToTable("CouponSalesOrder", (string)null);
+                    b.ToTable("CouponSalesOrder");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.CartItem", b =>
@@ -60,7 +63,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItems", (string)null);
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.Category", b =>
@@ -89,7 +92,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("CouponCode");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.Coupon", b =>
@@ -143,7 +146,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasKey("Code");
 
-                    b.ToTable("Coupons", (string)null);
+                    b.ToTable("Coupons");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.District", b =>
@@ -169,7 +172,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("ProvinceId");
 
-                    b.ToTable("Districts", (string)null);
+                    b.ToTable("Districts");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.OrderProduct", b =>
@@ -212,7 +215,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderProducts", (string)null);
+                    b.ToTable("OrderProducts");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.Payment", b =>
@@ -267,7 +270,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasKey("PaymentId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.Product", b =>
@@ -337,7 +340,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("ShopId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.ProductDiscount", b =>
@@ -370,7 +373,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductDiscounts", (string)null);
+                    b.ToTable("ProductDiscounts");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.ProductPhoto", b =>
@@ -390,7 +393,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductPhotos", (string)null);
+                    b.ToTable("ProductPhotos");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.ProductReview", b =>
@@ -428,7 +431,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ProductReviews", (string)null);
+                    b.ToTable("ProductReviews");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.ProductSubcategory", b =>
@@ -443,7 +446,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("SubcategoryId");
 
-                    b.ToTable("ProductSubcategories", (string)null);
+                    b.ToTable("ProductSubcategories");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.Province", b =>
@@ -464,7 +467,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Provinces", (string)null);
+                    b.ToTable("Provinces");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.SalesOrder", b =>
@@ -541,7 +544,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SalesOrders", (string)null);
+                    b.ToTable("SalesOrders");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.Subcategory", b =>
@@ -570,7 +573,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Subcategories", (string)null);
+                    b.ToTable("Subcategories");
                 });
 
             modelBuilder.Entity("Ecommerce.Domain.User", b =>
@@ -677,7 +680,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("DistrictId");
 
-                    b.ToTable("Wards", (string)null);
+                    b.ToTable("Wards");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -824,7 +827,7 @@ namespace Ecommerce.Persistence.Migrations
 
                     b.HasIndex("SalesOrderId");
 
-                    b.ToTable("PaymentSalesOrder", (string)null);
+                    b.ToTable("PaymentSalesOrder");
                 });
 
             modelBuilder.Entity("CouponSalesOrder", b =>

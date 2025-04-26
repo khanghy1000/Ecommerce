@@ -35,6 +35,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         modelBuilder.Entity<Product>().Property(p => p.Name).HasMaxLength(255);
         modelBuilder.Entity<Product>().Property(p => p.Description).HasMaxLength(20000);
         modelBuilder.Entity<Product>().Property(p => p.ShopId).HasMaxLength(36);
+        modelBuilder.Entity<Product>().Property(p => p.Active).HasDefaultValue(true);
 
         modelBuilder
             .Entity<Product>()
@@ -80,6 +81,9 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         modelBuilder.Entity<Payment>().Property(p => p.BankCode).HasMaxLength(100);
         modelBuilder.Entity<Payment>().Property(p => p.BankTransactionId).HasMaxLength(100);
         modelBuilder.Entity<Payment>().Property(p => p.VnpayTransactionId).HasMaxLength(100);
+
+        modelBuilder.Entity<Coupon>().Property(c => c.UsedCount).HasDefaultValue(0);
+        modelBuilder.Entity<Coupon>().Property(c => c.Active).HasDefaultValue(true);
     }
 
     public override Task<int> SaveChangesAsync(

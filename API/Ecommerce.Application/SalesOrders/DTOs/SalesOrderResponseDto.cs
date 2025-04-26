@@ -6,9 +6,12 @@ public class SalesOrderResponseDto
 {
     public int Id { get; set; }
     public DateTime OrderTime { get; set; }
+    public decimal Subtotal { get; set; }
+    public int ShippingFee { get; set; }
+    public decimal ProductDiscountAmount { get; set; }
+    public decimal ShippingDiscountAmount { get; set; }
     public decimal Total { get; set; }
     public string UserId { get; set; }
-    public int? CouponId { get; set; }
     public string ShippingOrderCode { get; set; }
     public string ShippingName { get; set; }
     public string ShippingPhone { get; set; }

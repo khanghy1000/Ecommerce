@@ -8,6 +8,8 @@ public class SalesOrder : BaseEntity
     public int? CouponId { get; set; }
     public required decimal Subtotal { get; set; }
     public required int ShippingFee { get; set; }
+    public decimal ProductDiscountAmount { get; set; }
+    public decimal ShippingDiscountAmount { get; set; }
     public required decimal Total { get; set; }
     public string? ShippingOrderCode { get; set; }
     public required string ShippingName { get; set; }
@@ -18,10 +20,10 @@ public class SalesOrder : BaseEntity
     public required SalesOrderStatus Status { get; set; }
 
     public User User { get; set; } = null!;
-    public Coupon? Coupon { get; set; }
     public ICollection<OrderProduct> OrderProducts { get; set; } = [];
     public Ward ShippingWard { get; set; } = null!;
     public ICollection<Payment> Payments { get; set; } = [];
+    public ICollection<Coupon> Coupons { get; set; } = [];
 }
 
 public enum SalesOrderStatus

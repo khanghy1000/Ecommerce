@@ -39,7 +39,7 @@ public class CreateShippingOrder
 
             var shippingRequest = new CreateShippingRequest
             {
-                PaymentTypeId = salesOrder.PaymentMethod == PaymentMethod.Cod ? 2 : 1,
+                PaymentTypeId = 1,
                 RequiredNote = "CHOXEMHANGKHONGTHU",
                 FromName = shop.DisplayName!,
                 FromPhone = shop.PhoneNumber!,
