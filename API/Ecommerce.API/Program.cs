@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using VNPAY.NET;
 
@@ -146,5 +147,22 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapGroup("api").WithTags("Identity").MapCustomIdentityApi<User>();
+
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+
+try
+{
+    var context = services.GetRequiredService<AppDbContext>();
+    var ghnSettings = services.GetRequiredService<IOptions<GHNSettings>>();
+    await context.Database.MigrateAsync();
+
+    await Seed.SeedLocations(context, ghnSettings.Value.Token);
+}
+catch (Exception ex)
+{
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error occurred during migration.");
+}
 
 app.Run();
