@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
 using Ecommerce.Application.Core;
 using Ecommerce.Application.Coupons.Commands;
@@ -50,20 +49,39 @@ public class Checkout
             if (cartItems.Count == 0)
                 return Result<CheckoutResponseDto>.Failure("Cart is empty", 400);
 
-            // Calculate subtotal for all items for checking coupon minimum order value
-            var checkoutSubTotal = (int)
-                Math.Ceiling(
-                    cartItems.Sum(ci =>
-                        (
-                            ci.Product.Discounts.Where(d =>
-                                    d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
-                                )
-                                .OrderBy(d => d.DiscountPrice)
-                                .Select(d => (decimal?)d.DiscountPrice)
-                                .FirstOrDefault() ?? ci.Product.RegularPrice
-                        ) * ci.Quantity
-                    )
+            var groupedCartItems = cartItems
+                .GroupBy(ci => ci.Product.Shop)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            Dictionary<User, int> shopSubtotals = new();
+
+            foreach (var group in groupedCartItems)
+            {
+                var shopSubtotal = (int)
+                    Math.Ceiling(group.Value.Sum(ci => GetProductPrice(ci.Product) * ci.Quantity));
+                shopSubtotals.Add(group.Key, shopSubtotal);
+            }
+
+            Dictionary<User, int> shopShippingFees = new();
+
+            foreach (var shop in groupedCartItems.Keys)
+            {
+                var getShippingFeeResult = await GetShippingFeeAsync(
+                    request,
+                    shop,
+                    groupedCartItems[shop],
+                    shippingWard
                 );
+                if (!getShippingFeeResult.IsSuccess)
+                {
+                    return Result<CheckoutResponseDto>.Failure(
+                        getShippingFeeResult.Error!,
+                        getShippingFeeResult.Code
+                    );
+                }
+
+                shopShippingFees.Add(shop, getShippingFeeResult.Value);
+            }
 
             var productCategoryIds = cartItems
                 .SelectMany(ci => ci.Product.Subcategories.Select(s => s.CategoryId))
@@ -80,7 +98,7 @@ public class Checkout
                     {
                         CouponCode = request.CheckoutRequestDto.ProductCouponCode,
                         CouponType = CouponType.Product,
-                        OrderSubtotal = checkoutSubTotal,
+                        OrderSubtotal = shopSubtotals.Values.Sum(),
                         ProductCategoryIds = productCategoryIds,
                     },
                     cancellationToken
@@ -101,7 +119,7 @@ public class Checkout
                     {
                         CouponCode = request.CheckoutRequestDto.ShippingCouponCode,
                         CouponType = CouponType.Shipping,
-                        OrderSubtotal = checkoutSubTotal,
+                        OrderSubtotal = shopSubtotals.Values.Sum(),
                         ProductCategoryIds = productCategoryIds,
                     },
                     cancellationToken
@@ -115,26 +133,56 @@ public class Checkout
                 shippingCoupon = shippingCouponResult.Value;
             }
 
-            var groupedCartItems = cartItems.GroupBy(ci => ci.Product.Shop).ToList();
+            var productDiscounts = CalculateProductDiscounts(
+                productCoupon,
+                groupedCartItems,
+                shopSubtotals
+            );
+            var shippingDiscounts = CalculateShippingDiscount(
+                shippingCoupon,
+                groupedCartItems,
+                shopShippingFees
+            );
+
+            if (productCoupon != null)
+            {
+                productCoupon.UsedCount += 1;
+                dbContext.Update(productCoupon);
+            }
+
+            if (shippingCoupon != null)
+            {
+                shippingCoupon.UsedCount += 1;
+                dbContext.Update(shippingCoupon);
+            }
+
+            // Create sales orders for each shop
             var createdSalesOrders = new List<SalesOrder>();
 
-            // Create order for each shop
-            foreach (var groupedCartItem in groupedCartItems)
+            foreach (var (shop, items) in groupedCartItems)
             {
+                var shopProductDiscount = productDiscounts.GetValueOrDefault(shop);
+                var shopShippingDiscount = shippingDiscounts.GetValueOrDefault(shop);
+
                 var createOrderResult = await CreateOrder(
                     request,
-                    groupedCartItem,
-                    shippingWard,
+                    items,
                     productCoupon,
                     shippingCoupon,
                     user,
+                    shopSubtotals[shop],
+                    shopShippingFees[shop],
+                    shopProductDiscount,
+                    shopShippingDiscount,
                     cancellationToken
                 );
+
                 if (!createOrderResult.IsSuccess)
                     return Result<CheckoutResponseDto>.Failure(
                         createOrderResult.Error!,
                         createOrderResult.Code
                     );
+
                 createdSalesOrders.Add(createOrderResult.Value!);
             }
 
@@ -171,51 +219,19 @@ public class Checkout
 
         private async Task<Result<SalesOrder>> CreateOrder(
             Command request,
-            IGrouping<User, CartItem> groupedCartItem,
-            Ward shippingWard,
+            List<CartItem> items,
             Coupon? productCoupon,
             Coupon? shippingCoupon,
             User user,
+            int subtotal,
+            int shippingFee,
+            decimal productDiscount,
+            decimal shippingDiscount,
             CancellationToken cancellationToken
         )
         {
-            var shop = groupedCartItem.Key;
-            var items = groupedCartItem.ToList();
-
-            var subtotal = (int)
-                Math.Ceiling(
-                    items.Sum(i =>
-                        (
-                            i.Product.Discounts.Where(d =>
-                                    d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
-                                )
-                                .OrderBy(d => d.DiscountPrice)
-                                .Select(d => (decimal?)d.DiscountPrice)
-                                .FirstOrDefault() ?? i.Product.RegularPrice
-                        ) * i.Quantity
-                    )
-                );
-
-            var getShippingFeeResult = await GetShippingFeeAsync(
-                request,
-                groupedCartItem,
-                shippingWard
-            );
-
-            if (!getShippingFeeResult.IsSuccess)
-            {
-                return Result<SalesOrder>.Failure(
-                    getShippingFeeResult.Error!,
-                    getShippingFeeResult.Code
-                );
-            }
-            var shippingFee = getShippingFeeResult.Value;
-
-            var productDiscount = GetProductDiscount(productCoupon, items, subtotal);
-            var shippingDiscount = GetShippingDiscount(shippingCoupon, shippingFee);
-
             var discountedSubtotal = subtotal - (int)Math.Ceiling(productDiscount);
-            var discountedShippingFee = (int)Math.Ceiling(shippingFee - shippingDiscount);
+            var discountedShippingFee = shippingFee - (int)Math.Ceiling(shippingDiscount);
             var total = discountedSubtotal + discountedShippingFee;
 
             var order = new SalesOrder
@@ -223,8 +239,8 @@ public class Checkout
                 UserId = user.Id,
                 Subtotal = subtotal,
                 ShippingFee = shippingFee,
-                ProductDiscountAmount = (decimal)Math.Ceiling(productDiscount),
-                ShippingDiscountAmount = (decimal)Math.Ceiling(shippingDiscount),
+                ProductDiscountAmount = (int)Math.Ceiling(productDiscount),
+                ShippingDiscountAmount = (int)Math.Ceiling(shippingDiscount),
                 Total = total,
                 ShippingName = request.CheckoutRequestDto.ShippingName,
                 ShippingPhone = request.CheckoutRequestDto.ShippingPhone,
@@ -241,14 +257,10 @@ public class Checkout
             if (productCoupon != null)
             {
                 order.Coupons.Add(productCoupon);
-                productCoupon.UsedCount += 1;
-                dbContext.Update(productCoupon);
             }
             if (shippingCoupon != null)
             {
                 order.Coupons.Add(shippingCoupon);
-                shippingCoupon.UsedCount += 1;
-                dbContext.Update(shippingCoupon);
             }
 
             dbContext.SalesOrders.Add(order);
@@ -257,56 +269,14 @@ public class Checkout
             var orderProducts = new List<OrderProduct>();
             foreach (var item in items)
             {
-                var itemPrice =
-                    item.Product.Discounts.Where(d =>
-                            d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
-                        )
-                        .OrderBy(d => d.DiscountPrice)
-                        .Select(d => (decimal?)d.DiscountPrice)
-                        .FirstOrDefault() ?? item.Product.RegularPrice;
-
-                decimal itemDiscount = 0;
-
-                // Apply item-specific discount if it's a product coupon with category restrictions
-                if (
-                    productCoupon != null
-                    && productCoupon.Categories.Count != 0
-                    && item.Product.Subcategories.Any(subcategory =>
-                        productCoupon.Categories.Any(cc => cc.Id == subcategory.CategoryId)
-                    )
-                )
-                {
-                    if (productCoupon.DiscountType == CouponDiscountType.Percent)
-                    {
-                        itemDiscount = itemPrice * (productCoupon.Value / 100) * item.Quantity;
-                    }
-                    else // Amount - distribute proportionally
-                    {
-                        var proportion = (itemPrice * item.Quantity) / subtotal;
-                        itemDiscount = Math.Min(
-                            productCoupon.Value * proportion,
-                            itemPrice * item.Quantity
-                        );
-                    }
-
-                    if (itemDiscount > productCoupon.MaxDiscountAmount)
-                    {
-                        itemDiscount = productCoupon.MaxDiscountAmount;
-                    }
-                }
-                // If product coupon with no category restrictions, apply discount proportionally
-                else if (productCoupon is { Categories.Count: 0 })
-                {
-                    var proportion = (itemPrice * item.Quantity) / subtotal;
-                    itemDiscount = productDiscount * proportion;
-                }
+                var itemPrice = GetProductPrice(item.Product);
 
                 var orderProduct = new OrderProduct
                 {
                     Name = item.Product.Name,
                     Price = itemPrice,
                     Quantity = item.Quantity,
-                    Subtotal = (itemPrice * item.Quantity) - itemDiscount,
+                    Subtotal = (itemPrice * item.Quantity),
                     OrderId = order.Id,
                     ProductId = item.ProductId,
                 };
@@ -321,90 +291,188 @@ public class Checkout
             return Result<SalesOrder>.Success(order);
         }
 
-        private decimal GetShippingDiscount(Coupon? shippingCoupon, [DisallowNull] int? fee)
+        private Dictionary<User, decimal> CalculateShippingDiscount(
+            Coupon? shippingCoupon,
+            Dictionary<User, List<CartItem>> groupedCartItems,
+            Dictionary<User, int> shopShippingFees
+        )
         {
-            decimal shippingDiscount = 0;
+            if (shippingCoupon == null)
+                return new Dictionary<User, decimal>();
 
-            if (shippingCoupon is { DiscountType: CouponDiscountType.Percent })
+            Dictionary<User, decimal> shippingDiscounts = new();
+
+            if (shippingCoupon is { Categories.Count: > 0 })
             {
-                shippingDiscount = fee.Value * (shippingCoupon.Value / 100);
-            }
-            else if (shippingCoupon is { DiscountType: CouponDiscountType.Amount })
-            {
-                shippingDiscount = shippingCoupon.Value;
+                var eligibleGroups = groupedCartItems
+                    .Where(group =>
+                        group.Value.Any(item =>
+                            item.Product.Subcategories.Any(subcategory =>
+                                shippingCoupon.Categories.Any(c => c.Id == subcategory.CategoryId)
+                            )
+                        )
+                    )
+                    .ToList();
+
+                if (eligibleGroups.Count == 0)
+                    return shippingDiscounts;
+
+                // Only for shops with eligible products
+                decimal categorySpecificShippingFee = eligibleGroups.Sum(group =>
+                    shopShippingFees.GetValueOrDefault(group.Key)
+                );
+
+                if (categorySpecificShippingFee == 0)
+                    return shippingDiscounts;
+
+                decimal totalShippingDiscount;
+
+                if (shippingCoupon.DiscountType == CouponDiscountType.Percent)
+                {
+                    totalShippingDiscount =
+                        categorySpecificShippingFee * (shippingCoupon.Value / 100);
+                }
+                else
+                {
+                    totalShippingDiscount =
+                        shippingCoupon.Value <= categorySpecificShippingFee
+                            ? shippingCoupon.Value
+                            : categorySpecificShippingFee;
+                }
+
+                if (totalShippingDiscount > shippingCoupon.MaxDiscountAmount)
+                {
+                    totalShippingDiscount = shippingCoupon.MaxDiscountAmount;
+                }
+
+                foreach (var group in eligibleGroups)
+                {
+                    if (!shopShippingFees.TryGetValue(group.Key, out var shopFee))
+                        continue;
+
+                    var shopDiscount =
+                        totalShippingDiscount * (shopFee / categorySpecificShippingFee);
+                    shippingDiscounts.Add(group.Key, shopDiscount);
+                }
+
+                return shippingDiscounts;
             }
 
-            if (shippingCoupon != null && shippingDiscount > shippingCoupon.MaxDiscountAmount)
+            decimal totalShippingFee = shopShippingFees.Values.Sum();
+            decimal totalDiscount;
+
+            if (shippingCoupon.DiscountType == CouponDiscountType.Percent)
             {
-                shippingDiscount = shippingCoupon.MaxDiscountAmount;
+                totalDiscount = totalShippingFee * (shippingCoupon.Value / 100);
+            }
+            else
+            {
+                totalDiscount =
+                    shippingCoupon.Value <= totalShippingFee
+                        ? shippingCoupon.Value
+                        : totalShippingFee;
             }
 
-            if (shippingCoupon != null && shippingDiscount > fee.Value)
+            if (totalDiscount > shippingCoupon.MaxDiscountAmount)
             {
-                shippingDiscount = fee.Value;
+                totalDiscount = shippingCoupon.MaxDiscountAmount;
             }
 
-            return shippingDiscount;
+            foreach (var shop in shopShippingFees.Keys)
+            {
+                var shopFee = shopShippingFees[shop];
+                var shopDiscount = totalDiscount * (shopFee / totalShippingFee);
+                shippingDiscounts.Add(shop, shopDiscount);
+            }
+
+            return shippingDiscounts;
         }
 
-        private decimal GetProductDiscount(
+        private Dictionary<User, decimal> CalculateProductDiscounts(
             Coupon? productCoupon,
-            List<CartItem> items,
-            int subTotal
+            Dictionary<User, List<CartItem>> groupedCartItems,
+            Dictionary<User, int> shopSubtotals
         )
         {
             if (productCoupon == null)
-                return 0;
+                return new Dictionary<User, decimal>();
 
-            decimal productDiscount = 0;
+            Dictionary<User, decimal> productDiscounts = new();
 
+            decimal productDiscount;
             if (productCoupon is { Categories.Count: > 0 })
             {
-                // Apply discount only to products with matching categories
-                decimal categorySpecificTotal = 0;
-                foreach (var item in items)
-                {
-                    if (
-                        !item.Product.Subcategories.Any(subcategory =>
+                // flatten the grouped cart items then filter by product coupon categories
+                var items = groupedCartItems
+                    .SelectMany(g => g.Value)
+                    .Where(item =>
+                        item.Product.Subcategories.Any(subcategory =>
                             productCoupon.Categories.Any(cc => cc.Id == subcategory.CategoryId)
                         )
                     )
-                        continue;
+                    .ToList();
 
-                    var itemPrice =
-                        item.Product.Discounts.Where(d =>
-                                d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
-                            )
-                            .OrderBy(d => d.DiscountPrice)
-                            .Select(d => (decimal?)d.DiscountPrice)
-                            .FirstOrDefault() ?? item.Product.RegularPrice;
+                if (items.Count == 0)
+                    return productDiscounts;
 
-                    categorySpecificTotal += itemPrice * item.Quantity;
-                }
+                decimal categorySpecificSubtotal = items.Sum(item =>
+                    (int)Math.Ceiling(GetProductPrice(item.Product) * item.Quantity)
+                );
 
                 if (productCoupon.DiscountType == CouponDiscountType.Percent)
                 {
-                    productDiscount = categorySpecificTotal * (productCoupon.Value / 100);
+                    productDiscount = categorySpecificSubtotal * (productCoupon.Value / 100);
                 }
                 else
                 {
                     productDiscount =
-                        productCoupon.Value <= categorySpecificTotal
+                        productCoupon.Value <= categorySpecificSubtotal
                             ? productCoupon.Value
-                            : categorySpecificTotal;
+                            : categorySpecificSubtotal;
                 }
+
+                if (productDiscount > productCoupon.MaxDiscountAmount)
+                {
+                    productDiscount = productCoupon.MaxDiscountAmount;
+                }
+
+                var eligibleGroups = groupedCartItems.Where(group =>
+                    group.Value.Any(item =>
+                        item.Product.Subcategories.Any(subcategory =>
+                            productCoupon.Categories.Any(cc => cc.Id == subcategory.CategoryId)
+                        )
+                    )
+                );
+
+                foreach (var group in eligibleGroups)
+                {
+                    var groupCategorySpecificSubtotal = group
+                        .Value.Where(item =>
+                            item.Product.Subcategories.Any(subcategory =>
+                                productCoupon.Categories.Any(cc => cc.Id == subcategory.CategoryId)
+                            )
+                        )
+                        .Sum(item =>
+                            (int)Math.Ceiling(GetProductPrice(item.Product) * item.Quantity)
+                        );
+
+                    var discount =
+                        productDiscount
+                        * (groupCategorySpecificSubtotal / categorySpecificSubtotal);
+                    productDiscounts.Add(group.Key, discount);
+                }
+
+                return productDiscounts;
             }
-            else if (productCoupon is { Categories.Count: 0 })
+
+            var subtotal = shopSubtotals.Values.Sum();
+            if (productCoupon.DiscountType == CouponDiscountType.Percent)
             {
-                if (productCoupon.DiscountType == CouponDiscountType.Percent)
-                {
-                    productDiscount = subTotal * (productCoupon.Value / 100);
-                }
-                else
-                {
-                    productDiscount =
-                        productCoupon.Value <= subTotal ? productCoupon.Value : subTotal;
-                }
+                productDiscount = subtotal * (productCoupon.Value / 100);
+            }
+            else
+            {
+                productDiscount = productCoupon.Value <= subtotal ? productCoupon.Value : subtotal;
             }
 
             if (productDiscount > productCoupon.MaxDiscountAmount)
@@ -412,7 +480,14 @@ public class Checkout
                 productDiscount = productCoupon.MaxDiscountAmount;
             }
 
-            return productDiscount;
+            foreach (var group in groupedCartItems)
+            {
+                var groupSubtotal = shopSubtotals[group.Key];
+                var discount = productDiscount * ((decimal)groupSubtotal / subtotal);
+                productDiscounts.Add(group.Key, discount);
+            }
+
+            return productDiscounts;
         }
 
         private async Task<List<CartItem>> GetCartItemsAsync(
@@ -437,13 +512,11 @@ public class Checkout
 
         private async Task<Result<int>> GetShippingFeeAsync(
             Command request,
-            IGrouping<User, CartItem> groupedCartItem,
+            User shop,
+            List<CartItem> items,
             Ward shippingWard
         )
         {
-            var shop = groupedCartItem.Key;
-            var items = groupedCartItem.ToList();
-
             var shippingRequest = new CreateShippingRequest
             {
                 PaymentTypeId = 1,
@@ -471,15 +544,29 @@ public class Checkout
             try
             {
                 var shippingResponse = await shippingService.PreviewShipping(shippingRequest);
-                var shippingFee = shippingResponse?.Data?.TotalFee;
-                return shippingFee == null
-                    ? Result<int>.Failure("Shipping fee not found", 400)
-                    : Result<int>.Success((int)shippingFee);
+
+                var fee = shippingResponse?.Data?.TotalFee;
+                if (fee == null)
+                    return Result<int>.Failure("Shipping fee not found", 400);
+                return Result<int>.Success((int)fee);
             }
             catch (Exception ex)
             {
                 return Result<int>.Failure(ex.Message, 500);
             }
+        }
+
+        private decimal GetProductPrice(Product product)
+        {
+            var discountPrice = product
+                .Discounts.Where(d =>
+                    d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
+                )
+                .OrderBy(d => d.DiscountPrice)
+                .Select(d => (decimal?)d.DiscountPrice)
+                .FirstOrDefault();
+
+            return discountPrice ?? product.RegularPrice;
         }
     }
 }
