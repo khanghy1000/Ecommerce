@@ -6,4 +6,5 @@ public interface IUserAccessor
 {
     string GetUserId();
     Task<User> GetUserAsync();
+    IEnumerable<string> GetUserRoles();
 }

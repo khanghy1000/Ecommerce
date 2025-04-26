@@ -5,7 +5,6 @@ public class SalesOrder : BaseEntity
     public int Id { get; set; }
     public DateTime OrderTime { get; set; } = DateTime.UtcNow;
     public required string UserId { get; set; }
-    public int? CouponId { get; set; }
     public required decimal Subtotal { get; set; }
     public required int ShippingFee { get; set; }
     public decimal ProductDiscountAmount { get; set; }

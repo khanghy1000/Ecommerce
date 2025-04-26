@@ -143,7 +143,46 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.Product.Height))
             .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.Product.Weight));
 
-        CreateMap<SalesOrder, SalesOrderResponseDto>();
+        CreateMap<SalesOrder, SalesOrderResponseDto>()
+            .ForMember(
+                dest => dest.ShippingDistrictId,
+                opt => opt.MapFrom(src => src.ShippingWard.DistrictId)
+            )
+            .ForMember(
+                dest => dest.ShippingProvinceId,
+                opt => opt.MapFrom(src => src.ShippingWard.District.ProvinceId)
+            )
+            .ForMember(
+                dest => dest.ShippingWardName,
+                opt => opt.MapFrom(src => src.ShippingWard.Name)
+            )
+            .ForMember(
+                dest => dest.ShippingDistrictName,
+                opt => opt.MapFrom(src => src.ShippingWard.District.Name)
+            )
+            .ForMember(
+                dest => dest.ShippingProvinceName,
+                opt => opt.MapFrom(src => src.ShippingWard.District.Province.Name)
+            )
+            .ForMember(
+                dest => dest.ProductCouponCode,
+                opt =>
+                    opt.MapFrom(src =>
+                        src.Coupons.Where(c => c.Type == CouponType.Product)
+                            .Select(c => c.Code)
+                            .FirstOrDefault()
+                    )
+            )
+            .ForMember(
+                dest => dest.ShippingCouponCode,
+                opt =>
+                    opt.MapFrom(src =>
+                        src.Coupons.Where(c => c.Type == CouponType.Shipping)
+                            .Select(c => c.Code)
+                            .FirstOrDefault()
+                    )
+            );
+
         CreateMap<OrderProduct, OrderProductResponseDto>();
 
         // In the MappingProfiles constructor:

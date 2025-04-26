@@ -26,4 +26,11 @@ public class UserAccessor(IHttpContextAccessor httpContextAccessor, AppDbContext
         return httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier)
             ?? throw new Exception("No user found");
     }
+
+    public IEnumerable<string> GetUserRoles()
+    {
+        var claims = httpContextAccessor.HttpContext?.User.Claims;
+        return claims?.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList()
+            ?? new List<string>();
+    }
 }

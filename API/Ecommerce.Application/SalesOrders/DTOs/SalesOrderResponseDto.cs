@@ -17,6 +17,14 @@ public class SalesOrderResponseDto
     public string ShippingPhone { get; set; }
     public string ShippingAddress { get; set; }
     public int ShippingWardId { get; set; }
+    public int ShippingDistrictId { get; set; }
+    public int ShippingProvinceId { get; set; }
+    public string ShippingWardName { get; set; }
+    public string ShippingDistrictName { get; set; }
+    public string ShippingProvinceName { get; set; }
+    public string ProductCouponCode { get; set; }
+    public string ShippingCouponCode { get; set; }
+
     public PaymentMethod PaymentMethod { get; set; }
     public SalesOrderStatus Status { get; set; }
     public ICollection<OrderProductResponseDto> OrderProducts { get; set; } = [];

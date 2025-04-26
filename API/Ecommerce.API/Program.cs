@@ -94,6 +94,14 @@ builder.Services.AddAuthorization(opt =>
             policy.Requirements.Add(new IsProductOwnerRequirement());
         }
     );
+
+    opt.AddPolicy(
+        "HasOrder",
+        policy =>
+        {
+            policy.Requirements.Add(new HasOrderRequirement());
+        }
+    );
 });
 
 builder.Services.ConfigureApplicationCookie(opt =>
