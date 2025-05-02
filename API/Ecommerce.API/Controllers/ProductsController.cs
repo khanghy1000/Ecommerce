@@ -73,6 +73,16 @@ public class ProductsController : BaseApiController
         return HandleResult(result);
     }
 
+    [HttpPut("{id}/active")]
+    [Authorize(Roles = "Seller,Admin", Policy = "IsProductOwner")]
+    public async Task<ActionResult<Product>> SetProductActiveState(int id, bool isActive)
+    {
+        var result = await Mediator.Send(
+            new SetProductActiveState.Command { ProductId = id, IsActive = isActive }
+        );
+        return HandleResult(result);
+    }
+
     [HttpDelete("{id}")]
     [Authorize(Roles = "Seller,Admin", Policy = "IsProductOwner")]
     public async Task<ActionResult<Unit>> DeleteProduct(int id)
