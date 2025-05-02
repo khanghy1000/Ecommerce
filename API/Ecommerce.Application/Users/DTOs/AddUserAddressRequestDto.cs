@@ -1,6 +1,6 @@
 namespace Ecommerce.Application.Users.DTOs;
 
-public class AddAddressRequestDto
+public class AddUserAddressRequestDto
 {
     public string Name { get; set; } = "";
     public string PhoneNumber { get; set; } = "";

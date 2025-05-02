@@ -5,6 +5,7 @@ using Ecommerce.Application.Interfaces;
 using Ecommerce.Application.Locations.DTOs;
 using Ecommerce.Application.Products.DTOs;
 using Ecommerce.Application.SalesOrders.DTOs;
+using Ecommerce.Application.Users.DTOs;
 using Ecommerce.Domain;
 
 namespace Ecommerce.Application.Core;
@@ -96,6 +97,14 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.ProvinceName, opt => opt.MapFrom(src => src.Province.Name));
         CreateMap<Ward, WardResponseDto>()
             .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.District.Name));
+
+        CreateMap<UserAddress, UserAddressResponseDto>()
+            .ForMember(dest => dest.WardName, opt => opt.MapFrom(src => src.Ward.Name))
+            .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.Ward.District.Name))
+            .ForMember(
+                dest => dest.ProvinceName,
+                opt => opt.MapFrom(src => src.Ward.District.Province.Name)
+            );
 
         CreateMap<CartItem, CreateShippingRequestItem>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Product.Name))
