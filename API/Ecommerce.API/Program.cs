@@ -102,7 +102,18 @@ builder.Services.AddAuthorization(opt =>
             policy.Requirements.Add(new HasOrderRequirement());
         }
     );
+
+    opt.AddPolicy(
+        "IsAddressOwner",
+        policy =>
+        {
+            policy.Requirements.Add(new IsAddressOwnerRequirement());
+        }
+    );
 });
+
+builder.Services.AddTransient<IAuthorizationHandler, IsProductOwnerRequirementHandler>();
+builder.Services.AddTransient<IAuthorizationHandler, IsAddressOwnerRequirementHandler>();
 
 builder.Services.ConfigureApplicationCookie(opt =>
 {
@@ -111,8 +122,6 @@ builder.Services.ConfigureApplicationCookie(opt =>
     opt.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     opt.ExpireTimeSpan = TimeSpan.FromDays(7);
 });
-
-builder.Services.AddTransient<IAuthorizationHandler, IsProductOwnerRequirementHandler>();
 
 builder.Services.AddSingleton<IVnpay, Vnpay>(sp =>
 {

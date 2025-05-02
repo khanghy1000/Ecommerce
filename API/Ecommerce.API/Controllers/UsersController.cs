@@ -19,6 +19,7 @@ public class UsersController : BaseApiController
     }
 
     [HttpGet("addresses/{addressId}")]
+    [Authorize(Policy = "IsAddressOwner")]
     public async Task<ActionResult<UserAddressResponseDto>> GetUserAddressById(int addressId)
     {
         return HandleResult(await Mediator.Send(new GetUserAddressById.Query { Id = addressId }));
@@ -37,6 +38,7 @@ public class UsersController : BaseApiController
     }
 
     [HttpPut("addresses/default/{addressId}")]
+    [Authorize(Policy = "IsAddressOwner")]
     public async Task<ActionResult<UserAddressResponseDto>> SetDefaultAddress(int addressId)
     {
         return HandleResult(
@@ -45,6 +47,7 @@ public class UsersController : BaseApiController
     }
 
     [HttpPut("addresses/{addressId}")]
+    [Authorize(Policy = "IsAddressOwner")]
     public async Task<ActionResult<UserAddressResponseDto>> EditAddress(
         int addressId,
         EditUserAddressRequestDto addressDto
@@ -62,6 +65,7 @@ public class UsersController : BaseApiController
     }
 
     [HttpDelete("addresses/{addressId}")]
+    [Authorize(Policy = "IsAddressOwner")]
     public async Task<ActionResult<Unit>> DeleteAddress(int addressId)
     {
         return HandleResult(await Mediator.Send(new DeleteUserAddress.Command { Id = addressId }));
