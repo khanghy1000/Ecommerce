@@ -113,6 +113,7 @@ builder.Services.AddAuthorization(opt =>
 });
 
 builder.Services.AddTransient<IAuthorizationHandler, IsProductOwnerRequirementHandler>();
+builder.Services.AddTransient<IAuthorizationHandler, HasOrderRequirementHandler>();
 builder.Services.AddTransient<IAuthorizationHandler, IsAddressOwnerRequirementHandler>();
 
 builder.Services.ConfigureApplicationCookie(opt =>
