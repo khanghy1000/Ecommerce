@@ -24,9 +24,6 @@ public class CreateShippingOrder
                 .SalesOrders.Include(so => so.OrderProducts)
                 .ThenInclude(op => op.Product)
                 .ThenInclude(p => p.Shop)
-                .ThenInclude(u => u.Ward)
-                .ThenInclude(w => w!.District)
-                .ThenInclude(d => d.Province)
                 .Include(so => so.ShippingWard)
                 .ThenInclude(w => w.District)
                 .ThenInclude(d => d.Province)
@@ -37,16 +34,28 @@ public class CreateShippingOrder
 
             var shop = salesOrder.OrderProducts.First().Product.Shop;
 
+            var shopAddress = await dbContext
+                .UserAddresses.Include(ua => ua.Ward)
+                .ThenInclude(w => w.District)
+                .ThenInclude(d => d.Province)
+                .FirstOrDefaultAsync(
+                    ua => ua.UserId == shop.Id && ua.IsDefault == true,
+                    cancellationToken
+                );
+
+            if (shopAddress == null)
+                return Result<Unit>.Failure("Shop address not found", 400);
+
             var shippingRequest = new CreateShippingRequest
             {
                 PaymentTypeId = 1,
                 RequiredNote = "CHOXEMHANGKHONGTHU",
-                FromName = shop.DisplayName!,
-                FromPhone = shop.PhoneNumber!,
-                FromAddress = shop.Address!,
-                FromWardName = shop.Ward!.Name,
-                FromDistrictName = shop.Ward.District.Name,
-                FromProvinceName = shop.Ward.District.Province.Name,
+                FromName = shopAddress.Name,
+                FromPhone = shopAddress.PhoneNumber,
+                FromAddress = shopAddress.Address!,
+                FromWardName = shopAddress.Ward!.Name,
+                FromDistrictName = shopAddress.Ward.District.Name,
+                FromProvinceName = shopAddress.Ward.District.Province.Name,
                 ToName = salesOrder.ShippingName,
                 ToPhone = salesOrder.ShippingPhone,
                 ToAddress = salesOrder.ShippingAddress,

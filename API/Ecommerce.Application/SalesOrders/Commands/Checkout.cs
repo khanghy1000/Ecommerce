@@ -62,13 +62,32 @@ public class Checkout
                 shopSubtotals.Add(group.Key, shopSubtotal);
             }
 
+            Dictionary<User, UserAddress> shopAddresses = new();
+
+            foreach (var shop in groupedCartItems.Keys)
+            {
+                var shopAddress = await dbContext
+                    .UserAddresses.Include(ua => ua.Ward)
+                    .ThenInclude(w => w.District)
+                    .ThenInclude(d => d.Province)
+                    .FirstOrDefaultAsync(
+                        ua => ua.UserId == shop.Id && ua.IsDefault == true,
+                        cancellationToken
+                    );
+
+                if (shopAddress == null)
+                    return Result<CheckoutResponseDto>.Failure("Shop address not found", 400);
+
+                shopAddresses.Add(shop, shopAddress);
+            }
+
             Dictionary<User, int> shopShippingFees = new();
 
             foreach (var shop in groupedCartItems.Keys)
             {
                 var getShippingFeeResult = await GetShippingFeeAsync(
                     request,
-                    shop,
+                    shopAddresses[shop],
                     groupedCartItems[shop],
                     shippingWard
                 );
@@ -498,9 +517,6 @@ public class Checkout
             var cartItems = await dbContext
                 .CartItems.Include(ci => ci.Product)
                 .ThenInclude(p => p.Shop)
-                .ThenInclude(u => u.Ward)
-                .ThenInclude(w => w!.District)
-                .ThenInclude(d => d.Province)
                 .Include(ci => ci.Product)
                 .ThenInclude(product => product.Discounts)
                 .Include(ci => ci.Product.Subcategories)
@@ -512,7 +528,7 @@ public class Checkout
 
         private async Task<Result<int>> GetShippingFeeAsync(
             Command request,
-            User shop,
+            UserAddress shopAddress,
             List<CartItem> items,
             Ward shippingWard
         )
@@ -521,12 +537,12 @@ public class Checkout
             {
                 PaymentTypeId = 1,
                 RequiredNote = "CHOXEMHANGKHONGTHU",
-                FromName = shop.DisplayName!,
-                FromPhone = shop.PhoneNumber!,
-                FromAddress = shop.Address!,
-                FromWardName = shop.Ward!.Name,
-                FromDistrictName = shop.Ward.District.Name,
-                FromProvinceName = shop.Ward.District.Province.Name,
+                FromName = shopAddress.Name,
+                FromPhone = shopAddress.PhoneNumber,
+                FromAddress = shopAddress.Address,
+                FromWardName = shopAddress.Ward.Name,
+                FromDistrictName = shopAddress.Ward.District.Name,
+                FromProvinceName = shopAddress.Ward.District.Province.Name,
                 ToName = request.CheckoutRequestDto.ShippingName,
                 ToPhone = request.CheckoutRequestDto.ShippingPhone,
                 ToAddress = request.CheckoutRequestDto.ShippingAddress,

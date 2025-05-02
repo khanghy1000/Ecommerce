@@ -21,6 +21,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public DbSet<ProductReview> ProductReviews { get; set; }
     public DbSet<Payment> Payments { get; set; }
     public DbSet<ProductDiscount> ProductDiscounts { get; set; }
+    public DbSet<UserAddress> UserAddresses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,7 +31,6 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 
         modelBuilder.Entity<User>().Property(u => u.DisplayName).HasMaxLength(255);
         modelBuilder.Entity<User>().Property(u => u.ImageUrl).HasMaxLength(255);
-        modelBuilder.Entity<User>().Property(u => u.Address).HasMaxLength(255);
 
         modelBuilder.Entity<Product>().Property(p => p.Name).HasMaxLength(255);
         modelBuilder.Entity<Product>().Property(p => p.Description).HasMaxLength(20000);
@@ -84,6 +84,11 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 
         modelBuilder.Entity<Coupon>().Property(c => c.UsedCount).HasDefaultValue(0);
         modelBuilder.Entity<Coupon>().Property(c => c.Active).HasDefaultValue(true);
+
+        modelBuilder.Entity<UserAddress>().Property(ua => ua.Name).HasMaxLength(255);
+        modelBuilder.Entity<UserAddress>().Property(ua => ua.PhoneNumber).HasMaxLength(20);
+        modelBuilder.Entity<UserAddress>().Property(ua => ua.Address).HasMaxLength(255);
+        modelBuilder.Entity<UserAddress>().Property(ua => ua.UserId).HasMaxLength(36);
     }
 
     public override Task<int> SaveChangesAsync(

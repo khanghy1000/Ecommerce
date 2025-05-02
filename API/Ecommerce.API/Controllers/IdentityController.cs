@@ -1,6 +1,12 @@
 using System.Security.Claims;
 using Ecommerce.API.DTOs;
+using Ecommerce.Application.Core;
+using Ecommerce.Application.Users.Commands;
+using Ecommerce.Application.Users.DTOs;
 using Ecommerce.Domain;
+using Ecommerce.Persistence;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +18,9 @@ namespace Ecommerce.API.Controllers;
 [Route("api")]
 public class IdentityController(
     SignInManager<User> signInManager,
-    RoleManager<IdentityRole> roleManager
+    RoleManager<IdentityRole> roleManager,
+    IValidator<AddAddressRequestDto> addressValidator,
+    AppDbContext dbContext
 ) : ControllerBase
 {
     [AllowAnonymous]
@@ -30,14 +38,49 @@ public class IdentityController(
             }
         }
 
+        var validateAddressResult = await addressValidator.ValidateAsync(
+            new AddAddressRequestDto
+            {
+                Name = registerDto.DisplayName,
+                PhoneNumber = registerDto.PhoneNumber,
+                Address = registerDto.Address,
+                WardId = registerDto.WardId,
+                IsDefault = true,
+            }
+        );
+
+        if (!validateAddressResult.IsValid)
+        {
+            foreach (var error in validateAddressResult.Errors)
+            {
+                ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+            }
+            return ValidationProblem();
+        }
+
+        var ward = await dbContext
+            .Wards.AsNoTracking()
+            .FirstOrDefaultAsync(w => w.Id == registerDto.WardId);
+
+        if (ward == null)
+        {
+            return BadRequest(
+                new ProblemDetails
+                {
+                    Type = "https://tools.ietf.org/html/rfc9110#section-15.5.6",
+                    Title = "Ward not found",
+                    Status = 400,
+                    Instance = HttpContext.Request.Path,
+                }
+            );
+        }
+
         var user = new User
         {
             UserName = registerDto.Email,
             Email = registerDto.Email,
             DisplayName = registerDto.DisplayName,
             PhoneNumber = registerDto.PhoneNumber,
-            Address = registerDto.Address,
-            WardId = registerDto.WardId,
         };
 
         var result = await signInManager.UserManager.CreateAsync(user, registerDto.Password);
@@ -49,7 +92,19 @@ public class IdentityController(
                 await roleManager.CreateAsync(new IdentityRole(registerDto.Role.ToString()));
             }
 
+            var address = new UserAddress
+            {
+                Name = registerDto.DisplayName,
+                PhoneNumber = registerDto.PhoneNumber,
+                Address = registerDto.Address,
+                WardId = registerDto.WardId,
+                UserId = user.Id,
+                IsDefault = true,
+            };
+
             await signInManager.UserManager.AddToRoleAsync(user, registerDto.Role.ToString());
+            await dbContext.UserAddresses.AddAsync(address);
+            await dbContext.SaveChangesAsync();
             // await SendConfirmationEmailAsync(user, registerDto.Email);
             return Ok();
         }
@@ -69,11 +124,9 @@ public class IdentityController(
         if (User.Identity?.IsAuthenticated == false)
             return NoContent();
 
-        var user = await signInManager
-            .UserManager.Users.Include(u => u.Ward)
-            .ThenInclude(w => w.District)
-            .ThenInclude(d => d.Province)
-            .FirstOrDefaultAsync(u => u.Email == User.FindFirstValue(ClaimTypes.Email));
+        var user = await signInManager.UserManager.Users.FirstOrDefaultAsync(u =>
+            u.Email == User.FindFirstValue(ClaimTypes.Email)
+        );
 
         if (user == null)
             return Unauthorized();
@@ -88,13 +141,6 @@ public class IdentityController(
                 user.Id,
                 user.ImageUrl,
                 user.PhoneNumber,
-                user.Address,
-                WardName = user.Ward?.Name,
-                DistrictName = user.Ward?.District.Name,
-                ProvinceName = user.Ward?.District.Province.Name,
-                user.WardId,
-                user.Ward?.DistrictId,
-                user.Ward?.District.ProvinceId,
                 Role = role.FirstOrDefault(),
             }
         );

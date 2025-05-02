@@ -13,11 +13,7 @@ public class UserAccessor(IHttpContextAccessor httpContextAccessor, AppDbContext
     public async Task<User> GetUserAsync()
     {
         var userId = GetUserId();
-        return await dbContext
-                .Users.Include(u => u.Ward)
-                .ThenInclude(w => w!.District)
-                .ThenInclude(d => d.Province)
-                .FirstOrDefaultAsync(u => u.Id == userId)
+        return await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new UnauthorizedAccessException("No user is logged in");
     }
 
