@@ -36,6 +36,14 @@ public class UsersController : BaseApiController
         );
     }
 
+    [HttpPut("addresses/default/{addressId}")]
+    public async Task<ActionResult<UserAddressResponseDto>> SetDefaultAddress(int addressId)
+    {
+        return HandleResult(
+            await Mediator.Send(new SetDefaultUserAddress.Command { Id = addressId })
+        );
+    }
+
     [HttpPut("addresses/{addressId}")]
     public async Task<ActionResult<UserAddressResponseDto>> EditAddress(
         int addressId,
