@@ -85,12 +85,14 @@ public class CreateShippingOrder
                 if (!shippingFee.HasValue)
                     return Result<Unit>.Failure("Shipping fee not found", 400);
 
-                // TODO: Update order status
+                salesOrder.ShippingOrderCode = shippingOrderCode;
+                await dbContext.SaveChangesAsync(cancellationToken);
             }
             catch (Exception ex)
             {
                 return Result<Unit>.Failure(ex.Message, 500);
             }
+
             return Result<Unit>.Success(Unit.Value);
         }
     }
