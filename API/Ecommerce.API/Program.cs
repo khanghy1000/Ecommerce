@@ -143,6 +143,7 @@ builder.Services.Configure<GHNSettings>(builder.Configuration.GetSection("GHN"))
 builder.Services.AddSingleton<IShippingService, ShippingService>();
 
 builder.Services.AddHostedService<UpdateTrackingOrdersTask>();
+builder.Services.AddHostedService<UpdatePopularProductsTask>();
 
 var app = builder.Build();
 

@@ -22,6 +22,7 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
     public DbSet<Payment> Payments { get; set; }
     public DbSet<ProductDiscount> ProductDiscounts { get; set; }
     public DbSet<UserAddress> UserAddresses { get; set; }
+    public DbSet<PopularProduct> PopularProducts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -89,6 +90,8 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
         modelBuilder.Entity<UserAddress>().Property(ua => ua.PhoneNumber).HasMaxLength(20);
         modelBuilder.Entity<UserAddress>().Property(ua => ua.Address).HasMaxLength(255);
         modelBuilder.Entity<UserAddress>().Property(ua => ua.UserId).HasMaxLength(36);
+
+        modelBuilder.Entity<PopularProduct>().HasKey(pp => new { pp.CategoryId, pp.ProductId });
     }
 
     public override Task<int> SaveChangesAsync(
