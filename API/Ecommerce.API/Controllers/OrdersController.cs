@@ -73,4 +73,20 @@ public class OrdersController : BaseApiController
         var salesOrder = await Mediator.Send(new GetSalesOrderById.Query { Id = id });
         return HandleResult(salesOrder);
     }
+
+    [HttpPost("{id}/confirm")]
+    [Authorize(Roles = "Shop,Admin", Policy = "HasOrder")]
+    public async Task<ActionResult<SalesOrderResponseDto>> ConfirmSalesOrder(int id)
+    {
+        var salesOrder = await Mediator.Send(new ConfirmOrder.Command { Id = id });
+        return HandleResult(salesOrder);
+    }
+
+    [HttpPost("{id}/cancel")]
+    [Authorize(Policy = "HasOrder")]
+    public async Task<ActionResult<SalesOrderResponseDto>> CancelSalesOrder(int id)
+    {
+        var salesOrder = await Mediator.Send(new CancelOrder.Command { Id = id });
+        return HandleResult(salesOrder);
+    }
 }
