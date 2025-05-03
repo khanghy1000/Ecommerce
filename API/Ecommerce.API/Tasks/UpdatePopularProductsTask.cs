@@ -12,19 +12,21 @@ public class UpdatePopularProductsTask(
     {
         using var timer = new PeriodicTimer(TimeSpan.FromMinutes(30));
 
-        while (
-            !stoppingToken.IsCancellationRequested
-            && await timer.WaitForNextTickAsync(stoppingToken)
-        )
+        do
         {
             using var scope = serviceProvider.CreateScope();
             var mediator = scope.ServiceProvider.GetService<IMediator>();
             if (mediator == null)
             {
-                throw new Exception("Mediator not found");
+                logger.LogError("Mediator not found");
+                continue;
             }
+
             await mediator.Send(new UpdatePopularProduct.Command(), stoppingToken);
             logger.LogInformation("Updated popular products");
-        }
+        } while (
+            !stoppingToken.IsCancellationRequested
+            && await timer.WaitForNextTickAsync(stoppingToken)
+        );
     }
 }

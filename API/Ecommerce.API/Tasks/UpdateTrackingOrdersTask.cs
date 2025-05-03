@@ -12,19 +12,21 @@ public class UpdateTrackingOrdersTask(
     {
         using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
 
-        while (
-            !stoppingToken.IsCancellationRequested
-            && await timer.WaitForNextTickAsync(stoppingToken)
-        )
+        do
         {
             using var scope = serviceProvider.CreateScope();
             var mediator = scope.ServiceProvider.GetService<IMediator>();
             if (mediator == null)
             {
-                throw new Exception("Mediator not found");
+                logger.LogError("Mediator not found");
+                continue;
             }
+
             await mediator.Send(new UpdateTrackingOrdersStatus.Command(), stoppingToken);
             logger.LogInformation("Updated tracking orders status");
-        }
+        } while (
+            !stoppingToken.IsCancellationRequested
+            && await timer.WaitForNextTickAsync(stoppingToken)
+        );
     }
 }
