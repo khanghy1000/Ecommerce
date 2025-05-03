@@ -49,7 +49,7 @@ public class ProductsController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(Roles = "Seller,Admin")]
+    [Authorize(Roles = "Shop,Admin")]
     public async Task<ActionResult<ProductResponseDto>> CreateProduct(
         CreateProductRequestDto createProductRequestDto
     )
@@ -61,7 +61,7 @@ public class ProductsController : BaseApiController
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "Seller,Admin", Policy = "IsProductOwner")]
+    [Authorize(Roles = "Shop,Admin", Policy = "IsProductOwner")]
     public async Task<ActionResult<ProductResponseDto>> EditProduct(
         int id,
         EditProductRequestDto editProductRequestDto
@@ -74,7 +74,7 @@ public class ProductsController : BaseApiController
     }
 
     [HttpPut("{id}/active")]
-    [Authorize(Roles = "Seller,Admin", Policy = "IsProductOwner")]
+    [Authorize(Roles = "Shop,Admin", Policy = "IsProductOwner")]
     public async Task<ActionResult<Product>> SetProductActiveState(int id, bool isActive)
     {
         var result = await Mediator.Send(
@@ -84,7 +84,7 @@ public class ProductsController : BaseApiController
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Seller,Admin", Policy = "IsProductOwner")]
+    [Authorize(Roles = "Shop,Admin", Policy = "IsProductOwner")]
     public async Task<ActionResult<Unit>> DeleteProduct(int id)
     {
         var result = await Mediator.Send(new DeleteProduct.Command { Id = id });
@@ -92,7 +92,7 @@ public class ProductsController : BaseApiController
     }
 
     [HttpPost("{id}/photos")]
-    [Authorize(Roles = "Seller,Admin", Policy = "IsProductOwner")]
+    [Authorize(Roles = "Shop,Admin", Policy = "IsProductOwner")]
     public async Task<ActionResult<ProductPhoto>> AddProductPhoto(int id, IFormFile file)
     {
         var result = await Mediator.Send(
@@ -102,7 +102,7 @@ public class ProductsController : BaseApiController
     }
 
     [HttpDelete("{id}/photos")]
-    [Authorize(Roles = "Seller,Admin", Policy = "IsProductOwner")]
+    [Authorize(Roles = "Shop,Admin", Policy = "IsProductOwner")]
     public async Task<ActionResult<Unit>> DeleteProductPhoto(int id, [FromQuery] string photoKey)
     {
         var result = await Mediator.Send(
@@ -112,7 +112,7 @@ public class ProductsController : BaseApiController
     }
 
     [HttpPut("{id}/photos/order")]
-    [Authorize(Roles = "Seller,Admin", Policy = "IsProductOwner")]
+    [Authorize(Roles = "Shop,Admin", Policy = "IsProductOwner")]
     public async Task<ActionResult<Unit>> UpdateProductPhotoDisplayOrder(
         int id,
         List<UpdateProductPhotoDisplayOrderRequestDto> photoOrderRequestDto

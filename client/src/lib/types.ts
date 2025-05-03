@@ -18,7 +18,7 @@ export type UserInfoResponse = {
   wardId: number;
   districtId: number;
   provinceId: number;
-  role: 'Buyer' | 'Seller' | 'Admin';
+  role: 'Buyer' | 'Shop' | 'Admin';
 } | null;
 
 export type LoginRequest = {
