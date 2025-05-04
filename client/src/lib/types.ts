@@ -113,3 +113,14 @@ export type PagedList<T> = {
   pageSize: number;
   totalCount: number;
 };
+
+export type SubcategoryIdNameResponseDto = {
+  id: number;
+  name: string;
+};
+
+export type CategoryResponseDto = {
+  id: number;
+  name: string;
+  subcategories: SubcategoryIdNameResponseDto[];
+};
