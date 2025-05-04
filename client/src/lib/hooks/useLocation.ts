@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { customFetch } from './customFetch';
-import { Province, District, Ward } from './types';
+import { customFetch } from '../customFetch';
+import { Province, District, Ward } from '../types';
 
 export const useLocation = (provinceId?: number, districtId?: number) => {
   const { data: provinces, isLoading: loadingProvinces } = useQuery({
