@@ -10,4 +10,5 @@ public class CheckoutPricePreviewRequestDto
     public string ShippingPhone { get; set; } = "";
     public string ShippingAddress { get; set; } = "";
     public int ShippingWardId { get; set; }
+    public List<int> ProductIds { get; set; } = new();
 }

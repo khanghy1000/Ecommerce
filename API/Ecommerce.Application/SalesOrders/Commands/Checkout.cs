@@ -44,7 +44,11 @@ public class Checkout
             if (shippingWard == null)
                 return Result<CheckoutResponseDto>.Failure("Ward not found", 400);
 
-            var cartItems = await GetCartItemsAsync(user.Id, cancellationToken);
+            var cartItems = await GetCartItemsAsync(
+                user.Id,
+                request.CheckoutRequestDto.ProductIds,
+                cancellationToken
+            );
 
             if (cartItems.Count == 0)
                 return Result<CheckoutResponseDto>.Failure("Cart is empty", 400);
@@ -511,6 +515,7 @@ public class Checkout
 
         private async Task<List<CartItem>> GetCartItemsAsync(
             string userId,
+            List<int> productIds,
             CancellationToken cancellationToken
         )
         {
@@ -521,7 +526,7 @@ public class Checkout
                 .ThenInclude(product => product.Discounts)
                 .Include(ci => ci.Product.Subcategories)
                 .ThenInclude(s => s.Category)
-                .Where(ci => ci.UserId == userId)
+                .Where(ci => ci.UserId == userId && productIds.Contains(ci.ProductId))
                 .ToListAsync(cancellationToken);
             return cartItems;
         }

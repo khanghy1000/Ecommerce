@@ -11,4 +11,5 @@ public class CheckoutRequestDto
     public string ShippingAddress { get; set; } = "";
     public int ShippingWardId { get; set; }
     public PaymentMethod PaymentMethod { get; set; }
+    public List<int> ProductIds { get; set; } = new();
 }
