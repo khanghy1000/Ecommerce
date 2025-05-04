@@ -50,7 +50,13 @@ public static class ListProducts
                 );
             }
 
-            if (request.SubcategoryIds is { Count: > 0 })
+            if (request.CategoryId.HasValue)
+            {
+                query = query.Where(x =>
+                    x.Subcategories.Any(sc => sc.CategoryId == request.CategoryId.Value)
+                );
+            }
+            else if (request.SubcategoryIds is { Count: > 0 })
             {
                 query = query.Where(x =>
                     x.Subcategories.Any(sc => request.SubcategoryIds.Contains(sc.Id))
