@@ -17,6 +17,7 @@ public static class ListProducts
         public int PageNumber { get; set; } = 1;
         public string SortBy { get; set; } = "name";
         public string SortDirection { get; set; } = "asc";
+        public int? CategoryId { get; set; }
         public List<int>? SubcategoryIds { get; set; }
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
@@ -30,6 +31,14 @@ public static class ListProducts
             CancellationToken cancellationToken
         )
         {
+            if (request is { CategoryId: not null, SubcategoryIds.Count: > 0 })
+            {
+                return Result<PagedList<ProductResponseDto>>.Failure(
+                    "Cannot filter by both category and subcategory.",
+                    400
+                );
+            }
+
             var query = dbContext.Products.AsQueryable();
 
             if (!string.IsNullOrEmpty(request.Keyword))

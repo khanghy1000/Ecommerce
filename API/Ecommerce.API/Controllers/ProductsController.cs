@@ -19,6 +19,7 @@ public class ProductsController : BaseApiController
         int pageNumber = 1,
         string sortBy = "name",
         string sortDirection = "asc",
+        int? categoryId = null,
         [FromQuery] List<int>? subCategoryIds = null,
         decimal? minPrice = null,
         decimal? maxPrice = null
@@ -32,6 +33,7 @@ public class ProductsController : BaseApiController
                 PageNumber = pageNumber,
                 SortBy = sortBy.ToLower(),
                 SortDirection = sortDirection.ToLower(),
+                CategoryId = categoryId,
                 SubcategoryIds = subCategoryIds,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
