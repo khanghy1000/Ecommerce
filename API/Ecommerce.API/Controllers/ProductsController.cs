@@ -48,6 +48,14 @@ public class ProductsController : BaseApiController
         return HandleResult(product);
     }
 
+    [HttpGet("popular")]
+    [AllowAnonymous]
+    public async Task<ActionResult<List<PopularProductResponseDto>>> GetPopularProducts()
+    {
+        var products = await Mediator.Send(new GetPopularProducts.Query());
+        return HandleResult(products);
+    }
+
     [HttpPost]
     [Authorize(Roles = "Shop,Admin")]
     public async Task<ActionResult<ProductResponseDto>> CreateProduct(

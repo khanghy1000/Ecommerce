@@ -7,4 +7,5 @@ public class PopularProduct
     public required int SalesCount { get; set; }
 
     public Product Product { get; set; } = null!;
+    public Category Category { get; set; } = null!;
 }

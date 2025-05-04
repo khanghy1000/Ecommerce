@@ -217,5 +217,41 @@ public class MappingProfiles : Profile
                 dest => dest.BankTransactionId,
                 opt => opt.MapFrom(src => src.BankingInfor.BankTransactionId)
             );
+
+        CreateMap<PopularProduct, PopularProductResponseDto>()
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
+            .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+            .ForMember(
+                dest => dest.RegularPrice,
+                opt => opt.MapFrom(src => src.Product.RegularPrice)
+            )
+            .ForMember(
+                dest => dest.DiscountPrice,
+                opt =>
+                    opt.MapFrom(src =>
+                        src.Product.Discounts.Where(d =>
+                                d.StartTime <= DateTime.UtcNow && d.EndTime >= DateTime.UtcNow
+                            )
+                            .OrderBy(d => d.DiscountPrice)
+                            .Select(d => (decimal?)d.DiscountPrice)
+                            .FirstOrDefault()
+                    )
+            )
+            .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Product.Quantity))
+            .ForMember(dest => dest.Active, opt => opt.MapFrom(src => src.Product.Active))
+            .ForMember(dest => dest.ShopId, opt => opt.MapFrom(src => src.Product.ShopId))
+            .ForMember(
+                dest => dest.ShopName,
+                opt => opt.MapFrom(src => src.Product.Shop.DisplayName)
+            )
+            .ForMember(
+                dest => dest.ShopImageUrl,
+                opt => opt.MapFrom(src => src.Product.Shop.ImageUrl)
+            )
+            .ForMember(
+                dest => dest.Subcategories,
+                opt => opt.MapFrom(src => src.Product.Subcategories)
+            )
+            .ForMember(dest => dest.Photos, opt => opt.MapFrom(src => src.Product.Photos));
     }
 }
