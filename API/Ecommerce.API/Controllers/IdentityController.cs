@@ -19,7 +19,7 @@ namespace Ecommerce.API.Controllers;
 public class IdentityController(
     SignInManager<User> signInManager,
     RoleManager<IdentityRole> roleManager,
-    IValidator<AddUserAddressRequestDto> addressValidator,
+    IValidator<AddUserAddress.Command> addressValidator,
     AppDbContext dbContext
 ) : ControllerBase
 {
@@ -39,13 +39,16 @@ public class IdentityController(
         }
 
         var validateAddressResult = await addressValidator.ValidateAsync(
-            new AddUserAddressRequestDto
+            new AddUserAddress.Command
             {
-                Name = registerDto.DisplayName,
-                PhoneNumber = registerDto.PhoneNumber,
-                Address = registerDto.Address,
-                WardId = registerDto.WardId,
-                IsDefault = true,
+                AddUserAddressRequestDto = new AddUserAddressRequestDto
+                {
+                    Name = registerDto.DisplayName,
+                    PhoneNumber = registerDto.PhoneNumber,
+                    Address = registerDto.Address,
+                    WardId = registerDto.WardId,
+                    IsDefault = true,
+                },
             }
         );
 
