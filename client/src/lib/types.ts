@@ -55,3 +55,61 @@ export type Ward = {
   districtId: number;
   districtName: string;
 };
+
+export type ListProductsRequest = {
+  keyword?: string;
+  pageSize?: number;
+  pageNumber?: number;
+  sortBy?: string;
+  sortDirection?: 'asc' | 'desc';
+  categoryId?: number;
+  subCategoryIds?: number[];
+  minPrice?: number;
+  maxPrice?: number;
+};
+
+export type ProductResponseDto = {
+  id: number;
+  name: string;
+  description: string;
+  regularPrice: number;
+  discountPrice: number | null;
+  quantity: number;
+  photos: ProductPhotoDto[];
+  subcategoryIds: number[];
+  subcategories: SubcategoryDto[];
+  shopId: string;
+  shopName: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string | null;
+};
+
+export type ProductPhotoDto = {
+  id: number;
+  url: string;
+  key: string;
+  displayOrder: number;
+};
+
+export type SubcategoryDto = {
+  id: number;
+  name: string;
+  categoryId: number;
+  categoryName: string;
+};
+
+export type PopularProductResponseDto = {
+  id: number;
+  categoryId: number;
+  categoryName: string;
+  productId: number;
+  product: ProductResponseDto;
+};
+
+export type PagedList<T> = {
+  items: T[];
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+};
