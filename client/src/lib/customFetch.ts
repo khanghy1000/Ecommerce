@@ -56,7 +56,7 @@ async function customFetch<T>(
         } else {
           notifications.show({
             color: 'red',
-            title: 'Lỗi',
+            title: 'Error',
             message: data.title ?? JSON.stringify(data),
           });
         }
@@ -68,8 +68,8 @@ async function customFetch<T>(
         } else {
           notifications.show({
             color: 'red',
-            title: 'Lỗi',
-            message: 'Chưa đăng nhập',
+            title: 'Error',
+            message: 'Unauthorized access. Please log in.',
           });
         }
         break;
