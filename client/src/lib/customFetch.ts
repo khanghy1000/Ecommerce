@@ -1,4 +1,5 @@
 import { router } from '../router';
+import { useAppStore } from './hooks/useAppStore';
 import { ErrorResponse } from './types';
 import { notifications } from '@mantine/notifications';
 
@@ -38,60 +39,81 @@ async function customFetch<T>(
       'Content-Type': 'application/json',
     },
   };
+  const finalOptions = { ...defaultOptions, ...options };
+
+  const { addLoading, removeLoading } = useAppStore.getState();
+  addLoading();
 
   await sleep(1000);
 
-  const finalOptions = { ...defaultOptions, ...options };
+  try {
+    const response = await fetch(baseUrl + path, finalOptions);
+    let data = await getBody<T | ErrorResponse>(response);
 
-  const response = await fetch(baseUrl + path, finalOptions);
-  let data = await getBody<T | ErrorResponse>(response);
-
-  if (!response.ok) {
-    const status = response.status;
-    switch (status) {
-      case 400:
-        data = data as ErrorResponse;
-        if (data.errors) {
-          const modalStateErrors = [];
-          for (const key in data.errors) {
-            if (data.errors[key]) {
-              modalStateErrors.push(data.errors[key]);
+    if (!response.ok) {
+      const status = response.status;
+      switch (status) {
+        case 400:
+          data = data as ErrorResponse;
+          if (data.errors) {
+            const modalStateErrors = [];
+            for (const key in data.errors) {
+              if (data.errors[key]) {
+                modalStateErrors.push(data.errors[key]);
+              }
             }
+            throw modalStateErrors.flat();
+          } else {
+            notifications.show({
+              color: 'red',
+              title: 'Error',
+              message: data.title ?? JSON.stringify(data),
+            });
           }
-          throw modalStateErrors.flat();
-        } else {
-          notifications.show({
-            color: 'red',
-            title: 'Error',
-            message: data.title ?? JSON.stringify(data),
-          });
-        }
-        break;
-      case 401:
-        data = data as ErrorResponse;
-        if (data.detail === 'NotAllowed' || data.detail === 'Failed') {
-          throw new Error(data.detail);
-        } else {
-          notifications.show({
-            color: 'red',
-            title: 'Error',
-            message: 'Unauthorized access. Please log in.',
-          });
-        }
-        break;
-      case 404:
-        router.navigate('/not-found');
-        break;
-      case 500:
-        router.navigate('/server-error', { state: { error: data } });
-        break;
-      default:
-        break;
+          break;
+        case 401:
+          data = data as ErrorResponse;
+          if (data.detail === 'NotAllowed' || data.detail === 'Failed') {
+            throw new Error(data.detail);
+          } else {
+            notifications.show({
+              color: 'red',
+              title: 'Error',
+              message: 'Unauthorized access. Please log in.',
+            });
+          }
+          break;
+        case 404:
+          router.navigate('/not-found');
+          break;
+        case 500:
+          router.navigate('/server-error', { state: { error: data } });
+          break;
+        default:
+          break;
+      }
+
+      return Promise.reject(data);
     }
 
-    return Promise.reject(data);
+    return data as T;
+  } catch (error) {
+    if (error instanceof Error) {
+      notifications.show({
+        color: 'red',
+        title: 'Error',
+        message: error.message,
+      });
+    } else {
+      notifications.show({
+        color: 'red',
+        title: 'Error',
+        message: JSON.stringify(error),
+      });
+    }
+    return Promise.reject(error);
+  } finally {
+    removeLoading();
   }
-
-  return data as T;
 }
 export { customFetch };

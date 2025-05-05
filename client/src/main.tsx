@@ -10,12 +10,17 @@ import { Notifications } from '@mantine/notifications';
 import './main.css';
 import '@mantine/carousel/styles.css';
 import { theme } from './theme';
+import { NavigationProgress } from '@mantine/nprogress';
+import '@mantine/nprogress/styles.css';
+import Loading from './Loading';
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <MantineProvider theme={theme}>
+      <Loading />
+      <NavigationProgress />
       <Notifications />
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, zodResolver } from '@mantine/form';
 import {
   TextInput,
@@ -32,7 +32,6 @@ const schema = z.object({
     .regex(
       /[^a-zA-Z0-9]/,
       'Password must contain a non-alphanumeric character'
-
     ),
   phoneNumber: z.string().min(10, 'Please enter a valid phone number'),
   address: z.string().min(5, 'Address must have at least 5 characters'),
@@ -46,7 +45,13 @@ type RegisterFormValues = z.infer<typeof schema>;
 
 function RegisterPage() {
   const navigate = useNavigate();
-  const { registerUser } = useAccount();
+  const { currentUserInfo, loadingUserInfo, registerUser } = useAccount();
+
+  useEffect(() => {
+    if (currentUserInfo) {
+      navigate('/');
+    }
+  }, [currentUserInfo, navigate]);
 
   const [selectedProvinceId, setSelectedProvinceId] = useState<
     number | undefined
@@ -271,7 +276,7 @@ function RegisterPage() {
 
             {/* Button in full width row */}
             <Grid.Col span={12}>
-              <Button fullWidth type="submit" loading={registerUser.isPending}>
+              <Button fullWidth type="submit" loading={registerUser.isPending} disabled={loadingUserInfo}>
                 Register
               </Button>
             </Grid.Col>
