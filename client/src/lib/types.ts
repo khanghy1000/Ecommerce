@@ -75,20 +75,21 @@ export type ProductResponseDto = {
   regularPrice: number;
   discountPrice: number | null;
   quantity: number;
-  photos: ProductPhotoDto[];
-  subcategoryIds: number[];
-  subcategories: SubcategoryDto[];
+  active: boolean;
+  length: number;
+  width: number;
+  height: number;
+  weight: number;
   shopId: string;
   shopName: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string | null;
+  shopImageUrl: string | null;
+  subcategories: SubcategoryDto[];
+  photos: ProductPhotoDto[];
 };
 
 export type ProductPhotoDto = {
-  id: number;
-  url: string;
   key: string;
+  productId: number;
   displayOrder: number;
 };
 
@@ -100,11 +101,20 @@ export type SubcategoryDto = {
 };
 
 export type PopularProductResponseDto = {
-  id: number;
   categoryId: number;
-  categoryName: string;
   productId: number;
+  salesCount: number;
+  categoryName: string;
+  productName: string;
+  regularPrice: number;
+  discountPrice: number | null;
+  quantity: number;
+  active: boolean;
+  shopId: string;
+  shopName: string;
+  shopImageUrl: string | null;
   product: ProductResponseDto;
+  photos: ProductPhotoDto[];
 };
 
 export type PagedList<T> = {
