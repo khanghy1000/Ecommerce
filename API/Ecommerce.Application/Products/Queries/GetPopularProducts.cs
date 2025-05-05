@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Ecommerce.Application.Core;
 using Ecommerce.Application.Products.DTOs;
 using Ecommerce.Persistence;
@@ -19,11 +20,11 @@ public class GetPopularProducts
             CancellationToken cancellationToken
         )
         {
-            var popularProducts = await dbContext.PopularProducts.ToListAsync();
+            var popularProducts = await dbContext
+                .PopularProducts.ProjectTo<PopularProductResponseDto>(mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
 
-            return Result<List<PopularProductResponseDto>>.Success(
-                mapper.Map<List<PopularProductResponseDto>>(popularProducts)
-            );
+            return Result<List<PopularProductResponseDto>>.Success(popularProducts);
         }
     }
 }
