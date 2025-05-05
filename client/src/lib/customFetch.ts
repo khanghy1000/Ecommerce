@@ -83,7 +83,7 @@ async function customFetch<T>(
         break;
     }
 
-    return Promise.reject(response);
+    return Promise.reject(data);
   }
 
   return data as T;
