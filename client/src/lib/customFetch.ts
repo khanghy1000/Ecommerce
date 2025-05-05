@@ -44,7 +44,9 @@ async function customFetch<T>(
   const { addLoading, removeLoading } = useAppStore.getState();
   addLoading();
 
-  await sleep(1000);
+  if (import.meta.env.DEV) {
+    await sleep(1000);
+  }
 
   try {
     const response = await fetch(baseUrl + path, finalOptions);

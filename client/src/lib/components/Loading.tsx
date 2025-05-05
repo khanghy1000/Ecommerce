@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useAppStore } from './lib/hooks/useAppStore';
+import { useAppStore } from '../hooks/useAppStore';
 import { nprogress } from '@mantine/nprogress';
 
 function Loading() {
