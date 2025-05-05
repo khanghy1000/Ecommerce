@@ -57,7 +57,7 @@ function LoginPage() {
   });
 
   return (
-    <Container size="xs" my={40}>
+    <Container size="xs" py={40}>
       <Paper radius="md" p="xl" withBorder>
         <Title ta="center" order={2} mb="md">
           Welcome back
