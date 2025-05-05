@@ -23,6 +23,10 @@ const getBody = <T>(c: Response | Request): Promise<T> => {
   return c.text() as Promise<T>;
 };
 
+async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function customFetch<T>(
   path: string,
   options: RequestInit = {}
@@ -34,6 +38,8 @@ async function customFetch<T>(
       'Content-Type': 'application/json',
     },
   };
+
+  await sleep(1000);
 
   const finalOptions = { ...defaultOptions, ...options };
 
