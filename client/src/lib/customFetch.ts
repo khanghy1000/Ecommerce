@@ -63,7 +63,7 @@ async function customFetch<T>(
         break;
       case 401:
         data = data as ErrorResponse;
-        if (data.detail === 'NotAllowed') {
+        if (data.detail === 'NotAllowed' || data.detail === 'Failed') {
           throw new Error(data.detail);
         } else {
           notifications.show({
