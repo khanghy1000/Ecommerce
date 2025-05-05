@@ -8,6 +8,7 @@ import { router } from './router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Notifications } from '@mantine/notifications';
 import './main.css';
+import '@mantine/carousel/styles.css';
 import { theme } from './theme';
 
 const queryClient = new QueryClient();

@@ -1,0 +1,127 @@
+import { useProducts } from '../../lib/hooks/useProducts';
+import {
+  Box,
+  Container,
+  Title,
+  Group,
+  Anchor,
+  Skeleton,
+  Card,
+  Text,
+} from '@mantine/core';
+import { Carousel } from '@mantine/carousel';
+import ProductCard from '../products/ProductCard';
+import { useEffect, useState } from 'react';
+import { PopularProductResponseDto } from '../../lib/types';
+import classes from './Homepage.module.css';
+
+interface GroupedProducts {
+  [categoryId: number]: {
+    categoryName: string;
+    products: PopularProductResponseDto[];
+  };
+}
+
+function Homepage() {
+  const { popularProducts, loadingPopularProducts } = useProducts();
+  const [groupedProducts, setGroupedProducts] = useState<GroupedProducts>({});
+
+  useEffect(() => {
+    if (!popularProducts) return;
+
+    const grouped: GroupedProducts = {};
+    popularProducts.forEach((product) => {
+      if (!grouped[product.categoryId]) {
+        grouped[product.categoryId] = {
+          categoryName: product.categoryName,
+          products: [],
+        };
+      }
+      grouped[product.categoryId].products.push(product);
+    });
+
+    setGroupedProducts(grouped);
+  }, [popularProducts]);
+
+  return (
+    <Container size="xl" py="xl">
+      {loadingPopularProducts
+        ? // Loading skeleton
+          Array.from({ length: 3 }).map((_, i) => (
+            <Box key={i} mb="xl">
+              <Skeleton height={30} width={200} mb="md" />
+              <Skeleton height={220} radius="md" />
+            </Box>
+          ))
+        : Object.entries(groupedProducts).map(([categoryId, category]) => (
+            <Box key={categoryId} mb="xl">
+              <Group mb="md" justify="space-between">
+                <Title order={3}>
+                  <Anchor
+                    href={`/categories/${categoryId}`}
+                    underline="hover"
+                    fw={600}
+                  >
+                    {category.categoryName}
+                  </Anchor>
+                </Title>
+              </Group>
+
+              <Carousel
+                slideSize="0%"
+                slideGap="md"
+                align="start"
+                slidesToScroll={3}
+                containScroll="trimSnaps"
+                classNames={classes}
+              >
+                {category.products.map((product: PopularProductResponseDto) => (
+                  <Carousel.Slide key={product.productId}>
+                    <ProductCard product={product} />
+                  </Carousel.Slide>
+                ))}
+                <Carousel.Slide>
+                  <Card
+                    component="a"
+                    href={`/categories/${categoryId}`}
+                    shadow="sm"
+                    padding="md"
+                    radius="md"
+                    withBorder
+                    style={{
+                      width: 180,
+                      height: 255,
+                      textDecoration: 'none',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor: '#f8f9fa',
+                      transition: 'transform 0.2s, box-shadow 0.2s',
+                      cursor: 'pointer',
+                    }}
+                    className={classes.moreCard}
+                  >
+                    <Box
+                      style={{
+                        textAlign: 'center',
+                        padding: '20px 0',
+                      }}
+                    >
+                      <Text size="xl" fw={500} mb="xs">
+                        See All
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        More in {category.categoryName}
+                      </Text>
+                    </Box>
+                  </Card>
+                </Carousel.Slide>
+              </Carousel>
+            </Box>
+          ))}
+    </Container>
+  );
+}
+
+export default Homepage;
