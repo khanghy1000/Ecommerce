@@ -16,6 +16,7 @@ import Loading from './lib/components/Loading';
 const queryClient = new QueryClient();
 
 const theme = createTheme({
+  cursorType: 'pointer',
   primaryColor: 'shopee',
   colors: {
     shopee: [
