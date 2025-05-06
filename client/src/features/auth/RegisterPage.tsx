@@ -16,7 +16,7 @@ import {
 } from '@mantine/core';
 import { z } from 'zod';
 import { useAccount } from '../../lib/hooks/useAccount';
-import { useLocation } from '../../lib/hooks/useLocation';
+import { useLocations } from '../../lib/hooks/useLocations';
 import { useNavigate } from 'react-router';
 import { notifications } from '@mantine/notifications';
 import { LogoOnlyNavbar } from '../layout/LogoOnlyNavbar';
@@ -68,7 +68,7 @@ function RegisterPage() {
     loadingProvinces,
     loadingDistricts,
     loadingWards,
-  } = useLocation(selectedProvinceId, selectedDistrictId);
+  } = useLocations(selectedProvinceId, selectedDistrictId);
 
   const form = useForm<RegisterFormValues>({
     mode: 'uncontrolled',
