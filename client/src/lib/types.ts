@@ -244,3 +244,31 @@ export type ListOrdersRequest = {
   pageSize?: number; 
   pageNumber?: number;
 };
+
+export type UserAddressResponseDto = {
+  id: number;
+  name: string;
+  phoneNumber: string;
+  address: string;
+  wardId: number;
+  wardName: string;
+  districtName: string;
+  provinceName: string;
+  isDefault: boolean;
+};
+
+export type AddUserAddressRequestDto = {
+  name: string;
+  phoneNumber: string;
+  address: string;
+  wardId: number;
+  isDefault: boolean;
+};
+
+export type EditUserAddressRequestDto = {
+  name: string;
+  phoneNumber: string;
+  address: string;
+  wardId: number;
+  isDefault: boolean;
+};
