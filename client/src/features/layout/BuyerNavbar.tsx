@@ -12,7 +12,6 @@ import {
   Box,
   Flex,
   Image,
-  useMantineTheme,
 } from '@mantine/core';
 import {
   FiSearch,
@@ -28,7 +27,6 @@ export function BuyerNavbar() {
   const { currentUserInfo, logoutUser, loadingUserInfo } = useAccount();
   const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
-  const theme = useMantineTheme();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,10 +42,11 @@ export function BuyerNavbar() {
         py="md"
         style={{
           height: 60,
-          backgroundColor: theme.colors[theme.primaryColor][5],
           position: 'fixed',
           width: '100%',
           zIndex: 1000,
+          borderBottom: `1px solid #eaeaea`,
+          backgroundColor: "var(--mantine-color-body)",
         }}
       >
         <Container size="xl" h="100%">
@@ -55,7 +54,7 @@ export function BuyerNavbar() {
             {/* Logo / Homepage link */}
             <Anchor component={Link} to="/" underline="never" fw={700}>
               <Image
-                src="/shopee-white.svg"
+                src="/shopee.svg"
                 alt="Shopee"
                 height={30}
                 width="auto"
@@ -94,10 +93,10 @@ export function BuyerNavbar() {
                     component={Link}
                     to="/cart"
                     variant="subtle"
-                    color="white"
                     aria-label="Cart"
                     size="lg"
                     radius="xl"
+                    color="gray"
                   >
                     <FiShoppingCart size={20} />
                   </ActionIcon>
@@ -105,15 +104,14 @@ export function BuyerNavbar() {
                   {/* User profile dropdown */}
                   <Menu shadow="md" width={200} position="bottom-end">
                     <Menu.Target>
-                      <Button variant="subtle" color="white" px="xs">
+                      <Button variant="subtle"px="xs">
                         <Avatar
                           src={currentUserInfo.imageUrl}
                           alt={currentUserInfo.displayName}
                           size="sm"
                           style={{ marginRight: rem(5) }}
-                          color="white"
                         />
-                        <Text size="sm" fw={500} c="white">
+                        <Text size="sm" fw={500} c="gray">
                           {currentUserInfo.displayName}
                         </Text>
                       </Button>
@@ -151,20 +149,19 @@ export function BuyerNavbar() {
               {!currentUserInfo && !loadingUserInfo && (
                 <Group gap={'xs'}>
                   <Button
+                    c={'dimmed'}
                     component={Link}
                     to="/login"
                     variant="subtle"
-                    color="white"
                     size="compact-sm"
                   >
                     Log in
                   </Button>
-                  <span style={{ color: 'white' }}>|</span>
+                  <span>|</span>
                   <Button
                     component={Link}
                     to="/register"
                     variant="subtle"
-                    color="white"
                     size="compact-sm"
                   >
                     Sign up
