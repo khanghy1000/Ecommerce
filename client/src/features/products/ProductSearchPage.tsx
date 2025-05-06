@@ -370,7 +370,9 @@ function ProductSearchPage() {
                           key={category.id}
                           value={category.id.toString()}
                         >
-                          <Accordion.Control>
+                          <Accordion.Control
+                            onClick={(e) => e.preventDefault()}
+                          >
                             <Radio
                               value={category.id.toString()}
                               label={category.name}
