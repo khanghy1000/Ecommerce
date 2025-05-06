@@ -1,4 +1,5 @@
 import { useProducts } from '../../lib/hooks/useProducts';
+import { useCategories } from '../../lib/hooks/useCategories';
 import {
   Box,
   Container,
@@ -8,6 +9,11 @@ import {
   Skeleton,
   Card,
   Text,
+  SimpleGrid,
+  Center,
+  Flex,
+  Loader,
+  Paper,
 } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import ProductCard from '../products/ProductCard';
@@ -25,6 +31,7 @@ interface GroupedProducts {
 
 function Homepage() {
   const { popularProducts, loadingPopularProducts } = useProducts();
+  const { categories, loadingCategories } = useCategories();
   const [groupedProducts, setGroupedProducts] = useState<GroupedProducts>({});
 
   useEffect(() => {
@@ -46,6 +53,44 @@ function Homepage() {
 
   return (
     <Container size="xl" py="xl">
+      {/* Categories Grid */}
+      <Box mb="lg">
+        <Title order={2} mb="lg" style={{ textAlign: 'center' }}>
+          Categories
+        </Title>
+
+        {loadingCategories ? (
+          <Flex justify="center" py="md">
+            <Loader size="md" />
+          </Flex>
+        ) : (
+          <SimpleGrid
+            cols={{ base: 2, sm: 3, md: 4, lg: 6 }}
+            spacing={{ base: 10, sm: 'md' }}
+          >
+            {categories?.map((category) => (
+              <Paper
+                key={category.id}
+                component={Link}
+                to={`/products/search?categoryId=${category.id}`}
+                shadow="sm"
+                p="md"
+                radius="md"
+                withBorder
+                className={classes.categoryCard}
+              >
+                <Center style={{ height: '100%' }}>
+                  <Text fw={500} ta="center" c={'black'}>
+                    {category.name}
+                  </Text>
+                </Center>
+              </Paper>
+            ))}
+          </SimpleGrid>
+        )}
+      </Box>
+
+      {/* Popular Products by Category */}
       {loadingPopularProducts
         ? // Loading skeleton
           Array.from({ length: 3 }).map((_, i) => (
