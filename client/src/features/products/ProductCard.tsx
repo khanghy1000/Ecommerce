@@ -1,6 +1,7 @@
 import { Card, Image, Text, Badge, Box } from '@mantine/core';
 import { ProductResponseDto, PopularProductResponseDto } from '../../lib/types';
 import { formatPrice } from '../../lib/utils';
+import { Link } from 'react-router';
 
 type ProductCardProps = {
   product: ProductResponseDto | PopularProductResponseDto;
@@ -24,8 +25,8 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Card
-      component="a"
-      href={`/products/${productId}`}
+      component={Link}
+      to={`/products/${productId}`}
       shadow="sm"
       padding="md"
       radius="md"
