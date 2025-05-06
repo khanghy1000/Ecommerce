@@ -161,3 +161,86 @@ export type UpdateCartItemRequestDto = {
 export type RemoveFromCartRequestDto = {
   productId: number;
 };
+
+export type OrderProductResponseDto = {
+  name: string;
+  price: number;
+  quantity: number;
+  subtotal: number;
+};
+
+export type SalesOrderStatus = 'PendingPayment' | 'PendingConfirmation' | 'Tracking' | 'Delivered' | 'Cancelled';
+export type PaymentMethod = 'Cod' | 'Vnpay';
+
+export type SalesOrderResponseDto = {
+  id: number;
+  orderTime: string;
+  subtotal: number;
+  shippingFee: number;
+  productDiscountAmount: number;
+  shippingDiscountAmount: number;
+  total: number;
+  userId: string;
+  shippingOrderCode: string;
+  shippingName: string;
+  shippingPhone: string;
+  shippingAddress: string;
+  shippingWardId: number;
+  shippingDistrictId: number;
+  shippingProvinceId: number;
+  shippingWardName: string;
+  shippingDistrictName: string;
+  shippingProvinceName: string;
+  productCouponCode: string;
+  shippingCouponCode: string;
+  paymentMethod: PaymentMethod;
+  status: SalesOrderStatus;
+  orderProducts: OrderProductResponseDto[];
+};
+
+export type CheckoutRequestDto = {
+  productCouponCode?: string;
+  shippingCouponCode?: string;
+  shippingName: string;
+  shippingPhone: string;
+  shippingAddress: string;
+  shippingWardId: number;
+  paymentMethod: PaymentMethod;
+  productIds: number[];
+};
+
+export type CheckoutPricePreviewRequestDto = {
+  productCouponCode?: string;
+  shippingCouponCode?: string;
+  shippingName: string;
+  shippingPhone: string;
+  shippingAddress: string;
+  shippingWardId: number;
+  productIds: number[];
+};
+
+export type CheckoutPricePreviewResponseDto = {
+  subtotal: number;
+  shippingFee: number;
+  productDiscountAmount: number;
+  shippingDiscountAmount: number;
+  total: number;
+  appliedProductCoupon?: string;
+  appliedShippingCoupon?: string;
+};
+
+export type CheckoutResponseDto = {
+  paymentUrl?: string;
+  salesOrders: SalesOrderResponseDto[];
+};
+
+export type ListOrdersRequest = {
+  orderId?: number;
+  fromDate?: string;
+  toDate?: string;
+  status?: SalesOrderStatus;
+  buyerId?: string;
+  shopId?: string;
+  pageSize?: number; 
+  pageNumber?: number;
+};
