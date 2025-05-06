@@ -6,6 +6,7 @@ import ServerError from './features/errors/ServerError';
 import Homepage from './features/homepage/Homepage';
 import { BuyerLayout } from './features/layout/BuyerLayout';
 import ProductSearchPage from './features/products/ProductSearchPage';
+import ProductPage from './features/products/ProductPage';
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: '/products/search',
         element: <ProductSearchPage />,
+      },
+      {
+        path: '/products/:productId',
+        element: <ProductPage />,
       },
       {
         path: '/cart',
