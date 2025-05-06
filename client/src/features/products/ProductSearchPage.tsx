@@ -18,6 +18,7 @@ import {
   Select,
   Paper,
   Pagination,
+  Accordion,
 } from '@mantine/core';
 import { useProducts } from '../../lib/hooks/useProducts';
 import { useCategories } from '../../lib/hooks/useCategories';
@@ -68,6 +69,9 @@ function ProductSearchPage() {
   const [keyword, setKeyword] = useState(currentKeyword);
   const [minPrice, setMinPrice] = useState<number | undefined>(currentMinPrice);
   const [maxPrice, setMaxPrice] = useState<number | undefined>(currentMaxPrice);
+
+  // Track which category accordion items should be open
+  const [openAccordionItems, setOpenAccordionItems] = useState<string[]>([]);
 
   // Fetch categories for filter options
   const { categories, loadingCategories } = useCategories();
@@ -127,6 +131,27 @@ function ProductSearchPage() {
       scrollTo({ y: 0 });
     }
   }, [products, currentPageNumber, searchParams, setSearchParams, scrollTo]);
+
+  // Update open accordion items when subcategories change
+  useEffect(() => {
+    if (!categories) return;
+    if (!currentSubcategories || currentSubcategories.length === 0) {
+      setOpenAccordionItems([]);
+      return;
+    }
+
+    // Find categories that have checked subcategories
+    const categoriesWithSelectedSubs = categories
+      .filter((category) =>
+        category.subcategories.some((sub) =>
+          currentSubcategories.includes(sub.id)
+        )
+      )
+      .map((category) => category.id.toString());
+
+    // Set those categories as open in the accordion
+    setOpenAccordionItems(categoriesWithSelectedSubs);
+  }, [categories, currentSubcategories]);
 
   const handleCategoryChange = (categoryId: number | null) => {
     const params = new URLSearchParams(searchParams);
@@ -236,6 +261,16 @@ function ProductSearchPage() {
     scrollTo({ y: 0 });
   };
 
+  // Calculate the value for the Radio.Group - should be empty if subcategories are selected
+  const categoryRadioValue = useMemo(() => {
+    // If any subcategory is selected, no radio button should be selected
+    if (currentSubcategories && currentSubcategories.length > 0) {
+      return 'none'; // A value that doesn't match any category ID
+    }
+    // Otherwise return the current category or empty string for "All Categories"
+    return currentCategory?.toString() || '';
+  }, [currentCategory, currentSubcategories]);
+
   return (
     <Container size="xl" py="md">
       <Title order={1} mb="lg">
@@ -312,53 +347,67 @@ function ProductSearchPage() {
                 ) : (
                   <Stack gap="xs">
                     <Radio.Group
-                      value={
-                        currentSubcategories != undefined &&
-                        currentSubcategories.length > 0
-                          ? 'subcategories' // Custom value when subcategories are selected
-                          : currentCategory?.toString() || ''
-                      }
+                      value={categoryRadioValue}
                       onChange={(value) =>
                         handleCategoryChange(
-                          value && value !== 'subcategories'
-                            ? Number(value)
-                            : null
+                          value === 'none' ? null : value ? Number(value) : null
                         )
                       }
                     >
                       <Stack gap="xs">
                         <Radio value="" label="All Categories" />
-                        {categories?.map((category) => (
-                          <Box key={category.id}>
+                      </Stack>
+                    </Radio.Group>
+
+                    {/* Accordion for categories with subcategories */}
+                    <Accordion
+                      multiple
+                      value={openAccordionItems}
+                      onChange={setOpenAccordionItems}
+                    >
+                      {categories?.map((category) => (
+                        <Accordion.Item
+                          key={category.id}
+                          value={category.id.toString()}
+                        >
+                          <Accordion.Control>
                             <Radio
                               value={category.id.toString()}
                               label={category.name}
+                              checked={
+                                currentCategory === category.id &&
+                                currentSubcategories?.length === 0
+                              }
+                              onChange={(e) => {
+                                if (e.currentTarget.checked) {
+                                  handleCategoryChange(category.id);
+                                }
+                              }}
+                              onClick={(e) => e.stopPropagation()}
                             />
-
-                            {/* Show subcategories regardless of selection status */}
-                            <Box ml="md" mt="xs">
-                              <Stack gap="xs">
-                                {category.subcategories.map((subcategory) => (
-                                  <Checkbox
-                                    key={subcategory.id}
-                                    label={subcategory.name}
-                                    checked={currentSubcategories?.includes(
-                                      subcategory.id
-                                    )}
-                                    onChange={(event) => {
-                                      handleSubcategoryChange(
-                                        subcategory.id,
-                                        event.currentTarget.checked
-                                      );
-                                    }}
-                                  />
-                                ))}
-                              </Stack>
-                            </Box>
-                          </Box>
-                        ))}
-                      </Stack>
-                    </Radio.Group>
+                          </Accordion.Control>
+                          <Accordion.Panel>
+                            <Stack gap="xs" ml="md">
+                              {category.subcategories.map((subcategory) => (
+                                <Checkbox
+                                  key={subcategory.id}
+                                  label={subcategory.name}
+                                  checked={currentSubcategories?.includes(
+                                    subcategory.id
+                                  )}
+                                  onChange={(event) => {
+                                    handleSubcategoryChange(
+                                      subcategory.id,
+                                      event.currentTarget.checked
+                                    );
+                                  }}
+                                />
+                              ))}
+                            </Stack>
+                          </Accordion.Panel>
+                        </Accordion.Item>
+                      ))}
+                    </Accordion>
                   </Stack>
                 )}
               </Box>
