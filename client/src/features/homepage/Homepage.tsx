@@ -147,7 +147,7 @@ function Homepage() {
                       transition: 'transform 0.2s, box-shadow 0.2s',
                       cursor: 'pointer',
                     }}
-                    className={classes.moreCard}
+                    classNames={classes}
                   >
                     <Box
                       style={{
