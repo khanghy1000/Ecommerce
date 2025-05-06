@@ -33,7 +33,7 @@ import { useWindowScroll } from '@mantine/hooks';
 
 function ProductSearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [scroll, scrollTo] = useWindowScroll();
+  const scrollTo = useWindowScroll()[1];
 
   // Get filter values from URL or set defaults
   const currentKeyword = searchParams.get('keyword') || '';
@@ -313,6 +313,7 @@ function ProductSearchPage() {
                   <Stack gap="xs">
                     <Radio.Group
                       value={
+                        currentSubcategories != undefined &&
                         currentSubcategories.length > 0
                           ? 'subcategories' // Custom value when subcategories are selected
                           : currentCategory?.toString() || ''
