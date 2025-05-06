@@ -14,6 +14,7 @@ import ProductCard from '../products/ProductCard';
 import { useEffect, useState } from 'react';
 import { PopularProductResponseDto } from '../../lib/types';
 import classes from './Homepage.module.css';
+import { Link } from 'react-router';
 
 interface GroupedProducts {
   [categoryId: number]: {
@@ -58,7 +59,8 @@ function Homepage() {
               <Group mb="md" justify="space-between">
                 <Title order={3}>
                   <Anchor
-                    href={`/products/search?categoryId=${categoryId}`}
+                    to={`/products/search?categoryId=${categoryId}`}
+                    component={Link}
                     underline="hover"
                     fw={600}
                   >
@@ -82,8 +84,8 @@ function Homepage() {
                 ))}
                 <Carousel.Slide>
                   <Card
-                    component="a"
-                    href={`/categories/${categoryId}`}
+                    component={Link}
+                    to={`/products/search?categoryId=${categoryId}`}
                     shadow="sm"
                     padding="md"
                     radius="md"
