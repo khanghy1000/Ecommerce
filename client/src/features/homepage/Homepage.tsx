@@ -58,7 +58,7 @@ function Homepage() {
               <Group mb="md" justify="space-between">
                 <Title order={3}>
                   <Anchor
-                    href={`/categories/${categoryId}`}
+                    href={`/products/search?categoryId=${categoryId}`}
                     underline="hover"
                     fw={600}
                   >
