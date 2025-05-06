@@ -19,6 +19,7 @@ import { useAccount } from '../../lib/hooks/useAccount';
 import { useLocation } from '../../lib/hooks/useLocation';
 import { useNavigate } from 'react-router';
 import { notifications } from '@mantine/notifications';
+import { LogoOnlyNavbar } from '../layout/LogoOnlyNavbar';
 
 const schema = z.object({
   displayName: z.string().min(2, 'Name must have at least 2 characters'),
@@ -160,130 +161,142 @@ function RegisterPage() {
   });
 
   return (
-    <Container size="md" py="xl">
-      <Paper radius="md" p="xl" withBorder>
-        <Title order={2} ta="center" mb="md">
-          Create an account
-        </Title>
+    <>
+      <LogoOnlyNavbar />
+      <Container size="md" py="xl">
+        <Paper radius="md" p="xl" withBorder>
+          <Title order={2} ta="center" mb="md">
+            Create an account
+          </Title>
 
-        <Text size="sm" ta="center" c="dimmed" mb="md">
-          Already have an account?{' '}
-          <Anchor component="button" onClick={() => navigate('/login')} inherit>
-            Log in
-          </Anchor>
-        </Text>
+          <Text size="sm" ta="center" c="dimmed" mb="md">
+            Already have an account?{' '}
+            <Anchor
+              component="button"
+              onClick={() => navigate('/login')}
+              inherit
+            >
+              Log in
+            </Anchor>
+          </Text>
 
-        <Divider my="lg" />
+          <Divider my="lg" />
 
-        <form onSubmit={handleSubmit}>
-          <Grid gutter="md">
-            {/* First column - Personal Information */}
-            <Grid.Col span={{ base: 12, sm: 6 }}>
-              <Stack gap="md">
-                <TextInput
-                  label="Full name"
-                  placeholder="Your name"
-                  {...form.getInputProps('displayName')}
-                />
+          <form onSubmit={handleSubmit}>
+            <Grid gutter="md">
+              {/* First column - Personal Information */}
+              <Grid.Col span={{ base: 12, sm: 6 }}>
+                <Stack gap="md">
+                  <TextInput
+                    label="Full name"
+                    placeholder="Your name"
+                    {...form.getInputProps('displayName')}
+                  />
 
-                <TextInput
-                  label="Email"
-                  placeholder="your@email.com"
-                  {...form.getInputProps('email')}
-                />
+                  <TextInput
+                    label="Email"
+                    placeholder="your@email.com"
+                    {...form.getInputProps('email')}
+                  />
 
-                <PasswordInput
-                  label="Password"
-                  placeholder="Create a password"
-                  {...form.getInputProps('password')}
-                />
+                  <PasswordInput
+                    label="Password"
+                    placeholder="Create a password"
+                    {...form.getInputProps('password')}
+                  />
 
-                <TextInput
-                  label="Phone number"
-                  placeholder="Your phone number"
-                  type="number"
-                  {...form.getInputProps('phoneNumber')}
-                />
+                  <TextInput
+                    label="Phone number"
+                    placeholder="Your phone number"
+                    type="number"
+                    {...form.getInputProps('phoneNumber')}
+                  />
 
-                <Select
-                  label="Are you a buyer or seller?"
-                  placeholder="Select role"
-                  data={[
-                    { value: 'Buyer', label: 'I want to shop' },
-                    { value: 'Shop', label: 'I want to sell products' },
-                  ]}
-                  {...form.getInputProps('role')}
-                />
-              </Stack>
-            </Grid.Col>
+                  <Select
+                    label="Are you a buyer or seller?"
+                    placeholder="Select role"
+                    data={[
+                      { value: 'Buyer', label: 'I want to shop' },
+                      { value: 'Shop', label: 'I want to sell products' },
+                    ]}
+                    {...form.getInputProps('role')}
+                  />
+                </Stack>
+              </Grid.Col>
 
-            {/* Second column - Address Information */}
-            <Grid.Col span={{ base: 12, sm: 6 }}>
-              <Stack gap="md">
-                <TextInput
-                  label="Address"
-                  placeholder="Street address"
-                  {...form.getInputProps('address')}
-                />
+              {/* Second column - Address Information */}
+              <Grid.Col span={{ base: 12, sm: 6 }}>
+                <Stack gap="md">
+                  <TextInput
+                    label="Address"
+                    placeholder="Street address"
+                    {...form.getInputProps('address')}
+                  />
 
-                <Select
-                  label="Province"
-                  placeholder="Select province"
-                  data={
-                    provinces?.map((province) => ({
-                      value: province.id.toString(),
-                      label: province.name,
-                    })) ?? []
-                  }
-                  disabled={loadingProvinces}
-                  onChange={handleProvinceChange}
-                  error={form.errors.provinceId}
-                />
-
-                <Select
-                  label="District"
-                  placeholder="Select district"
-                  data={
-                    districts?.map((district) => ({
-                      value: district.id.toString(),
-                      label: district.name,
-                    })) ?? []
-                  }
-                  disabled={!selectedProvinceId || loadingDistricts}
-                  onChange={handleDistrictChange}
-                  error={form.errors.districtId}
-                />
-
-                <Select
-                  label="Ward"
-                  placeholder="Select ward"
-                  data={
-                    wards?.map((ward) => ({
-                      value: ward.id.toString(),
-                      label: ward.name,
-                    })) ?? []
-                  }
-                  disabled={!selectedDistrictId || loadingWards}
-                  onChange={(value) => {
-                    if (value) {
-                      form.setFieldValue('wardId', parseInt(value));
+                  <Select
+                    label="Province"
+                    placeholder="Select province"
+                    data={
+                      provinces?.map((province) => ({
+                        value: province.id.toString(),
+                        label: province.name,
+                      })) ?? []
                     }
-                  }}
-                  error={form.errors.wardId}
-                />
-              </Stack>
-            </Grid.Col>
+                    disabled={loadingProvinces}
+                    onChange={handleProvinceChange}
+                    error={form.errors.provinceId}
+                  />
 
-            {/* Button in full width row */}
-            <Grid.Col span={12}>
-              <Button fullWidth type="submit" loading={registerUser.isPending} disabled={loadingUserInfo}>
-                Register
-              </Button>
-            </Grid.Col>
-          </Grid>
-        </form>
-      </Paper>
-    </Container>
+                  <Select
+                    label="District"
+                    placeholder="Select district"
+                    data={
+                      districts?.map((district) => ({
+                        value: district.id.toString(),
+                        label: district.name,
+                      })) ?? []
+                    }
+                    disabled={!selectedProvinceId || loadingDistricts}
+                    onChange={handleDistrictChange}
+                    error={form.errors.districtId}
+                  />
+
+                  <Select
+                    label="Ward"
+                    placeholder="Select ward"
+                    data={
+                      wards?.map((ward) => ({
+                        value: ward.id.toString(),
+                        label: ward.name,
+                      })) ?? []
+                    }
+                    disabled={!selectedDistrictId || loadingWards}
+                    onChange={(value) => {
+                      if (value) {
+                        form.setFieldValue('wardId', parseInt(value));
+                      }
+                    }}
+                    error={form.errors.wardId}
+                  />
+                </Stack>
+              </Grid.Col>
+
+              {/* Button in full width row */}
+              <Grid.Col span={12}>
+                <Button
+                  fullWidth
+                  type="submit"
+                  loading={registerUser.isPending}
+                  disabled={loadingUserInfo}
+                >
+                  Register
+                </Button>
+              </Grid.Col>
+            </Grid>
+          </form>
+        </Paper>
+      </Container>
+    </>
   );
 }
 

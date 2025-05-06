@@ -16,6 +16,7 @@ import {
   Divider,
   Stack,
 } from '@mantine/core';
+import { LogoOnlyNavbar } from '../layout/LogoOnlyNavbar';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
@@ -57,61 +58,61 @@ function LoginPage() {
   });
 
   return (
-    <Container size="xs" py={40}>
-      <Paper radius="md" p="xl" withBorder>
-        <Title ta="center" order={2} mb="md">
-          Welcome back
-        </Title>
-        <Text c="dimmed" size="sm" ta="center" mb="lg">
-          Don't have an account yet?{' '}
-          <Anchor
-            component="button"
-            onClick={() => navigate('/register')}
-            inherit
-          >
-            Create account
-          </Anchor>
-        </Text>
-
-        <Divider my="lg" />
-
-        <form onSubmit={handleSubmit}>
-          <Stack gap="md">
-            <TextInput
-              required
-              label="Email"
-              placeholder="your@email.com"
-              {...form.getInputProps('email')}
-            />
-
-            <PasswordInput
-              required
-              label="Password"
-              placeholder="Your password"
-              {...form.getInputProps('password')}
-            />
-
-            <Group justify="space-between" mt="sm">
-              <Anchor
-                size="sm"
-                onClick={() => navigate('/forgot-password')}
-              >
-                Forgot password?
-              </Anchor>
-            </Group>
-
-            <Button
-              fullWidth
-              type="submit"
-              loading={loginUser.isPending}
-              disabled={loadingUserInfo}
+    <>
+      <LogoOnlyNavbar />
+      <Container size="xs" py={40}>
+        <Paper radius="md" p="xl" withBorder>
+          <Title ta="center" order={2} mb="md">
+            Welcome back
+          </Title>
+          <Text c="dimmed" size="sm" ta="center" mb="lg">
+            Don't have an account yet?{' '}
+            <Anchor
+              component="button"
+              onClick={() => navigate('/register')}
+              inherit
             >
-              Log in
-            </Button>
-          </Stack>
-        </form>
-      </Paper>
-    </Container>
+              Create account
+            </Anchor>
+          </Text>
+
+          <Divider my="lg" />
+
+          <form onSubmit={handleSubmit}>
+            <Stack gap="md">
+              <TextInput
+                required
+                label="Email"
+                placeholder="your@email.com"
+                {...form.getInputProps('email')}
+              />
+
+              <PasswordInput
+                required
+                label="Password"
+                placeholder="Your password"
+                {...form.getInputProps('password')}
+              />
+
+              <Group justify="space-between" mt="sm">
+                <Anchor size="sm" onClick={() => navigate('/forgot-password')}>
+                  Forgot password?
+                </Anchor>
+              </Group>
+
+              <Button
+                fullWidth
+                type="submit"
+                loading={loginUser.isPending}
+                disabled={loadingUserInfo}
+              >
+                Log in
+              </Button>
+            </Stack>
+          </form>
+        </Paper>
+      </Container>
+    </>
   );
 }
 
