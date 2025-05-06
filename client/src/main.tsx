@@ -1,4 +1,4 @@
-import { MantineProvider } from '@mantine/core';
+import { createTheme, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import { StrictMode } from 'react';
@@ -9,12 +9,29 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Notifications } from '@mantine/notifications';
 import './main.css';
 import '@mantine/carousel/styles.css';
-import { theme } from './theme';
 import { NavigationProgress } from '@mantine/nprogress';
 import '@mantine/nprogress/styles.css';
 import Loading from './lib/components/Loading';
 
 const queryClient = new QueryClient();
+
+const theme = createTheme({
+  primaryColor: 'shopee',
+  colors: {
+    shopee: [
+      '#ffeae7', // 0 - very light
+      '#ffd3c9', // 1
+      '#ffb3a3', // 2
+      '#ff8e77', // 3
+      '#ff674d', // 4
+      '#ee4d2d', // 5 - main
+      '#ee4d2d', // 6
+      '#ba3a23', // 7
+      '#9e311e', // 8
+      '#802818', // 9 - very dark
+    ],
+  },
+});
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

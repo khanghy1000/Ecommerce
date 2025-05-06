@@ -44,7 +44,7 @@ export function BuyerNavbar() {
         py="md"
         style={{
           height: 60,
-          backgroundColor: theme.colors[theme.primaryColor][6],
+          backgroundColor: theme.colors[theme.primaryColor][5],
           position: 'fixed',
           width: '100%',
           zIndex: 1000,
