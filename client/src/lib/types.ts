@@ -134,3 +134,30 @@ export type CategoryResponseDto = {
   name: string;
   subcategories: SubcategoryIdNameResponseDto[];
 };
+
+export type CartItemResponseDto = {
+  productId: number;
+  quantity: number;
+  maxQuantity: number;
+  productName: string;
+  unitPrice: number;
+  discountPrice: number | null;
+  subtotal: number;
+  productImageUrl: string;
+  shopId: string;
+  shopName: string;
+};
+
+export type AddToCartRequestDto = {
+  productId: number;
+  quantity: number;
+};
+
+export type UpdateCartItemRequestDto = {
+  productId: number;
+  quantity: number;
+};
+
+export type RemoveFromCartRequestDto = {
+  productId: number;
+};
