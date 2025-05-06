@@ -72,6 +72,7 @@ We use React to build our e-commerce website. This react app will use ASP.NET AP
 - React Router for routing.
 - Tanstack Query for data fetching.
 - Mantine for UI components.
+- React Icons for icons.
 - Zod for data validation.
 
 For schema/form validation, we will use Mantine use-form with Zod schema. Mantine use-form is a hook that provides a simple way to manage form state and validation.

@@ -3,6 +3,7 @@ import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import Homepage from './features/homepage/Homepage';
 import { BuyerLayout } from './features/layout/BuyerLayout';
+import ProductSearchPage from './features/products/ProductSearchPage';
 
 const router = createBrowserRouter([
   {
@@ -23,7 +24,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/products/search',
-        element: <div>Search Results Page</div>,
+        element: <ProductSearchPage />,
       },
       {
         path: '/cart',

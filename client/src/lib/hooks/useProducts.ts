@@ -19,7 +19,7 @@ export const useProducts = (
 
       if (listProductsRequest) {
         const stringifiedParams = queryString.stringify(listProductsRequest, {
-          arrayFormat: 'comma',
+          arrayFormat: 'none',
         });
         url = `${url}?${stringifiedParams}`;
       }
