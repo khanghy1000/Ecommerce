@@ -1,8 +1,11 @@
 export type ErrorResponse = {
-  detail?: string;
-  status?: number;
   title?: string;
+  status?: number; // http status code
+  detail?: string; // error message (include command handler error)
+  message?: string; // exception message
+  details?: string; // exception stack trace
   type?: string;
+  // validation errors
   errors?: {
     [key: string]: string[];
   };
@@ -169,7 +172,12 @@ export type OrderProductResponseDto = {
   subtotal: number;
 };
 
-export type SalesOrderStatus = 'PendingPayment' | 'PendingConfirmation' | 'Tracking' | 'Delivered' | 'Cancelled';
+export type SalesOrderStatus =
+  | 'PendingPayment'
+  | 'PendingConfirmation'
+  | 'Tracking'
+  | 'Delivered'
+  | 'Cancelled';
 export type PaymentMethod = 'Cod' | 'Vnpay';
 
 export type SalesOrderResponseDto = {
@@ -241,7 +249,7 @@ export type ListOrdersRequest = {
   status?: SalesOrderStatus;
   buyerId?: string;
   shopId?: string;
-  pageSize?: number; 
+  pageSize?: number;
   pageNumber?: number;
 };
 

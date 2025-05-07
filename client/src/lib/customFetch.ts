@@ -69,7 +69,7 @@ async function customFetch<T>(
             notifications.show({
               color: 'red',
               title: 'Error',
-              message: data.title ?? JSON.stringify(data),
+              message: data.detail ?? JSON.stringify(data),
             });
           }
           break;
@@ -100,6 +100,7 @@ async function customFetch<T>(
 
     return data as T;
   } catch (error) {
+    // handle network errors
     if (error instanceof Error) {
       notifications.show({
         color: 'red',

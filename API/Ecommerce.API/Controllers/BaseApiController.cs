@@ -23,8 +23,9 @@ public class BaseApiController : ControllerBase
                 new ProblemDetails
                 {
                     Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5",
-                    Title = result.Error ?? "Not Found",
+                    Title = "Not Found",
                     Status = 404,
+                    Detail = result.Error ?? "Resource not found",
                     Instance = HttpContext.Request.Path,
                 }
             ),
@@ -32,8 +33,9 @@ public class BaseApiController : ControllerBase
                 new ProblemDetails
                 {
                     Type = "https://tools.ietf.org/html/rfc9110#section-15.5.6",
-                    Title = result.Error ?? "Bad Request",
+                    Title = "Bad Request",
                     Status = 400,
+                    Detail = result.Error ?? "Invalid request",
                     Instance = HttpContext.Request.Path,
                 }
             ),
