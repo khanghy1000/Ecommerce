@@ -19,7 +19,7 @@ import {
   FiUser,
   FiShoppingBag,
 } from 'react-icons/fi';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useAccount } from '../../lib/hooks/useAccount';
 import { Link, useNavigate } from 'react-router';
 
@@ -27,11 +27,16 @@ export function BuyerNavbar() {
   const { currentUserInfo, logoutUser, loadingUserInfo } = useAccount();
   const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchValue.trim()) {
       navigate(`/products/search?keyword=${encodeURIComponent(searchValue)}`);
+      setSearchValue('');
+      if (searchInputRef.current) {
+        searchInputRef.current.blur();
+      }
     }
   };
 
@@ -46,19 +51,14 @@ export function BuyerNavbar() {
           width: '100%',
           zIndex: 1000,
           borderBottom: `1px solid #eaeaea`,
-          backgroundColor: "var(--mantine-color-body)",
+          backgroundColor: 'var(--mantine-color-body)',
         }}
       >
         <Container size="xl" h="100%">
           <Flex align="center" justify="space-between" h="100%">
             {/* Logo / Homepage link */}
             <Anchor component={Link} to="/" underline="never" fw={700}>
-              <Image
-                src="/shopee.svg"
-                alt="Shopee"
-                height={30}
-                width="auto"
-              />
+              <Image src="/shopee.svg" alt="Shopee" height={30} width="auto" />
             </Anchor>
 
             {/* Search bar */}
@@ -68,6 +68,7 @@ export function BuyerNavbar() {
               style={{ flex: 1, maxWidth: 480, margin: '0 auto' }}
             >
               <Input
+                ref={searchInputRef}
                 placeholder="Search products..."
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
@@ -104,7 +105,7 @@ export function BuyerNavbar() {
                   {/* User profile dropdown */}
                   <Menu shadow="md" width={200} position="bottom-end">
                     <Menu.Target>
-                      <Button variant="subtle"px="xs">
+                      <Button variant="subtle" px="xs">
                         <Avatar
                           src={currentUserInfo.imageUrl}
                           alt={currentUserInfo.displayName}
