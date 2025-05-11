@@ -37,7 +37,7 @@ public class UsersController : BaseApiController
         );
     }
 
-    [HttpPut("addresses/default/{addressId}")]
+    [HttpPut("addresses/{addressId}/default")]
     [Authorize(Policy = "IsAddressOwner")]
     public async Task<ActionResult<UserAddressResponseDto>> SetDefaultAddress(int addressId)
     {

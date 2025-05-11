@@ -45,7 +45,7 @@ export const useAddresses = (addressId?: number) => {
   // Set an address as default
   const setDefaultAddress = useMutation({
     mutationFn: async (id: number) => {
-      return await customFetch<UserAddressResponseDto>(`/users/addresses/default/${id}`, {
+      return await customFetch<UserAddressResponseDto>(`/users/addresses/${id}/default`, {
         method: 'PUT',
       });
     },

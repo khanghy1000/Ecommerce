@@ -36,12 +36,12 @@ public class IsAddressOwnerRequirementHandler(
 
         var httpContext = httpContextAccessor.HttpContext;
 
-        if (httpContext?.GetRouteValue("addressId") is not int addressId)
+        if (httpContext?.GetRouteValue("addressId") is not string addressId)
             return;
 
         var address = await dbContext
             .UserAddresses.AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Id == addressId);
+            .SingleOrDefaultAsync(x => x.Id.ToString() == addressId);
 
         if (address == null)
             return;
