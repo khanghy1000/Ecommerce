@@ -20,6 +20,7 @@ import { useLocations } from '../../lib/hooks/useLocations';
 import { useNavigate } from 'react-router';
 import { notifications } from '@mantine/notifications';
 import { LogoOnlyNavbar } from '../layout/LogoOnlyNavbar';
+import { FiCheckCircle } from 'react-icons/fi';
 
 const schema = z.object({
   displayName: z.string().min(2, 'Name must have at least 2 characters'),
@@ -126,6 +127,8 @@ function RegisterPage() {
           notifications.show({
             title: 'Registration successful',
             message: 'You can now log in to your account',
+            color: 'green',
+            icon: <FiCheckCircle />,
           });
           navigate('/login');
         },
