@@ -13,7 +13,8 @@ import queryString from 'query-string';
 
 export const useOrders = (
   orderId?: number,
-  listOrdersRequest?: ListOrdersRequest
+  listOrdersRequest?: ListOrdersRequest,
+  checkoutPreviewRequest?: CheckoutPricePreviewRequestDto
 ) => {
   const queryClient = useQueryClient();
 
@@ -32,7 +33,7 @@ export const useOrders = (
 
       return await customFetch<PagedList<SalesOrderResponseDto>>(url);
     },
-    enabled: !orderId,
+    enabled: !orderId && !checkoutPreviewRequest,
   });
 
   // Get single order by ID
@@ -63,18 +64,22 @@ export const useOrders = (
     },
   });
 
-  // Preview checkout prices
-  const checkoutPreview = useMutation({
-    mutationFn: async (previewData: CheckoutPricePreviewRequestDto) => {
-      return await customFetch<CheckoutPricePreviewResponseDto>(
-        '/orders/checkout-preview',
-        {
-          method: 'POST',
-          body: JSON.stringify(previewData),
-        }
-      );
-    },
-  });
+  const { data: checkoutPreview, isLoading: loadingCheckoutPreview } = useQuery(
+    {
+      queryKey: ['checkoutPreview', checkoutPreviewRequest],
+      queryFn: async () => {
+        if (!checkoutPreviewRequest) return null;
+        return await customFetch<CheckoutPricePreviewResponseDto>(
+          '/orders/checkout-preview',
+          {
+            method: 'POST',
+            body: JSON.stringify(checkoutPreviewRequest),
+          }
+        );
+      },
+      enabled: !!checkoutPreviewRequest,
+    }
+  );
 
   // Confirm order
   const confirmOrder = useMutation({
@@ -119,10 +124,12 @@ export const useOrders = (
     order,
     loadingOrder,
 
-    // Mutations
-    checkout,
-    checkoutPreview,
     confirmOrder,
     cancelOrder,
+
+    // Checkout
+    checkoutPreview,
+    loadingCheckoutPreview,
+    checkout,
   };
 };

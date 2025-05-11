@@ -8,6 +8,7 @@ import { BuyerLayout } from './features/layout/BuyerLayout';
 import ProductSearchPage from './features/products/ProductSearchPage';
 import ProductPage from './features/products/ProductPage';
 import CartPage from './features/cart/CartPage';
+import CheckoutPage from './features/orders/CheckoutPage';
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       {
         path: '/cart',
         element: <CartPage />,
+      },
+      {
+        path: '/checkout',
+        element: <CheckoutPage />,
       },
       {
         path: '/profile',
