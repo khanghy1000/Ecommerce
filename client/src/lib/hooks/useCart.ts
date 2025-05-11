@@ -42,10 +42,45 @@ export const useCart = () => {
         body: JSON.stringify(item),
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['cart'],
-      });
+    onMutate: async (newItem) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['cart'] });
+
+      // Snapshot the previous value
+      const previousCartItems = queryClient.getQueryData<CartItemResponseDto[]>(
+        ['cart']
+      );
+
+      // Optimistically update the cache with the new value
+      if (previousCartItems) {
+        const updatedCartItems = previousCartItems.map((cartItem) => {
+          if (cartItem.productId === newItem.productId) {
+            // Calculate new subtotal
+            const unitPrice = cartItem.discountPrice ?? cartItem.unitPrice;
+            return {
+              ...cartItem,
+              quantity: newItem.quantity,
+              subtotal: unitPrice * newItem.quantity,
+            };
+          }
+          return cartItem;
+        });
+
+        queryClient.setQueryData(['cart'], updatedCartItems);
+      }
+
+      // Return the snapshot to rollback if the mutation fails
+      return { previousCartItems };
+    },
+    onError: (_err, _newItem, context) => {
+      // If the mutation fails, use the context returned above
+      if (context?.previousCartItems) {
+        queryClient.setQueryData(['cart'], context.previousCartItems);
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
   });
 

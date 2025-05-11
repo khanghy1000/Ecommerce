@@ -7,6 +7,7 @@ import Homepage from './features/homepage/Homepage';
 import { BuyerLayout } from './features/layout/BuyerLayout';
 import ProductSearchPage from './features/products/ProductSearchPage';
 import ProductPage from './features/products/ProductPage';
+import CartPage from './features/cart/CartPage';
 
 const router = createBrowserRouter([
   {
@@ -35,7 +36,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/cart',
-        element: <div>Cart Page</div>,
+        element: <CartPage />,
       },
       {
         path: '/profile',

@@ -149,6 +149,7 @@ export type CartItemResponseDto = {
   productImageUrl: string;
   shopId: string;
   shopName: string;
+  shopImageUrl: string | null;
 };
 
 export type AddToCartRequestDto = {

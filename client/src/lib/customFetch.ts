@@ -85,6 +85,13 @@ async function customFetch<T>(
             });
           }
           break;
+        case 403:
+          notifications.show({
+            color: 'red',
+            title: 'Error',
+            message: 'Forbidden access. You do not have permission to perform this action.',
+          });
+          break;
         case 404:
           router.navigate('/not-found');
           break;

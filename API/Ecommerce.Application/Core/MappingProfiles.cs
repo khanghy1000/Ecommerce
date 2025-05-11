@@ -90,6 +90,10 @@ public class MappingProfiles : Profile
             .ForMember(
                 dest => dest.ShopName,
                 opt => opt.MapFrom(src => src.Product.Shop.DisplayName)
+            )
+            .ForMember(
+                dest => dest.ShopImageUrl,
+                opt => opt.MapFrom(src => src.Product.Shop.ImageUrl)
             );
 
         CreateMap<Province, ProvinceResponseDto>();

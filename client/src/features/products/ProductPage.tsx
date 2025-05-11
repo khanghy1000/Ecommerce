@@ -1,5 +1,7 @@
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { useProducts } from '../../lib/hooks/useProducts';
+import { useCart } from '../../lib/hooks/useCart';
+import { useAppStore } from '../../lib/hooks/useAppStore';
 import {
   Container,
   Group,
@@ -15,17 +17,21 @@ import {
   NumberInput,
   Anchor,
 } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { Carousel } from '@mantine/carousel';
 import { formatPrice } from '../../lib/utils';
-import { FiShoppingCart, FiShoppingBag } from 'react-icons/fi';
+import { FiShoppingCart, FiShoppingBag, FiCheckCircle } from 'react-icons/fi';
 import { useState } from 'react';
 import { Link } from 'react-router';
 
 function ProductPage() {
   const { productId } = useParams();
+  const navigate = useNavigate();
   const { product, loadingProduct } = useProducts(
     productId ? parseInt(productId) : undefined
   );
+  const { addToCart } = useCart();
+  const { disableAllCartItems, enableCartItem } = useAppStore();
   const [quantity, setQuantity] = useState(1);
 
   const baseImageUrl = import.meta.env.VITE_BASE_IMAGE_URL;
@@ -37,6 +43,43 @@ function ProductPage() {
           100
       )
     : 0;
+
+  const handleAddToCart = () => {
+    if (product && productId) {
+      const productIdNumber = parseInt(productId);
+
+      addToCart.mutate(
+        { productId: productIdNumber, quantity },
+        {
+          onSuccess: () => {
+            notifications.show({
+              title: 'Product added to cart',
+              message: `${quantity} x ${product.name} has been added to your cart`,
+              color: 'green',
+              icon: <FiCheckCircle />,
+            });
+          },
+        }
+      );
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (product && productId) {
+      const productIdNumber = parseInt(productId);
+
+      addToCart.mutate(
+        { productId: productIdNumber, quantity },
+        {
+          onSuccess: () => {
+            disableAllCartItems();
+            enableCartItem(productIdNumber);
+            navigate('/cart');
+          },
+        }
+      );
+    }
+  };
 
   if (loadingProduct) {
     return (
@@ -204,9 +247,13 @@ function ProductPage() {
               style={{ width: 100 }}
               disabled={product.quantity <= 0}
             />
-            {product.quantity > 0 && (
+            {product.quantity > 0 ? (
               <Text size="sm" c="dimmed">
                 {product.quantity} items available
+              </Text>
+            ) : (
+              <Text size="sm" c="red" fw={500}>
+                Out of stock
               </Text>
             )}
           </Group>
@@ -216,7 +263,9 @@ function ProductPage() {
             <Button
               leftSection={<FiShoppingCart />}
               radius="md"
-              disabled={product.quantity <= 0}
+              disabled={product.quantity <= 0 || addToCart.isPending}
+              onClick={handleAddToCart}
+              loading={addToCart.isPending}
             >
               Add to Cart
             </Button>
@@ -225,7 +274,9 @@ function ProductPage() {
               radius="md"
               variant="filled"
               color="red"
-              disabled={product.quantity <= 0}
+              disabled={product.quantity <= 0 || addToCart.isPending}
+              onClick={handleBuyNow}
+              loading={addToCart.isPending}
             >
               Buy Now
             </Button>

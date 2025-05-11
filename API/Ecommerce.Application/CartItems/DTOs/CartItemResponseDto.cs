@@ -14,4 +14,5 @@ public class CartItemResponseDto
     public string ProductImageUrl { get; set; } = "";
     public string ShopId { get; set; } = "";
     public string ShopName { get; set; } = "";
+    public string ShopImageUrl { get; set; } = "";
 }
