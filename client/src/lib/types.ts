@@ -281,3 +281,49 @@ export type EditUserAddressRequestDto = {
   wardId: number;
   isDefault: boolean;
 };
+
+export type CouponResponseDto = {
+  code: string;
+  active: boolean;
+  startTime: Date;
+  endTime: Date;
+  type: 'Product' | 'Shipping';
+  discountType: 'Percent' | 'Amount';
+  value: number;
+  minOrderValue: number;
+  maxDiscountAmount: number;
+  allowMultipleUse: boolean;
+  maxUseCount: number;
+  usedCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type CreateCouponRequestDto = {
+  code: string;
+  active: boolean;
+  startTime: Date;
+  endTime: Date;
+  type: 'Product' | 'Shipping';
+  discountType: 'Percent' | 'Amount';
+  value: number;
+  minOrderValue: number;
+  maxDiscountAmount: number;
+  allowMultipleUse: boolean;
+  maxUseCount: number;
+  categoryIds: number[];
+};
+
+export type EditCouponRequestDto = {
+  active: boolean;
+  startTime: Date;
+  endTime: Date;
+  type: 'Product' | 'Shipping';
+  discountType: 'Percent' | 'Amount';
+  value: number;
+  minOrderValue: number;
+  maxDiscountAmount: number;
+  allowMultipleUse: boolean;
+  maxUseCount: number;
+  categoryIds: number[];
+};
