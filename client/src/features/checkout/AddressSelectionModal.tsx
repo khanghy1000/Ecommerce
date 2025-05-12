@@ -66,7 +66,8 @@ export const AddressSelectionModal = ({
             }}
             onClick={() => onAddressSelect(address.id)}
           >
-            <Group align="flex-start" justify="space-between">
+            <Stack>
+              {/* address details */}
               <Group align="flex-start">
                 <Radio
                   checked={selectedAddressId === address.id}
@@ -93,7 +94,9 @@ export const AddressSelectionModal = ({
                   </Group>
                 </Box>
               </Group>
-              <Group>
+
+              {/* edit, delete, set default buttons */}
+              <Group justify='flex-end'>
                 <ActionIcon
                   variant="subtle"
                   color="blue"
@@ -129,7 +132,7 @@ export const AddressSelectionModal = ({
                   </Button>
                 )}
               </Group>
-            </Group>
+            </Stack>
           </Card>
         ))}
       </Stack>
