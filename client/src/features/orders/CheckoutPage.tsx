@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useCart } from '../../lib/hooks/useCart';
 import { useAddresses } from '../../lib/hooks/useAddresses';
 import { useOrders } from '../../lib/hooks/useOrders';
+import { useCoupons } from '../../lib/hooks/useCoupons';
 import { useNavigate, useSearchParams } from 'react-router';
 import {
   Container,
@@ -25,11 +26,14 @@ import {
   Modal,
   Badge,
   Loader,
+  Table,
+  Center,
 } from '@mantine/core';
 import { formatPrice } from '../../lib/utils';
 import {
   CheckoutPricePreviewRequestDto,
   CheckoutRequestDto,
+  CouponResponseDto,
   PaymentMethod,
 } from '../../lib/types';
 import { Link } from 'react-router';
@@ -40,20 +44,33 @@ import {
   FiCreditCard,
   FiEdit2,
   FiMapPin,
+  FiTag,
   FiTruck,
 } from 'react-icons/fi';
+import { format } from 'date-fns';
 
 function CheckoutPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { cartItems, isLoadingCart } = useCart();
   const { addresses, loadingAddresses, setDefaultAddress } = useAddresses();
+  const { coupons, loadingCoupons } = useCoupons();
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
     null
   );
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('Cod');
   const baseImageUrl = import.meta.env.VITE_BASE_IMAGE_URL;
   const [addressModalOpened, setAddressModalOpened] = useState(false);
+  const [productCouponModalOpened, setProductCouponModalOpened] =
+    useState(false);
+  const [shippingCouponModalOpened, setShippingCouponModalOpened] =
+    useState(false);
+  const [selectedProductCoupon, setSelectedProductCoupon] = useState<
+    string | undefined
+  >(undefined);
+  const [selectedShippingCoupon, setSelectedShippingCoupon] = useState<
+    string | undefined
+  >(undefined);
 
   // Get product IDs from URL search params
   const selectedProductIds = searchParams.getAll('productId').map(Number);
@@ -70,6 +87,23 @@ function CheckoutPage() {
     }
   }, [addresses]);
 
+  // Filter coupons by type
+  const productCoupons =
+    coupons?.filter(
+      (coupon) =>
+        coupon.type === 'Product' &&
+        coupon.active &&
+        new Date(coupon.endTime) > new Date()
+    ) || [];
+
+  const shippingCoupons =
+    coupons?.filter(
+      (coupon) =>
+        coupon.type === 'Shipping' &&
+        coupon.active &&
+        new Date(coupon.endTime) > new Date()
+    ) || [];
+
   // Create checkout preview request
   const selectedAddress = addresses?.find(
     (addr) => addr.id === selectedAddressId
@@ -84,6 +118,8 @@ function CheckoutPage() {
           shippingAddress: selectedAddress.address,
           shippingWardId: selectedAddress.wardId,
           productIds: selectedProductIds,
+          productCouponCode: selectedProductCoupon,
+          shippingCouponCode: selectedShippingCoupon,
         }
       : undefined;
 
@@ -104,6 +140,26 @@ function CheckoutPage() {
     setDefaultAddress.mutate(addressId);
   };
 
+  // Handle coupon selection
+  const handleProductCouponSelect = (code: string | undefined) => {
+    setSelectedProductCoupon(code);
+    setProductCouponModalOpened(false);
+  };
+
+  const handleShippingCouponSelect = (code: string | undefined) => {
+    setSelectedShippingCoupon(code);
+    setShippingCouponModalOpened(false);
+  };
+
+  // Format coupon value for display
+  const formatCouponValue = (coupon: CouponResponseDto) => {
+    if (coupon.discountType === 'Percent') {
+      return `${coupon.value}%`;
+    } else {
+      return formatPrice(coupon.value);
+    }
+  };
+
   // Handle checkout submission
   const handleCheckout = () => {
     if (!selectedAddress || selectedProductIds.length === 0) return;
@@ -115,6 +171,8 @@ function CheckoutPage() {
       shippingWardId: selectedAddress.wardId,
       productIds: selectedProductIds,
       paymentMethod: paymentMethod,
+      productCouponCode: selectedProductCoupon,
+      shippingCouponCode: selectedShippingCoupon,
     };
 
     checkout.mutate(checkoutData, {
@@ -174,7 +232,7 @@ function CheckoutPage() {
     0
   );
 
-  if (isLoadingCart || loadingAddresses) {
+  if (isLoadingCart || loadingAddresses || loadingCoupons) {
     return (
       <Container size="xl" py="xl" style={{ position: 'relative' }}>
         <LoadingOverlay visible={true} />
@@ -466,6 +524,239 @@ function CheckoutPage() {
           </Stack>
         </Paper>
 
+        {/* Coupons Section */}
+        <Paper shadow="xs" p="md" withBorder>
+          <Title order={4} mb="md">
+            Coupons
+          </Title>
+
+          <Group justify='space-between'>
+            {/* Product Coupon */}
+            <Group>
+              <Group>
+                <FiTag size={18} />
+                <Box>
+                  <Text fw={500}>Product Coupon</Text>
+                  {selectedProductCoupon ? (
+                    <Text size="sm" c="green">
+                      Coupon applied: {selectedProductCoupon}
+                    </Text>
+                  ) : (
+                    <Text size="sm" c="dimmed">
+                      No coupon applied
+                    </Text>
+                  )}
+                </Box>
+              </Group>
+              <Button
+                variant="outline"
+                onClick={() => setProductCouponModalOpened(true)}
+              >
+                {selectedProductCoupon ? 'Change' : 'Select Coupon'}
+              </Button>
+            </Group>
+
+            {/* Shipping Coupon */}
+            <Group>
+              <Group>
+                <FiTruck size={18} />
+                <Box>
+                  <Text fw={500}>Shipping Coupon</Text>
+                  {selectedShippingCoupon ? (
+                    <Text size="sm" c="green">
+                      Coupon applied: {selectedShippingCoupon}
+                    </Text>
+                  ) : (
+                    <Text size="sm" c="dimmed">
+                      No coupon applied
+                    </Text>
+                  )}
+                </Box>
+              </Group>
+              <Button
+                variant="outline"
+                onClick={() => setShippingCouponModalOpened(true)}
+              >
+                {selectedShippingCoupon ? 'Change' : 'Select Coupon'}
+              </Button>
+            </Group>
+          </Group>
+
+          {/* Product Coupon Modal */}
+          <Modal
+            opened={productCouponModalOpened}
+            onClose={() => setProductCouponModalOpened(false)}
+            title="Select Product Coupon"
+            size="lg"
+          >
+            {productCoupons.length > 0 ? (
+              <Stack>
+                <Button
+                  variant="subtle"
+                  color="red"
+                  onClick={() => handleProductCouponSelect(undefined)}
+                >
+                  Remove Coupon
+                </Button>
+                <Table>
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>Code</Table.Th>
+                      <Table.Th>Discount</Table.Th>
+                      <Table.Th>Min Order</Table.Th>
+                      <Table.Th>Valid Until</Table.Th>
+                      <Table.Th>Action</Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {productCoupons.map((coupon) => (
+                      <Table.Tr key={coupon.code}>
+                        <Table.Td>
+                          <Group>
+                            <FiTag size={16} />
+                            <Text fw={500}>{coupon.code}</Text>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color="green">
+                            {formatCouponValue(coupon)}
+                            {coupon.maxDiscountAmount > 0 &&
+                              coupon.discountType === 'Percent' &&
+                              ` (max ${formatPrice(coupon.maxDiscountAmount)})`}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          {coupon.minOrderValue > 0
+                            ? formatPrice(coupon.minOrderValue)
+                            : 'None'}
+                        </Table.Td>
+                        <Table.Td>
+                          {format(new Date(coupon.endTime), 'dd/MM/yyyy')}
+                        </Table.Td>
+                        <Table.Td>
+                          <Button
+                            size="xs"
+                            onClick={() =>
+                              handleProductCouponSelect(coupon.code)
+                            }
+                            variant={
+                              selectedProductCoupon === coupon.code
+                                ? 'filled'
+                                : 'outline'
+                            }
+                          >
+                            {selectedProductCoupon === coupon.code
+                              ? 'Selected'
+                              : 'Select'}
+                          </Button>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              </Stack>
+            ) : (
+              <Center py="xl">
+                <Alert color="yellow">
+                  No product coupons available at the moment.
+                </Alert>
+              </Center>
+            )}
+            <Group justify="flex-end" mt="xl">
+              <Button onClick={() => setProductCouponModalOpened(false)}>
+                Close
+              </Button>
+            </Group>
+          </Modal>
+
+          {/* Shipping Coupon Modal */}
+          <Modal
+            opened={shippingCouponModalOpened}
+            onClose={() => setShippingCouponModalOpened(false)}
+            title="Select Shipping Coupon"
+            size="lg"
+          >
+            {shippingCoupons.length > 0 ? (
+              <Stack>
+                <Button
+                  variant="subtle"
+                  color="red"
+                  onClick={() => handleShippingCouponSelect(undefined)}
+                >
+                  Remove Coupon
+                </Button>
+                <Table>
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>Code</Table.Th>
+                      <Table.Th>Discount</Table.Th>
+                      <Table.Th>Min Order</Table.Th>
+                      <Table.Th>Valid Until</Table.Th>
+                      <Table.Th>Action</Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {shippingCoupons.map((coupon) => (
+                      <Table.Tr key={coupon.code}>
+                        <Table.Td>
+                          <Group>
+                            <FiTruck size={16} />
+                            <Text fw={500}>{coupon.code}</Text>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color="blue">
+                            {formatCouponValue(coupon)}
+                            {coupon.maxDiscountAmount > 0 &&
+                              coupon.discountType === 'Percent' &&
+                              ` (max ${formatPrice(coupon.maxDiscountAmount)})`}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          {coupon.minOrderValue > 0
+                            ? formatPrice(coupon.minOrderValue)
+                            : 'None'}
+                        </Table.Td>
+                        <Table.Td>
+                          {format(new Date(coupon.endTime), 'dd/MM/yyyy')}
+                        </Table.Td>
+                        <Table.Td>
+                          <Button
+                            size="xs"
+                            onClick={() =>
+                              handleShippingCouponSelect(coupon.code)
+                            }
+                            variant={
+                              selectedShippingCoupon === coupon.code
+                                ? 'filled'
+                                : 'outline'
+                            }
+                          >
+                            {selectedShippingCoupon === coupon.code
+                              ? 'Selected'
+                              : 'Select'}
+                          </Button>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              </Stack>
+            ) : (
+              <Center py="xl">
+                <Alert color="yellow">
+                  No shipping coupons available at the moment.
+                </Alert>
+              </Center>
+            )}
+            <Group justify="flex-end" mt="xl">
+              <Button onClick={() => setShippingCouponModalOpened(false)}>
+                Close
+              </Button>
+            </Group>
+          </Modal>
+        </Paper>
+
         {/* Payment Method Section */}
         <Paper shadow="xs" p="md" withBorder>
           <Title order={4} mb="md">
@@ -527,18 +818,32 @@ function CheckoutPage() {
             {checkoutPreview && checkoutPreview.productDiscountAmount > 0 && (
               <Group justify="space-between">
                 <Text>Product Discount</Text>
-                <Text fw={500} c="green">
-                  -{formatPrice(checkoutPreview.productDiscountAmount)}
-                </Text>
+                <Group gap={5}>
+                  {checkoutPreview.appliedProductCoupon && (
+                    <Badge size="xs" color="green">
+                      {checkoutPreview.appliedProductCoupon}
+                    </Badge>
+                  )}
+                  <Text fw={500} c="green">
+                    -{formatPrice(checkoutPreview.productDiscountAmount)}
+                  </Text>
+                </Group>
               </Group>
             )}
 
             {checkoutPreview && checkoutPreview.shippingDiscountAmount > 0 && (
               <Group justify="space-between">
                 <Text>Shipping Discount</Text>
-                <Text fw={500} c="green">
-                  -{formatPrice(checkoutPreview.shippingDiscountAmount)}
-                </Text>
+                <Group gap={5}>
+                  {checkoutPreview.appliedShippingCoupon && (
+                    <Badge size="xs" color="blue">
+                      {checkoutPreview.appliedShippingCoupon}
+                    </Badge>
+                  )}
+                  <Text fw={500} c="green">
+                    -{formatPrice(checkoutPreview.shippingDiscountAmount)}
+                  </Text>
+                </Group>
               </Group>
             )}
 
