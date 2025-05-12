@@ -20,11 +20,12 @@ import {
   rem,
   Avatar,
 } from '@mantine/core';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { formatPrice } from '../../lib/utils';
 import { FiTrash2, FiShoppingBag } from 'react-icons/fi';
 
 function CartPage() {
+  const navigate = useNavigate();
   const { cartItems, isLoadingCart, updateCartItem, removeFromCart } =
     useCart();
   const { selectedCartItems, selectCartItem } = useAppStore();
@@ -51,6 +52,21 @@ function CartPage() {
 
   const handleToggleSelect = (productId: number, isChecked: boolean) => {
     selectCartItem(productId, isChecked);
+  };
+
+  const handleCheckout = () => {
+    const selectedProductIds = cartItems
+      ?.filter((item) => selectedCartItems[item.productId])
+      .map((item) => item.productId);
+
+    if (selectedProductIds && selectedProductIds.length > 0) {
+      const searchParams = new URLSearchParams();
+      selectedProductIds.forEach((id) => {
+        searchParams.append('productId', id.toString());
+      });
+
+      navigate(`/checkout?${searchParams.toString()}`);
+    }
   };
 
   // Group cart items by shop
@@ -308,7 +324,7 @@ function CartPage() {
             </Group>
 
             {hasSelectedItems ? (
-              <Button component={Link} to="/checkout" fullWidth size="lg">
+              <Button onClick={handleCheckout} fullWidth size="lg">
                 Proceed to Checkout
               </Button>
             ) : (

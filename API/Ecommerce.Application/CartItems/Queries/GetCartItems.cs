@@ -26,6 +26,7 @@ public static class GetCartItems
             var cartItems = await dbContext
                 .CartItems.Where(ci => ci.UserId == user.Id)
                 .ProjectTo<CartItemResponseDto>(mapper.ConfigurationProvider)
+                .OrderBy(ci => ci.ProductName)
                 .ToListAsync(cancellationToken);
 
             return Result<List<CartItemResponseDto>>.Success(cartItems);

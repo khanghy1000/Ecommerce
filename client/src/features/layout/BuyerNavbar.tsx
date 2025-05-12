@@ -49,7 +49,7 @@ export function BuyerNavbar() {
           height: 60,
           position: 'fixed',
           width: '100%',
-          zIndex: 1000,
+          zIndex: 100,
           borderBottom: `1px solid #eaeaea`,
           backgroundColor: 'var(--mantine-color-body)',
         }}

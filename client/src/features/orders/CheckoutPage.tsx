@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useCart } from '../../lib/hooks/useCart';
-import { useAppStore } from '../../lib/hooks/useAppStore';
 import { useAddresses } from '../../lib/hooks/useAddresses';
 import { useOrders } from '../../lib/hooks/useOrders';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import {
   Container,
   Title,
@@ -15,7 +14,6 @@ import {
   Paper,
   Stack,
   Radio,
-  Checkbox,
   rem,
   Avatar,
   Divider,
@@ -24,6 +22,9 @@ import {
   Card,
   SegmentedControl,
   Flex,
+  Modal,
+  Badge,
+  Loader,
 } from '@mantine/core';
 import { formatPrice } from '../../lib/utils';
 import {
@@ -37,26 +38,25 @@ import {
   FiArrowLeft,
   FiCheckCircle,
   FiCreditCard,
+  FiEdit2,
+  FiMapPin,
   FiTruck,
 } from 'react-icons/fi';
 
 function CheckoutPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { cartItems, isLoadingCart } = useCart();
-  const { selectedCartItems } = useAppStore();
   const { addresses, loadingAddresses, setDefaultAddress } = useAddresses();
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
     null
   );
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('Cod');
   const baseImageUrl = import.meta.env.VITE_BASE_IMAGE_URL;
+  const [addressModalOpened, setAddressModalOpened] = useState(false);
 
-  // Calculate selected product IDs from cart
-  const selectedProductIds = cartItems
-    ? cartItems
-        .filter((item) => selectedCartItems[item.productId])
-        .map((item) => item.productId)
-    : [];
+  // Get product IDs from URL search params
+  const selectedProductIds = searchParams.getAll('productId').map(Number);
 
   // Find default address and set it as selected initially
   useEffect(() => {
@@ -88,7 +88,7 @@ function CheckoutPage() {
       : undefined;
 
   // Get checkout price preview
-  const { checkoutPreview, loadingCheckoutPreview, checkout } = useOrders(
+  const { checkoutPreview, fetchingCheckoutPreview, checkout } = useOrders(
     undefined,
     undefined,
     previewRequest
@@ -130,9 +130,9 @@ function CheckoutPage() {
     });
   };
 
-  // Group selected cart items by shop
+  // Filter cart items to only include selected products
   const selectedItems = cartItems
-    ? cartItems.filter((item) => selectedCartItems[item.productId])
+    ? cartItems.filter((item) => selectedProductIds.includes(item.productId))
     : [];
 
   const groupedSelectedItems =
@@ -182,7 +182,7 @@ function CheckoutPage() {
     );
   }
 
-  if (!cartItems || cartItems.length === 0 || selectedProductIds.length === 0) {
+  if (!selectedProductIds.length) {
     return (
       <Container size="xl" py="xl">
         <Alert
@@ -205,8 +205,31 @@ function CheckoutPage() {
     );
   }
 
+  if (!cartItems || selectedItems.length === 0) {
+    return (
+      <Container size="xl" py="xl">
+        <Alert
+          icon={<FiAlertCircle size={16} />}
+          title="Products not found"
+          color="yellow"
+        >
+          The selected products could not be found in your cart. They might have
+          been removed or are no longer available.
+        </Alert>
+        <Button
+          component={Link}
+          to="/cart"
+          leftSection={<FiArrowLeft />}
+          mt="md"
+        >
+          Return to Cart
+        </Button>
+      </Container>
+    );
+  }
+
   return (
-    <Container size="xl" py="xl">
+    <Container size="md" py="xl">
       <Title order={2} mb="lg">
         Checkout
       </Title>
@@ -214,69 +237,130 @@ function CheckoutPage() {
       <Stack gap="xl">
         {/* Shipping Address Section */}
         <Paper shadow="xs" p="md" withBorder>
-          <Title order={4} mb="md">
-            Shipping Address
-          </Title>
+          <Group justify="space-between" mb="md">
+            <Title order={4}>Shipping Address</Title>
+            <Button
+              size="xs"
+              variant="outline"
+              leftSection={<FiEdit2 size={16} />}
+              onClick={() => setAddressModalOpened(true)}
+            >
+              Change
+            </Button>
+          </Group>
 
-          {addresses?.length === 0 && (
+          {addresses?.length === 0 ? (
             <Alert color="yellow">
               You don't have any saved addresses. Please add an address to
               continue.
             </Alert>
+          ) : selectedAddress ? (
+            <Card withBorder p="md">
+              <Group mb={4}>
+                <FiMapPin />
+                <Text fw={500}>{selectedAddress.name}</Text>
+                <Text size="sm" c="dimmed">
+                  {selectedAddress.phoneNumber}
+                </Text>
+                {selectedAddress.isDefault && (
+                  <Badge size="sm" color="blue">
+                    DEFAULT
+                  </Badge>
+                )}
+              </Group>
+              <Text size="sm" ml={24}>
+                {selectedAddress.address}, {selectedAddress.wardName},{' '}
+                {selectedAddress.districtName}, {selectedAddress.provinceName}
+              </Text>
+            </Card>
+          ) : (
+            <Alert color="yellow">
+              Please select a shipping address to continue.
+            </Alert>
           )}
 
-          <Radio.Group
-            value={selectedAddressId?.toString() || ''}
-            onChange={(value) => handleAddressSelect(parseInt(value))}
+          <Modal
+            opened={addressModalOpened}
+            onClose={() => setAddressModalOpened(false)}
+            title="Select Shipping Address"
+            size="auto"
           >
             <Stack>
               {addresses?.map((address) => (
-                <Card key={address.id} withBorder p="sm">
+                <Card
+                  key={address.id}
+                  withBorder
+                  p="sm"
+                  style={{
+                    cursor: 'pointer',
+                    backgroundColor:
+                      selectedAddressId === address.id
+                        ? 'var(--mantine-color-gray-0)'
+                        : undefined,
+                    borderColor:
+                      selectedAddressId === address.id
+                        ? 'var(--mantine-color-blue-5)'
+                        : undefined,
+                  }}
+                  onClick={() => handleAddressSelect(address.id)}
+                >
                   <Group align="flex-start" justify="space-between">
-                    <Radio
-                      value={address.id.toString()}
-                      label={
-                        <Box ml="xs">
-                          <Group mb={4}>
-                            <Text fw={500}>{address.name}</Text>
-                            <Text size="sm" c="dimmed">
-                              {address.phoneNumber}
-                            </Text>
-                            {address.isDefault && (
-                              <Text size="xs" fw={500} c="blue">
-                                DEFAULT
-                              </Text>
-                            )}
-                          </Group>
+                    <Group align="flex-start">
+                      <Radio
+                        checked={selectedAddressId === address.id}
+                        onChange={() => handleAddressSelect(address.id)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <Box>
+                        <Group mb={4}>
+                          <Text fw={500}>{address.name}</Text>
+                          <Text size="sm" c="dimmed">
+                            {address.phoneNumber}
+                          </Text>
+                          {address.isDefault && (
+                            <Badge size="sm" color="blue">
+                              DEFAULT
+                            </Badge>
+                          )}
+                        </Group>
+                        <Group align="center">
                           <Text size="sm">
                             {address.address}, {address.wardName},{' '}
                             {address.districtName}, {address.provinceName}
                           </Text>
-                        </Box>
-                      }
-                    />
-
-                    {!address.isDefault && (
-                      <Checkbox
-                        label="Set as default"
-                        checked={false}
-                        onChange={() => handleSetDefault(address.id)}
-                      />
-                    )}
+                          {!address.isDefault && (
+                            <Button
+                              variant="outline"
+                              size="xs"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSetDefault(address.id);
+                              }}
+                            >
+                              Set as default
+                            </Button>
+                          )}
+                        </Group>
+                      </Box>
+                    </Group>
                   </Group>
                 </Card>
               ))}
             </Stack>
-          </Radio.Group>
 
-          <Button
-            component={Link}
-            to="/account/addresses/new"
-            variant="outline"
-            mt="md"
-          >
-            Add New Address
-          </Button>
+            <Group justify="space-between" mt="xl">
+              <Button
+                component={Link}
+                to="/account/addresses/new"
+                variant="outline"
+              >
+                Add New Address
+              </Button>
+              <Button onClick={() => setAddressModalOpened(false)}>
+                Confirm Selection
+              </Button>
+            </Group>
+          </Modal>
         </Paper>
 
         {/* Order Items Section */}
@@ -429,42 +513,48 @@ function CheckoutPage() {
 
             <Group justify="space-between">
               <Text>Shipping Fee</Text>
-              <Text fw={500}>
-                {checkoutPreview
-                  ? formatPrice(checkoutPreview.shippingFee)
-                  : 'Calculating...'}
-              </Text>
+              {fetchingCheckoutPreview ? (
+                <Loader size="sm" />
+              ) : (
+                <Text fw={500}>
+                  {checkoutPreview
+                    ? formatPrice(checkoutPreview.shippingFee)
+                    : 'Calculating...'}
+                </Text>
+              )}
             </Group>
 
-            {checkoutPreview?.productDiscountAmount &&
-              checkoutPreview?.productDiscountAmount > 0 && (
-                <Group justify="space-between">
-                  <Text>Product Discount</Text>
-                  <Text fw={500} c="green">
-                    -{formatPrice(checkoutPreview.productDiscountAmount)}
-                  </Text>
-                </Group>
-              )}
+            {checkoutPreview && checkoutPreview.productDiscountAmount > 0 && (
+              <Group justify="space-between">
+                <Text>Product Discount</Text>
+                <Text fw={500} c="green">
+                  -{formatPrice(checkoutPreview.productDiscountAmount)}
+                </Text>
+              </Group>
+            )}
 
-            {checkoutPreview?.shippingDiscountAmount &&
-              checkoutPreview?.shippingDiscountAmount > 0 && (
-                <Group justify="space-between">
-                  <Text>Shipping Discount</Text>
-                  <Text fw={500} c="green">
-                    -{formatPrice(checkoutPreview.shippingDiscountAmount)}
-                  </Text>
-                </Group>
-              )}
+            {checkoutPreview && checkoutPreview.shippingDiscountAmount > 0 && (
+              <Group justify="space-between">
+                <Text>Shipping Discount</Text>
+                <Text fw={500} c="green">
+                  -{formatPrice(checkoutPreview.shippingDiscountAmount)}
+                </Text>
+              </Group>
+            )}
 
             <Divider />
 
             <Group justify="space-between">
               <Text fw={700}>Total</Text>
-              <Text style={{ color: 'red', fontSize: '1.2rem' }} fw={700}>
-                {checkoutPreview
-                  ? formatPrice(checkoutPreview.total)
-                  : formatPrice(selectedItemsTotal)}
-              </Text>
+              {fetchingCheckoutPreview ? (
+                <Loader size="sm" />
+              ) : (
+                <Text style={{ color: 'red', fontSize: '1.2rem' }} fw={700}>
+                  {checkoutPreview
+                    ? formatPrice(checkoutPreview.total)
+                    : formatPrice(selectedItemsTotal)}
+                </Text>
+              )}
             </Group>
           </Stack>
 
@@ -473,10 +563,13 @@ function CheckoutPage() {
               fullWidth
               size="lg"
               disabled={
-                !selectedAddress || loadingCheckoutPreview || checkout.isPending
+                !selectedAddress ||
+                fetchingCheckoutPreview ||
+                checkout.isPending
               }
               onClick={handleCheckout}
               leftSection={<FiCheckCircle />}
+              loading={fetchingCheckoutPreview}
             >
               {checkout.isPending
                 ? 'Processing...'

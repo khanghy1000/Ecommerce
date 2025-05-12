@@ -64,7 +64,7 @@ export const useOrders = (
     },
   });
 
-  const { data: checkoutPreview, isLoading: loadingCheckoutPreview } = useQuery(
+  const { data: checkoutPreview, isLoading: loadingCheckoutPreview, isFetching: fetchingCheckoutPreview } = useQuery(
     {
       queryKey: ['checkoutPreview', checkoutPreviewRequest],
       queryFn: async () => {
@@ -130,6 +130,7 @@ export const useOrders = (
     // Checkout
     checkoutPreview,
     loadingCheckoutPreview,
+    fetchingCheckoutPreview,
     checkout,
   };
 };
