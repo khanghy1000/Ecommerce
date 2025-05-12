@@ -67,6 +67,7 @@ export const useOrders = (
   const { data: checkoutPreview, isLoading: loadingCheckoutPreview, isFetching: fetchingCheckoutPreview } = useQuery(
     {
       queryKey: ['checkoutPreview', checkoutPreviewRequest],
+      retry: false,
       queryFn: async () => {
         if (!checkoutPreviewRequest) return null;
         return await customFetch<CheckoutPricePreviewResponseDto>(
