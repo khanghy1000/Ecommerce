@@ -28,6 +28,9 @@ import {
   Loader,
   Table,
   Center,
+  TextInput,
+  Select,
+  ActionIcon,
 } from '@mantine/core';
 import { formatPrice } from '../../lib/utils';
 import {
@@ -38,6 +41,8 @@ import {
   CouponResponseDto,
   PaymentMethod,
   UserAddressResponseDto,
+  AddUserAddressRequestDto,
+  EditUserAddressRequestDto,
 } from '../../lib/types';
 import { Link } from 'react-router';
 import {
@@ -47,10 +52,14 @@ import {
   FiCreditCard,
   FiEdit2,
   FiMapPin,
+  FiPlus,
   FiTag,
+  FiTrash2,
   FiTruck,
 } from 'react-icons/fi';
 import { format } from 'date-fns';
+import { useForm } from '@mantine/form';
+import { useLocations } from '../../lib/hooks/useLocations';
 
 // Format coupon value for display
 const formatCouponValue = (coupon: CouponResponseDto) => {
@@ -59,6 +68,202 @@ const formatCouponValue = (coupon: CouponResponseDto) => {
   } else {
     return formatPrice(coupon.value);
   }
+};
+
+// AddressForm component for add/edit address
+type AddressFormProps = {
+  initialValues?: UserAddressResponseDto;
+  onSubmit: (
+    values: AddUserAddressRequestDto | EditUserAddressRequestDto
+  ) => void;
+  onCancel: () => void;
+  isSubmitting: boolean;
+};
+
+const AddressForm = ({
+  initialValues,
+  onSubmit,
+  onCancel,
+  isSubmitting,
+}: AddressFormProps) => {
+  const [selectedProvinceId, setSelectedProvinceId] = useState<
+    number | undefined
+  >(initialValues?.wardId ? undefined : undefined);
+  const [selectedDistrictId, setSelectedDistrictId] = useState<
+    number | undefined
+  >(initialValues?.wardId ? undefined : undefined);
+
+  // Use the useLocations hook to get provinces, districts, and wards
+  const {
+    provinces,
+    districts,
+    wards,
+    loadingProvinces,
+    loadingDistricts,
+    loadingWards,
+  } = useLocations(selectedProvinceId, selectedDistrictId);
+
+  const form = useForm<AddUserAddressRequestDto | EditUserAddressRequestDto>({
+    mode: 'uncontrolled',
+    initialValues: initialValues
+      ? {
+          name: initialValues.name,
+          phoneNumber: initialValues.phoneNumber,
+          address: initialValues.address,
+          wardId: initialValues.wardId,
+          isDefault: initialValues.isDefault,
+        }
+      : {
+          name: '',
+          phoneNumber: '',
+          address: '',
+          wardId: 0,
+          isDefault: false,
+        },
+  });
+
+  // Find the ward, district, and province for the selected address
+  useEffect(() => {
+    if (initialValues?.wardId && wards.length > 0) {
+      const ward = wards.find((w) => w.id === initialValues.wardId);
+      if (ward) {
+        setSelectedDistrictId(ward.districtId);
+      }
+    }
+  }, [initialValues?.wardId, wards]);
+
+  useEffect(() => {
+    if (selectedDistrictId && districts.length > 0) {
+      const district = districts.find((d) => d.id === selectedDistrictId);
+      if (district) {
+        setSelectedProvinceId(district.provinceId);
+      }
+    }
+  }, [selectedDistrictId, districts]);
+
+  const handleProvinceChange = (value: string | null) => {
+    if (value) {
+      const provinceId = parseInt(value);
+      setSelectedProvinceId(provinceId);
+      form.setFieldValue('provinceId', provinceId);
+
+      // Reset district and ward selections
+      setSelectedDistrictId(undefined);
+      form.setFieldValue('districtId', 0);
+      form.setFieldValue('wardId', 0);
+    }
+  };
+
+  const handleDistrictChange = (value: string | null) => {
+    if (value) {
+      const districtId = parseInt(value);
+      setSelectedDistrictId(districtId);
+      form.setFieldValue('districtId', districtId);
+
+      // Reset ward selection
+      form.setFieldValue('wardId', 0);
+    }
+  };
+
+  const handleSubmit = (
+    values: AddUserAddressRequestDto | EditUserAddressRequestDto
+  ) => {
+    onSubmit(values);
+  };
+
+  return (
+    <form onSubmit={form.onSubmit(handleSubmit)}>
+      <Stack>
+        <TextInput
+          required
+          label="Full Name"
+          placeholder="Enter your full name"
+          {...form.getInputProps('name')}
+        />
+
+        <TextInput
+          required
+          label="Phone Number"
+          placeholder="Enter your phone number"
+          {...form.getInputProps('phoneNumber')}
+        />
+
+        <TextInput
+          required
+          label="Address"
+          placeholder="Street address, apartment, etc."
+          {...form.getInputProps('address')}
+        />
+
+        <Select
+          required
+          label="Province"
+          placeholder="Select province"
+          data={
+            provinces?.map((province) => ({
+              value: province.id.toString(),
+              label: province.name,
+            })) || []
+          }
+          value={selectedProvinceId?.toString()}
+          onChange={handleProvinceChange}
+          disabled={loadingProvinces}
+        />
+
+        <Select
+          required
+          label="District"
+          placeholder="Select district"
+          data={
+            districts?.map((district) => ({
+              value: district.id.toString(),
+              label: district.name,
+            })) || []
+          }
+          value={selectedDistrictId?.toString()}
+          onChange={handleDistrictChange}
+          disabled={loadingDistricts || !selectedProvinceId}
+        />
+
+        <Select
+          required
+          label="Ward"
+          placeholder="Select ward"
+          data={
+            wards?.map((ward) => ({
+              value: ward.id.toString(),
+              label: ward.name,
+            })) || []
+          }
+          onChange={(value) => {
+            if (value) {
+              form.setFieldValue('wardId', parseInt(value));
+            }
+          }}
+          disabled={loadingWards || !selectedDistrictId}
+        />
+
+        <Flex align="center" gap="md">
+          <Radio
+            label="Set as default address"
+            checked={form.values.isDefault}
+            onChange={(event) =>
+              form.setFieldValue('isDefault', event.currentTarget.checked)
+            }
+          />
+        </Flex>
+
+        <Group justify="flex-end" mt="md">
+          <Button variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button type="submit" loading={isSubmitting}>
+            {initialValues ? 'Update Address' : 'Add Address'}
+          </Button>
+        </Group>
+      </Stack>
+    </form>
+  );
 };
 
 // ShippingAddressCard component
@@ -101,6 +306,9 @@ type AddressSelectionModalProps = {
   selectedAddressId: number | null;
   onAddressSelect: (addressId: number) => void;
   onSetDefault: (addressId: number) => void;
+  onEdit: (address: UserAddressResponseDto) => void;
+  onDelete: (addressId: number) => void;
+  onAdd: () => void;
 };
 
 const AddressSelectionModal = ({
@@ -110,15 +318,22 @@ const AddressSelectionModal = ({
   selectedAddressId,
   onAddressSelect,
   onSetDefault,
+  onEdit,
+  onDelete,
+  onAdd,
 }: AddressSelectionModalProps) => {
   return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      title="Select Shipping Address"
-      size="auto"
-    >
+    <Modal opened={opened} onClose={onClose} title="Shipping Address" size="lg">
       <Stack>
+        <Button
+          leftSection={<FiPlus size={16} />}
+          variant="outline"
+          onClick={onAdd}
+          mb="sm"
+        >
+          Add New Address
+        </Button>
+
         {addresses?.map((address) => (
           <Card
             key={address.id}
@@ -161,32 +376,85 @@ const AddressSelectionModal = ({
                       {address.address}, {address.wardName},{' '}
                       {address.districtName}, {address.provinceName}
                     </Text>
-                    {!address.isDefault && (
-                      <Button
-                        variant="outline"
-                        size="xs"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSetDefault(address.id);
-                        }}
-                      >
-                        Set as default
-                      </Button>
-                    )}
                   </Group>
                 </Box>
+              </Group>
+              <Group>
+                <ActionIcon
+                  variant="subtle"
+                  color="blue"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(address);
+                  }}
+                >
+                  <FiEdit2 size={16} />
+                </ActionIcon>
+                {!address.isDefault && (
+                  <ActionIcon
+                    variant="subtle"
+                    color="red"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(address.id);
+                    }}
+                  >
+                    <FiTrash2 size={16} />
+                  </ActionIcon>
+                )}
+                {!address.isDefault && (
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSetDefault(address.id);
+                    }}
+                  >
+                    Set as default
+                  </Button>
+                )}
               </Group>
             </Group>
           </Card>
         ))}
       </Stack>
 
-      <Group justify="space-between" mt="xl">
-        <Button component={Link} to="/account/addresses/new" variant="outline">
-          Add New Address
-        </Button>
+      <Group justify="flex-end" mt="xl">
         <Button onClick={onClose}>Confirm Selection</Button>
       </Group>
+    </Modal>
+  );
+};
+
+// Modal for adding/editing addresses
+type AddressFormModalProps = {
+  opened: boolean;
+  onClose: () => void;
+  title: string;
+  editingAddress?: UserAddressResponseDto;
+  onSubmit: (
+    values: AddUserAddressRequestDto | EditUserAddressRequestDto
+  ) => void;
+  isSubmitting: boolean;
+};
+
+const AddressFormModal = ({
+  opened,
+  onClose,
+  title,
+  editingAddress,
+  onSubmit,
+  isSubmitting,
+}: AddressFormModalProps) => {
+  return (
+    <Modal opened={opened} onClose={onClose} title={title} size="lg">
+      <AddressForm
+        initialValues={editingAddress}
+        onSubmit={onSubmit}
+        onCancel={onClose}
+        isSubmitting={isSubmitting}
+      />
     </Modal>
   );
 };
@@ -201,6 +469,9 @@ type ShippingAddressSectionProps = {
   selectedAddressId: number | null;
   onAddressSelect: (addressId: number) => void;
   onSetDefault: (addressId: number) => void;
+  onEdit: (address: UserAddressResponseDto) => void;
+  onDelete: (addressId: number) => void;
+  onAdd: () => void;
 };
 
 const ShippingAddressSection = ({
@@ -212,6 +483,9 @@ const ShippingAddressSection = ({
   selectedAddressId,
   onAddressSelect,
   onSetDefault,
+  onEdit,
+  onDelete,
+  onAdd,
 }: ShippingAddressSectionProps) => {
   return (
     <Paper shadow="xs" p="md" withBorder>
@@ -249,6 +523,9 @@ const ShippingAddressSection = ({
         selectedAddressId={selectedAddressId}
         onAddressSelect={onAddressSelect}
         onSetDefault={onSetDefault}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onAdd={onAdd}
       />
     </Paper>
   );
@@ -781,7 +1058,14 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { cartItems, isLoadingCart } = useCart();
-  const { addresses, loadingAddresses, setDefaultAddress } = useAddresses();
+  const {
+    addresses,
+    loadingAddresses,
+    setDefaultAddress,
+    addAddress,
+    editAddress,
+    deleteAddress,
+  } = useAddresses();
   const { coupons, loadingCoupons } = useCoupons();
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
     null
@@ -798,6 +1082,12 @@ function CheckoutPage() {
   >(undefined);
   const [selectedShippingCoupon, setSelectedShippingCoupon] = useState<
     string | undefined
+  >(undefined);
+
+  // State for address form modal
+  const [addressFormModalOpened, setAddressFormModalOpened] = useState(false);
+  const [editingAddress, setEditingAddress] = useState<
+    UserAddressResponseDto | undefined
   >(undefined);
 
   // Get product IDs from URL search params
@@ -866,6 +1156,55 @@ function CheckoutPage() {
   // Handle setting address as default
   const handleSetDefault = (addressId: number) => {
     setDefaultAddress.mutate(addressId);
+  };
+
+  // Handle edit address
+  const handleEditAddress = (address: UserAddressResponseDto) => {
+    setEditingAddress(address);
+    setAddressFormModalOpened(true);
+  };
+
+  // Handle delete address
+  const handleDeleteAddress = (addressId: number) => {
+    if (window.confirm('Are you sure you want to delete this address?')) {
+      deleteAddress.mutate(addressId);
+    }
+  };
+
+  // Handle add new address
+  const handleAddAddress = () => {
+    setEditingAddress(undefined);
+    setAddressFormModalOpened(true);
+  };
+
+  // Handle form submission for adding/editing address
+  const handleAddressFormSubmit = (
+    values: AddUserAddressRequestDto | EditUserAddressRequestDto
+  ) => {
+    if (editingAddress) {
+      // Edit existing address
+      editAddress.mutate(
+        {
+          id: editingAddress.id,
+          addressData: values as EditUserAddressRequestDto,
+        },
+        {
+          onSuccess: () => {
+            setAddressFormModalOpened(false);
+            setAddressModalOpened(true);
+          },
+        }
+      );
+    } else {
+      // Add new address
+      addAddress.mutate(values as AddUserAddressRequestDto, {
+        onSuccess: (newAddress) => {
+          setAddressFormModalOpened(false);
+          setSelectedAddressId(newAddress.id);
+          setAddressModalOpened(true);
+        },
+      });
+    }
   };
 
   // Handle coupon selection
@@ -1012,6 +1351,19 @@ function CheckoutPage() {
           selectedAddressId={selectedAddressId}
           onAddressSelect={handleAddressSelect}
           onSetDefault={handleSetDefault}
+          onEdit={handleEditAddress}
+          onDelete={handleDeleteAddress}
+          onAdd={handleAddAddress}
+        />
+
+        {/* Address Form Modal */}
+        <AddressFormModal
+          opened={addressFormModalOpened}
+          onClose={() => setAddressFormModalOpened(false)}
+          title={editingAddress ? 'Edit Address' : 'Add New Address'}
+          editingAddress={editingAddress}
+          onSubmit={handleAddressFormSubmit}
+          isSubmitting={addAddress.isPending || editAddress.isPending}
         />
 
         {/* Order Items Section */}
