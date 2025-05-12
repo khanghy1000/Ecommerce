@@ -45,7 +45,7 @@ async function customFetch<T>(
   addLoading();
 
   if (import.meta.env.DEV) {
-    await sleep(1000);
+    // await sleep(1000);
   }
 
   try {

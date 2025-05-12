@@ -17,8 +17,6 @@ import {
   CheckoutRequestDto,
   PaymentMethod,
   UserAddressResponseDto,
-  AddUserAddressRequestDto,
-  EditUserAddressRequestDto,
 } from '../../lib/types';
 import { Link } from 'react-router';
 import { FiAlertCircle, FiArrowLeft } from 'react-icons/fi';
@@ -72,6 +70,7 @@ function CheckoutPage() {
 
   // Find default address and set it as selected initially
   useEffect(() => {
+    if (selectedAddressId) return;
     if (addresses?.length) {
       const defaultAddress = addresses.find((addr) => addr.isDefault);
       if (defaultAddress) {
@@ -80,7 +79,7 @@ function CheckoutPage() {
         setSelectedAddressId(addresses[0].id);
       }
     }
-  }, [addresses]);
+  }, [addresses, selectedAddressId]);
 
   // Filter coupons by type
   const productCoupons =
@@ -152,36 +151,6 @@ function CheckoutPage() {
   const handleAddAddress = () => {
     setEditingAddress(undefined);
     setAddressFormModalOpened(true);
-  };
-
-  // Handle form submission for adding/editing address
-  const handleAddressFormSubmit = (
-    values: AddUserAddressRequestDto | EditUserAddressRequestDto
-  ) => {
-    if (editingAddress) {
-      // Edit existing address
-      editAddress.mutate(
-        {
-          id: editingAddress.id,
-          addressData: values as EditUserAddressRequestDto,
-        },
-        {
-          onSuccess: () => {
-            setAddressFormModalOpened(false);
-            setAddressModalOpened(true);
-          },
-        }
-      );
-    } else {
-      // Add new address
-      addAddress.mutate(values as AddUserAddressRequestDto, {
-        onSuccess: (newAddress) => {
-          setAddressFormModalOpened(false);
-          setSelectedAddressId(newAddress.id);
-          setAddressModalOpened(true);
-        },
-      });
-    }
   };
 
   // Handle coupon selection
@@ -339,7 +308,10 @@ function CheckoutPage() {
           onClose={() => setAddressFormModalOpened(false)}
           title={editingAddress ? 'Edit Address' : 'Add New Address'}
           editingAddress={editingAddress}
-          onSubmit={handleAddressFormSubmit}
+          onSubmitSuccess={() => {
+            setAddressFormModalOpened(false);
+            setAddressModalOpened(true);
+          }}
           isSubmitting={addAddress.isPending || editAddress.isPending}
         />
 

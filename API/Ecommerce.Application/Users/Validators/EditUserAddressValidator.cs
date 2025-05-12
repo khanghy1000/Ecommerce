@@ -25,9 +25,9 @@ public class EditUserAddressValidator : AbstractValidator<EditUserAddress.Comman
             .NotEmpty()
             .WithMessage("Phone number is required")
             .MinimumLength(10)
-            .WithMessage("PhoneNumber must not be less than 10 characters.")
+            .WithMessage("Phone Number must not be less than 10 characters.")
             .MaximumLength(20)
-            .WithMessage("PhoneNumber must not exceed 50 characters.");
+            .WithMessage("Phone Number must not exceed 50 characters.");
 
         RuleFor(x => x.EditUserAddressRequestDto.WardId)
             .NotEmpty()

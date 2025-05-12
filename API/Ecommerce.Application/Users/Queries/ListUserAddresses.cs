@@ -28,7 +28,7 @@ public static class ListUserAddresses
                 .ThenInclude(w => w.District)
                 .ThenInclude(d => d.Province)
                 .Where(a => a.UserId == userId)
-                .OrderByDescending(a => a.IsDefault)
+                .OrderBy(a => a.Name)
                 .ProjectTo<UserAddressResponseDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
