@@ -296,7 +296,7 @@ function ProductPage() {
               height={30}
               radius="xl"
             />
-            <Anchor component={Link} to={`/users/${product.shopId}`} fw={500}>
+            <Anchor component={Link} to={`/shop/${product.shopId}`} fw={500}>
               {product.shopName}
             </Anchor>
           </Group>

@@ -436,7 +436,7 @@ function CheckoutPage() {
                     variant="subtle"
                     px="xs"
                     component={Link}
-                    to={`/users/${group.shopId}`}
+                    to={`/shop/${group.shopId}`}
                   >
                     <Avatar
                       src={group.shopImageUrl}
