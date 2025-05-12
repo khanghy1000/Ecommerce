@@ -1,6 +1,7 @@
 using AutoMapper;
 using Ecommerce.Application.CartItems.DTOs;
 using Ecommerce.Application.Categories.DTOs;
+using Ecommerce.Application.Coupons.DTOs;
 using Ecommerce.Application.Interfaces;
 using Ecommerce.Application.Locations.DTOs;
 using Ecommerce.Application.Products.DTOs;
@@ -257,5 +258,17 @@ public class MappingProfiles : Profile
                 opt => opt.MapFrom(src => src.Product.Subcategories)
             )
             .ForMember(dest => dest.Photos, opt => opt.MapFrom(src => src.Product.Photos));
+
+        // Coupon mappings
+        CreateMap<Coupon, CouponResponseDto>();
+
+        CreateMap<CreateCouponRequestDto, Coupon>()
+            .ForMember(dest => dest.UsedCount, opt => opt.MapFrom(_ => 0))
+            .ForMember(dest => dest.Categories, opt => opt.Ignore());
+
+        CreateMap<EditCouponRequestDto, Coupon>()
+            .ForMember(dest => dest.Code, opt => opt.Ignore())
+            .ForMember(dest => dest.UsedCount, opt => opt.Ignore())
+            .ForMember(dest => dest.Categories, opt => opt.Ignore());
     }
 }
