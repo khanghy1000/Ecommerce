@@ -7,14 +7,15 @@ import {
   Group,
   Button,
 } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { useState, useEffect } from 'react';
+import { useForm, zodResolver } from '@mantine/form';
+import { useState } from 'react';
 import { useLocations } from '../../lib/hooks/useLocations';
 import {
   UserAddressResponseDto,
   AddUserAddressRequestDto,
   EditUserAddressRequestDto,
 } from '../../lib/types';
+import { z } from 'zod';
 
 // AddressForm component for add/edit address
 type AddressFormProps = {
@@ -25,6 +26,19 @@ type AddressFormProps = {
   onCancel: () => void;
   isSubmitting: boolean;
 };
+
+const schema = z.object({
+  address: z.string().min(5, 'Address must have at least 5 characters'),
+  provinceId: z.number().min(1, 'Please select a province'),
+  districtId: z.number().min(1, 'Please select a district'),
+  wardId: z.number().min(1, 'Please select a ward'),
+  phoneNumber: z.string().min(10, 'Please enter a valid phone number'),
+  name: z.string().min(2, 'Name must have at least 2 characters'),
+  isDefault: z.boolean(),
+});
+
+type AddressFormValues = z.infer<typeof schema>;
+
 export const AddressForm = ({
   initialValues,
   onSubmit,
@@ -33,10 +47,13 @@ export const AddressForm = ({
 }: AddressFormProps) => {
   const [selectedProvinceId, setSelectedProvinceId] = useState<
     number | undefined
-  >(initialValues?.wardId ? undefined : undefined);
+  >(initialValues?.provinceId ?? undefined);
   const [selectedDistrictId, setSelectedDistrictId] = useState<
     number | undefined
-  >(initialValues?.wardId ? undefined : undefined);
+    >(initialValues?.districtId ?? undefined);
+  const [selectedWardId, setSelectedWardId] = useState<
+    number | undefined
+    >(initialValues?.wardId ?? undefined);
 
   // Use the useLocations hook to get provinces, districts, and wards
   const {
@@ -48,13 +65,15 @@ export const AddressForm = ({
     loadingWards,
   } = useLocations(selectedProvinceId, selectedDistrictId);
 
-  const form = useForm<AddUserAddressRequestDto | EditUserAddressRequestDto>({
+  const form = useForm<AddressFormValues>({
     mode: 'uncontrolled',
     initialValues: initialValues
       ? {
           name: initialValues.name,
           phoneNumber: initialValues.phoneNumber,
           address: initialValues.address,
+          provinceId: initialValues.provinceId,
+          districtId: initialValues.districtId,
           wardId: initialValues.wardId,
           isDefault: initialValues.isDefault,
         }
@@ -62,29 +81,13 @@ export const AddressForm = ({
           name: '',
           phoneNumber: '',
           address: '',
+          provinceId: 0,
+          districtId: 0,
           wardId: 0,
           isDefault: false,
         },
+    validate: zodResolver(schema),
   });
-
-  // Find the ward, district, and province for the selected address
-  useEffect(() => {
-    if (initialValues?.wardId && wards.length > 0) {
-      const ward = wards.find((w) => w.id === initialValues.wardId);
-      if (ward) {
-        setSelectedDistrictId(ward.districtId);
-      }
-    }
-  }, [initialValues?.wardId, wards]);
-
-  useEffect(() => {
-    if (selectedDistrictId && districts.length > 0) {
-      const district = districts.find((d) => d.id === selectedDistrictId);
-      if (district) {
-        setSelectedProvinceId(district.provinceId);
-      }
-    }
-  }, [selectedDistrictId, districts]);
 
   const handleProvinceChange = (value: string | null) => {
     if (value) {
@@ -107,6 +110,14 @@ export const AddressForm = ({
 
       // Reset ward selection
       form.setFieldValue('wardId', 0);
+    }
+  };
+
+  const handleWardChange = (value: string | null) => {
+    if (value) {
+      const wardId = parseInt(value);
+      setSelectedWardId(wardId);
+      form.setFieldValue('wardId', wardId);
     }
   };
 
@@ -153,6 +164,7 @@ export const AddressForm = ({
           value={selectedProvinceId?.toString()}
           onChange={handleProvinceChange}
           disabled={loadingProvinces}
+          error={form.errors.provinceId}
         />
 
         <Select
@@ -168,6 +180,7 @@ export const AddressForm = ({
           value={selectedDistrictId?.toString()}
           onChange={handleDistrictChange}
           disabled={loadingDistricts || !selectedProvinceId}
+          error={form.errors.districtId}
         />
 
         <Select
@@ -180,12 +193,10 @@ export const AddressForm = ({
               label: ward.name,
             })) || []
           }
-          onChange={(value) => {
-            if (value) {
-              form.setFieldValue('wardId', parseInt(value));
-            }
-          }}
+          onChange={handleWardChange}
+          value={selectedWardId?.toString()}
           disabled={loadingWards || !selectedDistrictId}
+          error={form.errors.wardId}
         />
 
         <Flex align="center" gap="md">

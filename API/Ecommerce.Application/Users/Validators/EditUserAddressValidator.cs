@@ -9,8 +9,6 @@ public class EditUserAddressValidator : AbstractValidator<EditUserAddress.Comman
 {
     public EditUserAddressValidator()
     {
-        RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required");
-
         RuleFor(x => x.EditUserAddressRequestDto.Address)
             .NotEmpty()
             .WithMessage("Address is required")

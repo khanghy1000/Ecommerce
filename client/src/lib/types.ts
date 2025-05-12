@@ -260,6 +260,8 @@ export type UserAddressResponseDto = {
   phoneNumber: string;
   address: string;
   wardId: number;
+  districtId: number;
+  provinceId: number;
   wardName: string;
   districtName: string;
   provinceName: string;

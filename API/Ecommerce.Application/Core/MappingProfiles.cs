@@ -104,6 +104,11 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.District.Name));
 
         CreateMap<UserAddress, UserAddressResponseDto>()
+            .ForMember(dest => dest.DistrictId, opt => opt.MapFrom(src => src.Ward.DistrictId))
+            .ForMember(
+                dest => dest.ProvinceId,
+                opt => opt.MapFrom(src => src.Ward.District.ProvinceId)
+            )
             .ForMember(dest => dest.WardName, opt => opt.MapFrom(src => src.Ward.Name))
             .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.Ward.District.Name))
             .ForMember(
