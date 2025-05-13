@@ -46,6 +46,7 @@ public static class UpdatePopularProduct
                         .Where(op =>
                             op.Product.Subcategories.Any(s => subcategoryIds.Contains(s.Id))
                         )
+                        .Where(op => op.Product.Active)
                         .GroupBy(op => op.ProductId)
                         .Select(g => new
                         {

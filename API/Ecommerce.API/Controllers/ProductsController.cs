@@ -22,7 +22,9 @@ public class ProductsController : BaseApiController
         int? categoryId = null,
         [FromQuery] List<int>? subCategoryIds = null,
         decimal? minPrice = null,
-        decimal? maxPrice = null
+        decimal? maxPrice = null,
+        bool includeInactive = false,
+        string? shopId = null
     )
     {
         var products = await Mediator.Send(
@@ -37,6 +39,8 @@ public class ProductsController : BaseApiController
                 SubcategoryIds = subCategoryIds,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
+                IncludeInactive = includeInactive,
+                ShopId = shopId,
             }
         );
         return HandleResult(products);

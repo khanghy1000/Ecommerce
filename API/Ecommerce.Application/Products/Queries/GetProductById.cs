@@ -1,7 +1,9 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Ecommerce.Application.Core;
+using Ecommerce.Application.Interfaces;
 using Ecommerce.Application.Products.DTOs;
+using Ecommerce.Domain;
 using Ecommerce.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +17,7 @@ public static class GetProductById
         public int Id { get; set; }
     }
 
-    public class Handler(AppDbContext dbContext, IMapper mapper)
+    public class Handler(AppDbContext dbContext, IMapper mapper, IUserAccessor userAccessor)
         : IRequestHandler<Query, Result<ProductResponseDto>>
     {
         public async Task<Result<ProductResponseDto>> Handle(
@@ -29,6 +31,28 @@ public static class GetProductById
 
             if (product == null)
                 return Result<ProductResponseDto>.Failure("Product not found", 404);
+
+            if (!product.Active)
+            {
+                User user;
+                string userRole;
+
+                try
+                {
+                    user = await userAccessor.GetUserAsync();
+                    userRole = userAccessor.GetUserRoles().First();
+                }
+                catch (Exception ex)
+                {
+                    return Result<ProductResponseDto>.Failure("Product not found", 404);
+                }
+
+                if (
+                    userRole == nameof(UserRole.Buyer)
+                    || userRole == nameof(UserRole.Shop) && product.ShopId != user.Id
+                )
+                    return Result<ProductResponseDto>.Failure("Product not found", 404);
+            }
 
             return Result<ProductResponseDto>.Success(product);
         }

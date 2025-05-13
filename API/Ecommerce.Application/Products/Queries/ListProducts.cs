@@ -1,7 +1,9 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Ecommerce.Application.Core;
+using Ecommerce.Application.Interfaces;
 using Ecommerce.Application.Products.DTOs;
+using Ecommerce.Domain;
 using Ecommerce.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +23,11 @@ public static class ListProducts
         public List<int>? SubcategoryIds { get; set; }
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
+        public bool IncludeInactive { get; set; } = false;
+        public string? ShopId { get; set; }
     }
 
-    public class Handler(AppDbContext dbContext, IMapper mapper)
+    public class Handler(AppDbContext dbContext, IMapper mapper, IUserAccessor userAccessor)
         : IRequestHandler<Query, Result<PagedList<ProductResponseDto>>>
     {
         public async Task<Result<PagedList<ProductResponseDto>>> Handle(
@@ -97,6 +101,62 @@ public static class ListProducts
                     : query.OrderByDescending(x => x.Name),
                 _ => query,
             };
+
+            if (request.ShopId != null)
+            {
+                query = query.Where(x => x.ShopId == request.ShopId);
+            }
+
+            if (!request.IncludeInactive)
+            {
+                query = query.Where(x => x.Active);
+            }
+
+            if (request.IncludeInactive)
+            {
+                User user;
+                string userRole;
+
+                try
+                {
+                    user = await userAccessor.GetUserAsync();
+                    userRole = userAccessor.GetUserRoles().First();
+                }
+                catch (Exception ex)
+                {
+                    return Result<PagedList<ProductResponseDto>>.Failure(
+                        "Shop or Admin role required",
+                        403
+                    );
+                }
+
+                if (userRole == nameof(UserRole.Buyer))
+                {
+                    return Result<PagedList<ProductResponseDto>>.Failure(
+                        "Buyer role cannot access inactive products.",
+                        403
+                    );
+                }
+
+                if (userRole == nameof(UserRole.Shop))
+                {
+                    if (request.ShopId == null)
+                    {
+                        return Result<PagedList<ProductResponseDto>>.Failure(
+                            "ShopId is required for Shop role when IncludeInactive is true.",
+                            400
+                        );
+                    }
+
+                    if (request.ShopId != null && request.ShopId != user.Id)
+                    {
+                        return Result<PagedList<ProductResponseDto>>.Failure(
+                            "ShopId does not match the user's id.",
+                            400
+                        );
+                    }
+                }
+            }
 
             var products = await query
                 .Skip((request.PageNumber - 1) * request.PageSize)
