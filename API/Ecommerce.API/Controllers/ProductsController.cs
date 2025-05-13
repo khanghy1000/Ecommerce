@@ -141,4 +141,67 @@ public class ProductsController : BaseApiController
         );
         return HandleResult(result);
     }
+
+    [HttpGet("{id}/discounts")]
+    [AllowAnonymous]
+    public async Task<ActionResult<List<ProductDiscountResponseDto>>> ListProductDiscounts(int id)
+    {
+        var result = await Mediator.Send(new ListProductDiscounts.Query { ProductId = id });
+        return HandleResult(result);
+    }
+
+    [HttpGet("{id}/discounts/{discountId}")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ProductDiscountResponseDto>> GetProductDiscountById(
+        int id,
+        int discountId
+    )
+    {
+        var result = await Mediator.Send(
+            new GetProductDiscountById.Query { ProductId = id, DiscountId = discountId }
+        );
+        return HandleResult(result);
+    }
+
+    [HttpPost("{id}/discounts")]
+    [Authorize(Roles = "Shop,Admin", Policy = "IsProductOwner")]
+    public async Task<ActionResult<ProductDiscountResponseDto>> AddProductDiscount(
+        int id,
+        AddProductDiscountRequestDto discountDto
+    )
+    {
+        var result = await Mediator.Send(
+            new AddProductDiscount.Command { ProductId = id, DiscountDto = discountDto }
+        );
+        return HandleResult(result);
+    }
+
+    [HttpPut("{id}/discounts/{discountId}")]
+    [Authorize(Roles = "Shop,Admin", Policy = "IsProductOwner")]
+    public async Task<ActionResult<ProductDiscountResponseDto>> EditProductDiscount(
+        int id,
+        int discountId,
+        EditProductDiscountRequestDto discountDto
+    )
+    {
+        var result = await Mediator.Send(
+            new EditProductDiscount.Command
+            {
+                ProductId = id,
+                DiscountId = discountId,
+                DiscountDto = discountDto,
+            }
+        );
+        return HandleResult(result);
+    }
+
+    [HttpDelete("{id}/discounts/{discountId}")]
+    [Authorize(Roles = "Shop,Admin", Policy = "IsProductOwner")]
+    public async Task<ActionResult<Unit>> DeleteProductDiscount(int id, int discountId)
+    {
+        var result = await Mediator.Send(
+            new DeleteProductDiscount.Command { ProductId = id, DiscountId = discountId }
+        );
+        return HandleResult(result);
+    }
 }

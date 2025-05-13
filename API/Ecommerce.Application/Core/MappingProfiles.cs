@@ -36,6 +36,14 @@ public class MappingProfiles : Profile
         CreateMap<CreateProductRequestDto, Product>();
         CreateMap<EditProductRequestDto, Product>();
 
+        // ProductDiscount mappings
+        CreateMap<ProductDiscount, ProductDiscountResponseDto>()
+            .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+            .ForMember(
+                dest => dest.RegularPrice,
+                opt => opt.MapFrom(src => src.Product.RegularPrice)
+            );
+
         // Category mappings
         CreateMap<Category, CategoryResponseDto>();
         CreateMap<CreateCategoryRequestDto, Category>();
