@@ -12,6 +12,16 @@ namespace Ecommerce.API.Controllers;
 [Authorize]
 public class UsersController : BaseApiController
 {
+    // display name
+    [HttpPut("display-name")]
+    public async Task<ActionResult<Unit>> UpdateDisplayName(string displayName)
+    {
+        var result = await Mediator.Send(
+            new UpdateUserDisplayName.Command { DisplayName = displayName }
+        );
+        return HandleResult(result);
+    }
+
     [HttpPut("image")]
     public async Task<ActionResult<Unit>> UpdateUserImage(IFormFile file)
     {
