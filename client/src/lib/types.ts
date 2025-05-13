@@ -69,6 +69,8 @@ export type ListProductsRequest = {
   subCategoryIds?: number[];
   minPrice?: number;
   maxPrice?: number;
+  includeInactive?: boolean;
+  shopId?: string;
 };
 
 export type ProductResponseDto = {
