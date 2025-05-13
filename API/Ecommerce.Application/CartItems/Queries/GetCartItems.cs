@@ -23,6 +23,16 @@ public static class GetCartItems
         {
             var user = await userAccessor.GetUserAsync();
 
+            var inactiveCartItems = await dbContext
+                .CartItems.Where(ci => ci.UserId == user.Id && !ci.Product.Active)
+                .ToListAsync(cancellationToken);
+
+            if (inactiveCartItems.Any())
+            {
+                dbContext.CartItems.RemoveRange(inactiveCartItems);
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+
             var cartItems = await dbContext
                 .CartItems.Where(ci => ci.UserId == user.Id)
                 .ProjectTo<CartItemResponseDto>(mapper.ConfigurationProvider)

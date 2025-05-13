@@ -53,6 +53,9 @@ public class Checkout
             if (cartItems.Count == 0)
                 return Result<CheckoutResponseDto>.Failure("Cart is empty", 400);
 
+            if (cartItems.Any(ci => ci.Product.Active))
+                return Result<CheckoutResponseDto>.Failure("Some products are not available", 400);
+
             var groupedCartItems = cartItems
                 .GroupBy(ci => ci.Product.Shop)
                 .ToDictionary(g => g.Key, g => g.ToList());
