@@ -12,6 +12,13 @@ namespace Ecommerce.API.Controllers;
 [Authorize]
 public class UsersController : BaseApiController
 {
+    [HttpPut("image")]
+    public async Task<ActionResult<Unit>> UpdateUserImage(IFormFile file)
+    {
+        var result = await Mediator.Send(new UpdateUserImage.Command { File = file });
+        return HandleResult(result);
+    }
+
     [HttpGet("addresses")]
     public async Task<ActionResult<List<UserAddressResponseDto>>> GetUserAddresses()
     {
