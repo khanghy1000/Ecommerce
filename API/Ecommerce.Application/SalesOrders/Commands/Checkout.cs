@@ -56,6 +56,9 @@ public class Checkout
             if (cartItems.Any(ci => ci.Product.Active))
                 return Result<CheckoutResponseDto>.Failure("Some products are not available", 400);
 
+            if (cartItems.Any(ci => ci.Quantity > ci.Product.Quantity))
+                return Result<CheckoutResponseDto>.Failure("Some products are out of stock", 400);
+
             var groupedCartItems = cartItems
                 .GroupBy(ci => ci.Product.Shop)
                 .ToDictionary(g => g.Key, g => g.ToList());
@@ -212,6 +215,18 @@ public class Checkout
                 createdSalesOrders.Add(createOrderResult.Value!);
             }
 
+            // update product quantity
+            foreach (var item in cartItems)
+            {
+                var product = item.Product;
+                product.Quantity -= item.Quantity;
+                if (product.Quantity < 0)
+                    product.Quantity = 0;
+                dbContext.Products.Update(product);
+            }
+
+            await dbContext.SaveChangesAsync(cancellationToken);
+
             if (request.CheckoutRequestDto.PaymentMethod != PaymentMethod.Vnpay)
                 return Result<CheckoutResponseDto>.Success(
                     new CheckoutResponseDto
@@ -290,7 +305,6 @@ public class Checkout
             }
 
             dbContext.SalesOrders.Add(order);
-            await dbContext.SaveChangesAsync(cancellationToken);
 
             var orderProducts = new List<OrderProduct>();
             foreach (var item in items)

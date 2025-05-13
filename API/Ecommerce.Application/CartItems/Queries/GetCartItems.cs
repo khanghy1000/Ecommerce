@@ -27,11 +27,25 @@ public static class GetCartItems
                 .CartItems.Where(ci => ci.UserId == user.Id && !ci.Product.Active)
                 .ToListAsync(cancellationToken);
 
-            if (inactiveCartItems.Any())
+            if (inactiveCartItems.Count != 0)
             {
                 dbContext.CartItems.RemoveRange(inactiveCartItems);
-                await dbContext.SaveChangesAsync(cancellationToken);
             }
+
+            var excessiveCartItems = await dbContext
+                .CartItems.Where(ci => ci.Quantity > ci.Product.Quantity)
+                .Include(cartItem => cartItem.Product)
+                .ToListAsync(cancellationToken);
+
+            if (excessiveCartItems.Count != 0)
+            {
+                foreach (var cartItem in excessiveCartItems)
+                {
+                    cartItem.Quantity = cartItem.Product.Quantity;
+                }
+            }
+
+            await dbContext.SaveChangesAsync(cancellationToken);
 
             var cartItems = await dbContext
                 .CartItems.Where(ci => ci.UserId == user.Id)
