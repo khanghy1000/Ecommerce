@@ -1,4 +1,4 @@
-import { Modal } from '@mantine/core';
+import { Checkbox, Modal } from '@mantine/core';
 import {
   UserAddressResponseDto,
   AddUserAddressRequestDto,
@@ -9,7 +9,6 @@ import {
   TextInput,
   Select,
   Flex,
-  Radio,
   Group,
   Button,
 } from '@mantine/core';
@@ -250,12 +249,9 @@ export const AddressFormModal = ({
           />
 
           <Flex align="center" gap="md">
-            <Radio
+            <Checkbox
               label="Set as default address"
-              checked={form.values.isDefault}
-              onChange={(event) =>
-                form.setFieldValue('isDefault', event.currentTarget.checked)
-              }
+              {...form.getInputProps('isDefault', { type: 'checkbox' })}
             />
           </Flex>
 
