@@ -9,6 +9,8 @@ import ProductSearchPage from './features/products/ProductSearchPage';
 import ProductPage from './features/products/ProductPage';
 import CartPage from './features/cart/CartPage';
 import CheckoutPage from './features/checkout/CheckoutPage';
+import PaymentSuccessPage from './features/payments/PaymentSuccessPage';
+import PaymentFailurePage from './features/payments/PaymentFailurePage';
 
 const router = createBrowserRouter([
   {
@@ -50,6 +52,14 @@ const router = createBrowserRouter([
       {
         path: '/orders',
         element: <div>Orders Page</div>,
+      },
+      {
+        path: '/payment/success',
+        element: <PaymentSuccessPage />,
+      },
+      {
+        path: '/payment/failure',
+        element: <PaymentFailurePage />,
       },
     ],
   },

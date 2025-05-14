@@ -1,13 +1,10 @@
-using Ecommerce.Application.Core;
 using Ecommerce.Application.Payments.Commands;
 using Ecommerce.Application.Payments.DTOs;
 using Ecommerce.Application.Payments.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using VNPAY.NET.Enums;
 using VNPAY.NET.Models;
-using VNPAY.NET.Utilities;
 
 namespace Ecommerce.API.Controllers;
 
@@ -29,7 +26,18 @@ public class PaymentController(IConfiguration config) : BaseApiController
     {
         var result = await Mediator.Send(new PaymentCallback.Query());
         return result.IsSuccess
-            ? Redirect(config["ClientUrl"] + "/payment/success")
-            : Redirect(config["ClientUrl"] + "/payment/failure");
+            ? Redirect(
+                config["ClientUrl"] + $"/payment/success?paymentId={result.Value!.PaymentId}"
+            )
+            : Redirect(
+                config["ClientUrl"] + $"/payment/failure?paymentId={result.Value!.PaymentId}"
+            );
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<PaymentResponseDto>> GetPaymentById(long id)
+    {
+        var result = await Mediator.Send(new GetPaymentById.Query { PaymentId = id });
+        return HandleResult(result);
     }
 }

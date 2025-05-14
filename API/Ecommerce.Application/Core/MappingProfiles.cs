@@ -4,6 +4,7 @@ using Ecommerce.Application.Categories.DTOs;
 using Ecommerce.Application.Coupons.DTOs;
 using Ecommerce.Application.Interfaces;
 using Ecommerce.Application.Locations.DTOs;
+using Ecommerce.Application.Payments.DTOs;
 using Ecommerce.Application.Products.DTOs;
 using Ecommerce.Application.Reviews.DTOs;
 using Ecommerce.Application.SalesOrders.DTOs;
@@ -287,5 +288,8 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Code, opt => opt.Ignore())
             .ForMember(dest => dest.UsedCount, opt => opt.Ignore())
             .ForMember(dest => dest.Categories, opt => opt.Ignore());
+
+        // Payment mappings
+        CreateMap<Payment, PaymentResponseDto>();
     }
 }

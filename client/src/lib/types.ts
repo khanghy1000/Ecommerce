@@ -331,3 +331,18 @@ export type EditCouponRequestDto = {
   maxUseCount: number;
   categoryIds: number[];
 };
+
+export type PaymentResponse = {
+  paymentId: number;
+  isSuccess: boolean;
+  description: string | null;
+  timestamp: string;
+  vnpayTransactionId: number;
+  paymentMethod: string | null;
+  responseCode: string | null;
+  responseDescription: string | null;
+  transactionCode: string | null;
+  transactionDescription: string | null;
+  bankCode: string | null;
+  bankTransactionId: string | null;
+}
