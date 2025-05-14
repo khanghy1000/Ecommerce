@@ -5,6 +5,7 @@ using Ecommerce.Application.Coupons.DTOs;
 using Ecommerce.Application.Interfaces;
 using Ecommerce.Application.Locations.DTOs;
 using Ecommerce.Application.Products.DTOs;
+using Ecommerce.Application.Reviews.DTOs;
 using Ecommerce.Application.SalesOrders.DTOs;
 using Ecommerce.Application.Users.DTOs;
 using Ecommerce.Domain;
@@ -271,6 +272,9 @@ public class MappingProfiles : Profile
                 opt => opt.MapFrom(src => src.Product.Subcategories)
             )
             .ForMember(dest => dest.Photos, opt => opt.MapFrom(src => src.Product.Photos));
+
+        // Review mappings
+        CreateMap<ProductReview, ReviewResponseDto>();
 
         // Coupon mappings
         CreateMap<Coupon, CouponResponseDto>();

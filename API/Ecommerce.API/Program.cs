@@ -111,11 +111,20 @@ builder.Services.AddAuthorization(opt =>
             policy.Requirements.Add(new IsAddressOwnerRequirement());
         }
     );
+
+    opt.AddPolicy(
+        "IsReviewOwner",
+        policy =>
+        {
+            policy.Requirements.Add(new IsReviewOwnerRequirement());
+        }
+    );
 });
 
 builder.Services.AddTransient<IAuthorizationHandler, IsProductOwnerRequirementHandler>();
 builder.Services.AddTransient<IAuthorizationHandler, HasOrderRequirementHandler>();
 builder.Services.AddTransient<IAuthorizationHandler, IsAddressOwnerRequirementHandler>();
+builder.Services.AddTransient<IAuthorizationHandler, IsReviewOwnerRequirementHandler>();
 
 builder.Services.ConfigureApplicationCookie(opt =>
 {

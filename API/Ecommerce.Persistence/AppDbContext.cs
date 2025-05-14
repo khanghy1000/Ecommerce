@@ -72,6 +72,10 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<User>(op
 
         modelBuilder.Entity<ProductReview>().Property(pr => pr.UserId).HasMaxLength(36);
         modelBuilder.Entity<ProductReview>().Property(pr => pr.Review).HasMaxLength(1000);
+        modelBuilder
+            .Entity<ProductReview>()
+            .HasIndex(pr => new { pr.UserId, pr.ProductId })
+            .IsUnique();
 
         modelBuilder.Entity<Payment>().Property(p => p.Description).HasMaxLength(1000);
         modelBuilder.Entity<Payment>().Property(p => p.PaymentMethod).HasMaxLength(255);
