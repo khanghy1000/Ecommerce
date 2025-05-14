@@ -305,6 +305,8 @@ public class Checkout
             }
 
             dbContext.SalesOrders.Add(order);
+            // save the order first to get the order id
+            await dbContext.SaveChangesAsync(cancellationToken);
 
             var orderProducts = new List<OrderProduct>();
             foreach (var item in items)
