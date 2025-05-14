@@ -12,7 +12,7 @@ using VNPAY.NET.Utilities;
 namespace Ecommerce.API.Controllers;
 
 [AllowAnonymous]
-public class PaymentController() : BaseApiController
+public class PaymentController(IConfiguration config) : BaseApiController
 {
     /// Perform any necessary actions after payment. This URL needs to be declared with VNPAY to work (e.g., http://localhost:1234/api/Vnpay/IpnAction)
     [HttpGet("IpnAction")]
@@ -28,6 +28,8 @@ public class PaymentController() : BaseApiController
     public async Task<ActionResult<PaymentResult>> Callback()
     {
         var result = await Mediator.Send(new PaymentCallback.Query());
-        return HandleResult(result);
+        return result.IsSuccess
+            ? Redirect(config["ClientUrl"] + "/payment/success")
+            : Redirect(config["ClientUrl"] + "/payment/failure");
     }
 }
