@@ -53,7 +53,7 @@ public class Checkout
             if (cartItems.Count == 0)
                 return Result<CheckoutResponseDto>.Failure("Cart is empty", 400);
 
-            if (cartItems.Any(ci => ci.Product.Active))
+            if (cartItems.Any(ci => !ci.Product.Active))
                 return Result<CheckoutResponseDto>.Failure("Some products are not available", 400);
 
             if (cartItems.Any(ci => ci.Quantity > ci.Product.Quantity))
