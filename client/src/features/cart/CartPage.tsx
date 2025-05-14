@@ -150,7 +150,7 @@ function CartPage() {
               <Text size="sm" c="dimmed" ta="center">
                 Looks like you haven't added any products to your cart yet.
               </Text>
-              <Button component={Link} to="/products" variant="filled" mt="md">
+              <Button component={Link} to="/" variant="filled" mt="md">
                 Continue Shopping
               </Button>
             </Stack>
