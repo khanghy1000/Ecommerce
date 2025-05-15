@@ -6,9 +6,11 @@ import {
   UpdateCartItemRequestDto,
 } from '../types';
 import { customFetch } from '../customFetch';
+import { useAccount } from './useAccount';
 
 export const useCart = () => {
   const queryClient = useQueryClient();
+  const { currentUserInfo } = useAccount();
 
   // Get cart items
   const { data: cartItems, isLoading: isLoadingCart } = useQuery({
@@ -17,6 +19,7 @@ export const useCart = () => {
       const data = await customFetch<CartItemResponseDto[]>('/cart');
       return data;
     },
+    enabled: !!currentUserInfo,
   });
 
   // Add item to cart
