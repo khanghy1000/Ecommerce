@@ -212,7 +212,9 @@ public class MappingProfiles : Profile
                     )
             );
 
-        CreateMap<OrderProduct, OrderProductResponseDto>();
+        CreateMap<OrderProduct, OrderProductResponseDto>()
+            .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Product.Id))
+            .ForMember(dest => dest.Photos, opt => opt.MapFrom(src => src.Product.Photos));
 
         // In the MappingProfiles constructor:
         CreateMap<VNPAY.NET.Models.PaymentResult, Payment>()
