@@ -13,11 +13,11 @@ public class IsReviewOwnerRequirement : IAuthorizationRequirement { }
 public class IsReviewOwnerRequirementHandler(
     AppDbContext dbContext,
     IHttpContextAccessor httpContextAccessor
-) : AuthorizationHandler<IsAddressOwnerRequirement>
+) : AuthorizationHandler<IsReviewOwnerRequirement>
 {
     protected override async Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
-        IsAddressOwnerRequirement requirement
+        IsReviewOwnerRequirement requirement
     )
     {
         var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);

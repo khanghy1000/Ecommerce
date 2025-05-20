@@ -13,11 +13,11 @@ public class HasOrderRequirement : IAuthorizationRequirement { }
 public class HasOrderRequirementHandler(
     AppDbContext dbContext,
     IHttpContextAccessor httpContextAccessor
-) : AuthorizationHandler<IsProductOwnerRequirement>
+) : AuthorizationHandler<HasOrderRequirement>
 {
     protected override async Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
-        IsProductOwnerRequirement requirement
+        HasOrderRequirement requirement
     )
     {
         var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -28,28 +28,28 @@ public class HasOrderRequirementHandler(
         if (userRole == null)
             return;
 
-        if (userRole == UserRole.Admin.ToString())
+        if (userRole == nameof(UserRole.Admin))
             context.Succeed(requirement);
 
         var httpContext = httpContextAccessor.HttpContext;
 
-        if (httpContext?.GetRouteValue("id") is not int orderId)
+        if (httpContext?.GetRouteValue("id") is not string orderId)
             return;
 
         var salesOrder = await dbContext
             .SalesOrders.Include(o => o.OrderProducts)
             .ThenInclude(op => op.Product)
             .AsNoTracking()
-            .FirstOrDefaultAsync(o => o.Id == orderId);
+            .FirstOrDefaultAsync(o => o.Id.ToString() == orderId);
 
         if (salesOrder == null)
-            context.Succeed(requirement);
+            return;
 
-        if (userRole == UserRole.Buyer.ToString() && salesOrder!.UserId == userId)
+        if (userRole == nameof(UserRole.Buyer) && salesOrder!.UserId == userId)
             context.Succeed(requirement);
 
         if (
-            userRole == UserRole.Shop.ToString()
+            userRole == nameof(UserRole.Shop)
             && salesOrder!.OrderProducts.Any(op => op.Product.ShopId == userId)
         )
             context.Succeed(requirement);
