@@ -1,7 +1,16 @@
-import { Avatar, Button, Divider, Group, Paper, rem, Stack, Text } from "@mantine/core";
-import { CartItemResponseDto } from "../../lib/types";
-import { Link } from "react-router";
-import { OrderItemCard } from "./OrderItemCard";
+import {
+  Avatar,
+  Button,
+  Divider,
+  Group,
+  Paper,
+  rem,
+  Stack,
+  Text,
+} from '@mantine/core';
+import { CartItemResponseDto } from '../../lib/types';
+import { Link } from 'react-router';
+import { OrderItemCard } from './OrderItemCard';
 
 // Define the shop group type
 export type ShopItemGroup = {

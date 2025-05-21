@@ -22,7 +22,9 @@ export const useAddresses = (addressId?: number) => {
     queryKey: ['address', addressId],
     queryFn: async () => {
       if (!addressId) return null;
-      return await customFetch<UserAddressResponseDto>(`/users/addresses/${addressId}`);
+      return await customFetch<UserAddressResponseDto>(
+        `/users/addresses/${addressId}`
+      );
     },
     enabled: !!addressId,
   });
@@ -45,9 +47,12 @@ export const useAddresses = (addressId?: number) => {
   // Set an address as default
   const setDefaultAddress = useMutation({
     mutationFn: async (id: number) => {
-      return await customFetch<UserAddressResponseDto>(`/users/addresses/${id}/default`, {
-        method: 'PUT',
-      });
+      return await customFetch<UserAddressResponseDto>(
+        `/users/addresses/${id}/default`,
+        {
+          method: 'PUT',
+        }
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -65,10 +70,13 @@ export const useAddresses = (addressId?: number) => {
       id: number;
       addressData: EditUserAddressRequestDto;
     }) => {
-      return await customFetch<UserAddressResponseDto>(`/users/addresses/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(addressData),
-      });
+      return await customFetch<UserAddressResponseDto>(
+        `/users/addresses/${id}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify(addressData),
+        }
+      );
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({

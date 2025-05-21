@@ -1,5 +1,5 @@
-import { Anchor, Box, Container, Flex, Group, Image } from "@mantine/core";
-import { Link } from "react-router";
+import { Anchor, Box, Container, Flex, Group, Image } from '@mantine/core';
+import { Link } from 'react-router';
 
 export function LogoOnlyNavbar() {
   return (

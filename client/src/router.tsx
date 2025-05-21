@@ -11,6 +11,15 @@ import CartPage from './features/cart/CartPage';
 import CheckoutPage from './features/checkout/CheckoutPage';
 import PaymentSuccessPage from './features/payments/PaymentSuccessPage';
 import PaymentFailurePage from './features/payments/PaymentFailurePage';
+import OrdersPage from './features/orders/OrdersPage';
+import OrderDetailPage from './features/orders/OrderDetailPage';
+import ManagementPage from './features/management/ManagementPage';
+import ManagementLayout from './features/layout/ManagementLayout';
+import ShopPage from './features/shop/ShopPage';
+import Unauthorized from './features/errors/Unauthorized';
+import RequireShopOrAdminRole from './lib/components/RequireShopOrAdminRole';
+import RequireBuyerRole from './lib/components/RequireBuyerRole';
+import RequireLogin from './lib/components/RequireLogin';
 
 const router = createBrowserRouter([
   {
@@ -20,6 +29,24 @@ const router = createBrowserRouter([
   {
     path: '/register',
     element: <RegisterPage />,
+  },
+  {
+    path: '/management',
+    element: (
+      <RequireShopOrAdminRole>
+        <ManagementLayout />
+      </RequireShopOrAdminRole>
+    ),
+    children: [
+      {
+        index: true,
+        element: <ManagementPage />,
+      },
+      {
+        path: '*',
+        element: <div>Placeholder</div>,
+      },
+    ],
   },
   {
     path: '/',
@@ -38,20 +65,48 @@ const router = createBrowserRouter([
         element: <ProductPage />,
       },
       {
+        path: '/shop/:shopId',
+        element: <ShopPage />,
+      },
+      {
         path: '/cart',
-        element: <CartPage />,
+        element: (
+          <RequireBuyerRole>
+            <CartPage />
+          </RequireBuyerRole>
+        ),
       },
       {
         path: '/checkout',
-        element: <CheckoutPage />,
+        element: (
+          <RequireBuyerRole>
+            <CheckoutPage />
+          </RequireBuyerRole>
+        ),
       },
       {
         path: '/profile',
-        element: <div>Profile Page</div>,
+        element: (
+          <RequireLogin>
+            <div>Profile page</div>
+          </RequireLogin>
+        ),
       },
       {
         path: '/orders',
-        element: <div>Orders Page</div>,
+        element: (
+          <RequireBuyerRole>
+            <OrdersPage />
+          </RequireBuyerRole>
+        ),
+      },
+      {
+        path: '/order/:orderId',
+        element: (
+          <RequireBuyerRole>
+            <OrderDetailPage />
+          </RequireBuyerRole>
+        ),
       },
       {
         path: '/payment/success',
@@ -70,6 +125,10 @@ const router = createBrowserRouter([
   {
     path: '/server-error',
     element: <ServerError />,
+  },
+  {
+    path: '/unauthorized',
+    element: <Unauthorized />,
   },
   {
     path: '*',

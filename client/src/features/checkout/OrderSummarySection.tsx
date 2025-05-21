@@ -1,8 +1,22 @@
-import { Paper, Title, Stack, Group, Loader, Badge, Divider, Flex, Button, Text } from "@mantine/core";
-import { FiCheckCircle, FiArrowLeft } from "react-icons/fi";
-import { Link } from "react-router";
-import { CheckoutPricePreviewResponseDto, UserAddressResponseDto } from "../../lib/types";
-import { formatPrice } from "../../lib/utils";
+import {
+  Paper,
+  Title,
+  Stack,
+  Group,
+  Loader,
+  Badge,
+  Divider,
+  Flex,
+  Button,
+  Text,
+} from '@mantine/core';
+import { FiCheckCircle, FiArrowLeft } from 'react-icons/fi';
+import { Link } from 'react-router';
+import {
+  CheckoutPricePreviewResponseDto,
+  UserAddressResponseDto,
+} from '../../lib/types';
+import { formatPrice } from '../../lib/utils';
 
 // OrderSummarySection component
 type OrderSummarySectionProps = {

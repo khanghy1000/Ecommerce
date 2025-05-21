@@ -89,7 +89,8 @@ async function customFetch<T>(
           notifications.show({
             color: 'red',
             title: 'Error',
-            message: 'Forbidden access. You do not have permission to perform this action.',
+            message:
+              'Forbidden access. You do not have permission to perform this action.',
           });
           break;
         case 404:

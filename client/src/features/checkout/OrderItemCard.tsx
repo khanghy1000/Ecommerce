@@ -1,7 +1,7 @@
-import { Group, Box, Image, Text } from "@mantine/core";
-import { Link } from "react-router";
-import { CartItemResponseDto } from "../../lib/types";
-import { formatPrice } from "../../lib/utils";
+import { Group, Box, Image, Text } from '@mantine/core';
+import { Link } from 'react-router';
+import { CartItemResponseDto } from '../../lib/types';
+import { formatPrice } from '../../lib/utils';
 
 // OrderItemCard component
 type OrderItemCardProps = {

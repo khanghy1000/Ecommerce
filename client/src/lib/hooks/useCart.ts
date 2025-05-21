@@ -19,7 +19,7 @@ export const useCart = () => {
       const data = await customFetch<CartItemResponseDto[]>('/cart');
       return data;
     },
-    enabled: !!currentUserInfo,
+    enabled: !!currentUserInfo && currentUserInfo.role === 'Buyer',
   });
 
   // Add item to cart

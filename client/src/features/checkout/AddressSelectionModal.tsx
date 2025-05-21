@@ -96,7 +96,7 @@ export const AddressSelectionModal = ({
               </Group>
 
               {/* edit, delete, set default buttons */}
-              <Group justify='flex-end'>
+              <Group justify="flex-end">
                 <ActionIcon
                   variant="subtle"
                   color="blue"

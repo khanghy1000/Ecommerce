@@ -64,23 +64,25 @@ export const useOrders = (
     },
   });
 
-  const { data: checkoutPreview, isLoading: loadingCheckoutPreview, isFetching: fetchingCheckoutPreview } = useQuery(
-    {
-      queryKey: ['checkoutPreview', checkoutPreviewRequest],
-      retry: false,
-      queryFn: async () => {
-        if (!checkoutPreviewRequest) return null;
-        return await customFetch<CheckoutPricePreviewResponseDto>(
-          '/orders/checkout-preview',
-          {
-            method: 'POST',
-            body: JSON.stringify(checkoutPreviewRequest),
-          }
-        );
-      },
-      enabled: !!checkoutPreviewRequest,
-    }
-  );
+  const {
+    data: checkoutPreview,
+    isLoading: loadingCheckoutPreview,
+    isFetching: fetchingCheckoutPreview,
+  } = useQuery({
+    queryKey: ['checkoutPreview', checkoutPreviewRequest],
+    retry: false,
+    queryFn: async () => {
+      if (!checkoutPreviewRequest) return null;
+      return await customFetch<CheckoutPricePreviewResponseDto>(
+        '/orders/checkout-preview',
+        {
+          method: 'POST',
+          body: JSON.stringify(checkoutPreviewRequest),
+        }
+      );
+    },
+    enabled: !!checkoutPreviewRequest,
+  });
 
   // Confirm order
   const confirmOrder = useMutation({

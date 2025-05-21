@@ -17,7 +17,7 @@ export type UserInfoResponse = {
   id: string;
   imageUrl: string | null;
   phoneNumber: string | null;
-  role: string;
+  role: 'Buyer' | 'Shop' | 'Admin';
 };
 
 export type LoginRequest = {
@@ -169,6 +169,9 @@ export type RemoveFromCartRequestDto = {
 };
 
 export type OrderProductResponseDto = {
+  id: number;
+  productId: number;
+  photos: ProductPhotoDto[];
   name: string;
   price: number;
   quantity: number;
@@ -345,4 +348,4 @@ export type PaymentResponse = {
   transactionDescription: string | null;
   bankCode: string | null;
   bankTransactionId: string | null;
-}
+};
