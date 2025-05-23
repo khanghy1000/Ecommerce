@@ -367,4 +367,32 @@ export type ShopPerformanceResponseDto = {
 export type ShopOrderStatsResponseDto = {
   totalOrders: number;
   averageRating: number;
+}; // Define types needed for reviews
+
+export type ReviewResponseDto = {
+  id: number;
+  productId: number;
+  userId: string;
+  rating: number;
+  review: string | null;
+  createdAt: string;
+  updatedAt: string | null;
+};
+
+export type CreateReviewRequestDto = {
+  productId: number;
+  rating: number;
+  review?: string;
+};
+
+export type UpdateReviewRequestDto = {
+  rating: number;
+  review?: string;
+};
+
+export type ListReviewsRequest = {
+  productId?: number;
+  userId?: string;
+  pageSize?: number;
+  pageNumber?: number;
 };
