@@ -424,3 +424,28 @@ export type EditProductRequestDto = {
   subcategoryIds: number[];
 };
 
+// Product discount types
+export type ProductDiscountResponseDto = {
+  id: number;
+  discountPrice: number;
+  startTime: string,
+  endTime: string,
+  productId: number;
+  productName: string;
+  regularPrice: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AddProductDiscountRequestDto = {
+  discountPrice: number;
+  startTime: Date;
+  endTime: Date;
+};
+
+export type EditProductDiscountRequestDto = {
+  discountPrice: number;
+  startTime: Date;
+  endTime: Date;
+};
+
