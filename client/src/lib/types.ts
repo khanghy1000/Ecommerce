@@ -449,3 +449,8 @@ export type EditProductDiscountRequestDto = {
   endTime: Date;
 };
 
+// Product photo types
+export type UpdateProductPhotoDisplayOrderRequestDto = {
+  key: string;
+  displayOrder: number;
+};
