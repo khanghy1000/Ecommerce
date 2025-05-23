@@ -349,3 +349,22 @@ export type PaymentResponse = {
   bankCode: string | null;
   bankTransactionId: string | null;
 };
+
+export type ShopPerformanceRequest = {
+  shopId: string;
+  metricType?: 'Quantity' | 'Value' | 'Orders';
+  timeRange?: 'Days' | 'Months' | 'Years' | 'All';
+  timeValue?: number;
+};
+
+export type ShopPerformanceResponseDto = {
+  time: string;
+  quantity: number;
+  value: number;
+  orderCount: number;
+};
+
+export type ShopOrderStatsResponseDto = {
+  totalOrders: number;
+  averageRating: number;
+};
