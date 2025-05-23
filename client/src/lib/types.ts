@@ -396,3 +396,31 @@ export type ListReviewsRequest = {
   pageSize?: number;
   pageNumber?: number;
 };
+
+// Product types
+export type CreateProductRequestDto = {
+  name: string;
+  description: string;
+  regularPrice: number;
+  quantity: number;
+  active: boolean;
+  length: number;
+  width: number;
+  height: number;
+  weight: number;
+  subcategoryIds: number[];
+};
+
+export type EditProductRequestDto = {
+  name: string;
+  description: string;
+  regularPrice: number;
+  quantity: number;
+  active: boolean;
+  length: number;
+  width: number;
+  height: number;
+  weight: number;
+  subcategoryIds: number[];
+};
+
