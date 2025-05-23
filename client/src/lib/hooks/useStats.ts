@@ -11,7 +11,7 @@ export const useStats = (
   shopPerformanceRequest?: ShopPerformanceRequest,
   shopSummaryRequestId?: string
 ) => {
-  const { data: shopPerformance } = useQuery({
+  const { data: shopPerformance, isLoading: loadingShopPerformance } = useQuery({
     queryKey: ['shopPerformance', shopPerformanceRequest],
     queryFn: async () => {
       const stringifiedParams = queryString.stringify(shopPerformanceRequest!);
@@ -22,7 +22,7 @@ export const useStats = (
     enabled: !!shopPerformanceRequest,
   });
 
-  const { data: shopSummary } = useQuery({
+  const { data: shopSummary, isLoading: loadingShopSummary } = useQuery({
     queryKey: ['shopSummary', shopSummaryRequestId],
     queryFn: async () => {
       const url = `/stats/shop-summary?shopId=${shopSummaryRequestId}`;
@@ -33,6 +33,8 @@ export const useStats = (
 
   return {
     shopPerformance,
+    loadingShopPerformance,
     shopSummary,
+    loadingShopSummary
   };
 };
