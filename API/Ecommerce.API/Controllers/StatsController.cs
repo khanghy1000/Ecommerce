@@ -13,7 +13,6 @@ public class StatsController : BaseApiController
     [HttpGet("shop-performance")]
     public async Task<ActionResult<List<ShopPerformanceResponseDto>>> ShopPerformance(
         string shopId,
-        GetShopPerformance.MetricType metricType = GetShopPerformance.MetricType.Orders,
         GetShopPerformance.TimeRange timeRange = GetShopPerformance.TimeRange.All,
         int? timeValue = null // number of days/months/years
     )
