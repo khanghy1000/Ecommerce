@@ -13,6 +13,7 @@ import { NavigationProgress } from '@mantine/nprogress';
 import '@mantine/nprogress/styles.css';
 import Loading from './lib/components/Loading';
 import '@mantine/charts/styles.css';
+import '@mantine/dates/styles.css';
 
 const queryClient = new QueryClient();
 

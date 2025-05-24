@@ -39,6 +39,8 @@ public static class ListSalesOrders
             var query = dbContext
                 .SalesOrders.Include(o => o.OrderProducts)
                 .ThenInclude(op => op.Product)
+                .ThenInclude(p => p.Shop)
+                .Include(o => o.User)
                 .AsQueryable();
 
             if (userRole == UserRole.Buyer.ToString())

@@ -194,7 +194,10 @@ export type SalesOrderResponseDto = {
   productDiscountAmount: number;
   shippingDiscountAmount: number;
   total: number;
-  userId: string;
+  buyerId: string;
+  buyerName: string;
+  shopId: string;
+  shopName: string;
   shippingOrderCode: string;
   shippingName: string;
   shippingPhone: string;
@@ -210,6 +213,17 @@ export type SalesOrderResponseDto = {
   paymentMethod: PaymentMethod;
   status: SalesOrderStatus;
   orderProducts: OrderProductResponseDto[];
+};
+
+export type ListOrdersRequest = {
+  orderId?: number;
+  fromDate?: string;
+  toDate?: string;
+  status?: SalesOrderStatus;
+  buyerId?: string;
+  shopId?: string;
+  pageSize?: number;
+  pageNumber?: number;
 };
 
 export type CheckoutRequestDto = {
@@ -246,17 +260,6 @@ export type CheckoutPricePreviewResponseDto = {
 export type CheckoutResponseDto = {
   paymentUrl?: string;
   salesOrders: SalesOrderResponseDto[];
-};
-
-export type ListOrdersRequest = {
-  orderId?: number;
-  fromDate?: string;
-  toDate?: string;
-  status?: SalesOrderStatus;
-  buyerId?: string;
-  shopId?: string;
-  pageSize?: number;
-  pageNumber?: number;
 };
 
 export type UserAddressResponseDto = {

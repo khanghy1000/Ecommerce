@@ -11,7 +11,10 @@ public class SalesOrderResponseDto
     public decimal ProductDiscountAmount { get; set; }
     public decimal ShippingDiscountAmount { get; set; }
     public decimal Total { get; set; }
-    public string UserId { get; set; }
+    public string BuyerId { get; set; }
+    public string BuyerName { get; set; }
+    public string ShopId { get; set; }
+    public string ShopName { get; set; }
     public string ShippingOrderCode { get; set; }
     public string ShippingName { get; set; }
     public string ShippingPhone { get; set; }

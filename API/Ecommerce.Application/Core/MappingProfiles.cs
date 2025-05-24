@@ -210,6 +210,16 @@ public class MappingProfiles : Profile
                             .Select(c => c.Code)
                             .FirstOrDefault()
                     )
+            )
+            .ForMember(dest => dest.BuyerId, opt => opt.MapFrom(src => src.UserId))
+            .ForMember(dest => dest.BuyerName, opt => opt.MapFrom(src => src.User.DisplayName))
+            .ForMember(
+                dest => dest.ShopId,
+                opt => opt.MapFrom(src => src.OrderProducts.First().Product.ShopId)
+            )
+            .ForMember(
+                dest => dest.ShopName,
+                opt => opt.MapFrom(src => src.OrderProducts.First().Product.Shop.DisplayName)
             );
 
         CreateMap<OrderProduct, OrderProductResponseDto>()
