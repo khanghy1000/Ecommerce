@@ -1,10 +1,6 @@
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Ecommerce.Application.Core;
 using Ecommerce.Application.Interfaces;
 using Ecommerce.Application.Statistics.DTOs;
-using Ecommerce.Domain;
 using Ecommerce.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -32,11 +28,17 @@ public static class GetShopSummary
                 )
                 .CountAsync(cancellationToken);
 
-            var avgRating = await dbContext
-                .ProductReviews.Where(r => r.Product.ShopId == request.ShopId)
-                .Select(r => (decimal)r.Rating)
-                .DefaultIfEmpty(0)
-                .AverageAsync(cancellationToken);
+            decimal avgRating = 0;
+            var hasReviews = await dbContext.ProductReviews
+                .AnyAsync(r => r.Product.ShopId == request.ShopId, cancellationToken);
+
+            if (hasReviews)
+            {
+                avgRating =(decimal) await dbContext.ProductReviews
+                    .Where(r => r.Product.ShopId == request.ShopId)
+                    .Select(r => r.Rating)
+                    .AverageAsync(cancellationToken);
+            }
 
             var result = new ShopOrderStatsResponseDto
             {
