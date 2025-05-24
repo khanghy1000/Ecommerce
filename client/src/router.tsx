@@ -22,6 +22,7 @@ import RequireBuyerRole from './lib/components/RequireBuyerRole';
 import RequireLogin from './lib/components/RequireLogin';
 import PerformancePage from './features/management/statistics/PerformancePage';
 import OrdersManagementPage from './features/management/orders/OrdersManagementPage';
+import ProductsManagementPage from './features/management/products/ProductsManagementPage';
 
 const router = createBrowserRouter([
   {
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
       {
         path: 'orders',
         element: <OrdersManagementPage />,
+      },
+      {
+        path: 'products',
+        element: <ProductsManagementPage />,
       },
       {
         path: '*',
