@@ -14,8 +14,8 @@ import { useState, useEffect } from 'react';
 const adminNavItems = [
   {
     icon: IoStatsChartSharp,
-    label: 'Statistics',
-    to: '/management/statistics',
+    label: 'Performance',
+    to: '/management/performance',
   },
   { icon: IoCartSharp, label: 'Orders', to: '/management/orders' },
   { icon: IoStorefront, label: 'Products', to: '/management/products' },

@@ -20,6 +20,7 @@ import Unauthorized from './features/errors/Unauthorized';
 import RequireShopOrAdminRole from './lib/components/RequireShopOrAdminRole';
 import RequireBuyerRole from './lib/components/RequireBuyerRole';
 import RequireLogin from './lib/components/RequireLogin';
+import PerformancePage from './features/management/statistics/PerformancePage';
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <ManagementPage />,
+      },
+      {
+        path: 'performance',
+        element: <PerformancePage />
       },
       {
         path: '*',

@@ -12,6 +12,7 @@ import '@mantine/carousel/styles.css';
 import { NavigationProgress } from '@mantine/nprogress';
 import '@mantine/nprogress/styles.css';
 import Loading from './lib/components/Loading';
+import '@mantine/charts/styles.css';
 
 const queryClient = new QueryClient();
 

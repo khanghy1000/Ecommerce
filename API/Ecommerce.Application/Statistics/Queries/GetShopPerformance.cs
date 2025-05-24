@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Ecommerce.Application.Core;
 using Ecommerce.Application.Interfaces;
 using Ecommerce.Application.Statistics.DTOs;
@@ -50,7 +45,7 @@ public static class GetShopPerformance
             {
                 startDate = request.TimeRange switch
                 {
-                    TimeRange.All => DateTime.UtcNow.AddDays(-request.TimeValue.Value),
+                    TimeRange.Days => DateTime.UtcNow.AddDays(-request.TimeValue.Value),
                     TimeRange.Months => DateTime.UtcNow.AddMonths(-request.TimeValue.Value),
                     TimeRange.Years => DateTime.UtcNow.AddYears(-request.TimeValue.Value),
                     _ => null,
@@ -73,6 +68,98 @@ public static class GetShopPerformance
 
             var performanceData = new List<ShopPerformanceResponseDto>();
 
+            // Define end date as current time
+            DateTime endDate = DateTime.UtcNow;
+
+            // If no startDate was specified (TimeRange.All), find the earliest order
+            if (!startDate.HasValue && orders.Any())
+            {
+                startDate = orders.Min(o => o.OrderTime);
+                // For "All" time range, default to monthly grouping if not empty
+                if (request.TimeRange == TimeRange.All)
+                {
+                    // Round down to first day of month
+                    startDate = new DateTime(startDate.Value.Year, startDate.Value.Month, 1);
+                }
+            }
+            else if (!startDate.HasValue)
+            {
+                // If no orders and no startDate specified, default to 6 months ago
+                startDate = DateTime.UtcNow.AddMonths(-6);
+                if (request.TimeRange == TimeRange.All)
+                {
+                    startDate = new DateTime(startDate.Value.Year, startDate.Value.Month, 1);
+                }
+            }
+
+            // Generate all time periods that should exist in the result
+            var allTimePeriods = new Dictionary<DateTime, ShopPerformanceResponseDto>();
+
+            switch (request.TimeRange)
+            {
+                case TimeRange.Days:
+                    for (
+                        var date = startDate.Value.Date;
+                        date <= endDate.Date;
+                        date = date.AddDays(1)
+                    )
+                    {
+                        allTimePeriods[date] = new ShopPerformanceResponseDto
+                        {
+                            Time = date,
+                            Quantity = 0,
+                            Value = 0,
+                            OrderCount = 0,
+                        };
+                    }
+                    break;
+
+                case TimeRange.Months:
+                    var monthStart = new DateTime(startDate.Value.Year, startDate.Value.Month, 1);
+                    var monthEnd = new DateTime(endDate.Year, endDate.Month, 1);
+                    for (var date = monthStart; date <= monthEnd; date = date.AddMonths(1))
+                    {
+                        allTimePeriods[date] = new ShopPerformanceResponseDto
+                        {
+                            Time = date,
+                            Quantity = 0,
+                            Value = 0,
+                            OrderCount = 0,
+                        };
+                    }
+                    break;
+
+                case TimeRange.Years:
+                    var yearStart = new DateTime(startDate.Value.Year, 1, 1);
+                    var yearEnd = new DateTime(endDate.Year, 1, 1);
+                    for (var date = yearStart; date <= yearEnd; date = date.AddYears(1))
+                    {
+                        allTimePeriods[date] = new ShopPerformanceResponseDto
+                        {
+                            Time = date,
+                            Quantity = 0,
+                            Value = 0,
+                            OrderCount = 0,
+                        };
+                    }
+                    break;
+
+                default: // TimeRange.All - use monthly by default
+                    var allMonthStart = new DateTime(startDate.Value.Year, startDate.Value.Month, 1);
+                    var allMonthEnd = new DateTime(endDate.Year, endDate.Month, 1);
+                    for (var date = allMonthStart; date <= allMonthEnd; date = date.AddMonths(1))
+                    {
+                        allTimePeriods[date] = new ShopPerformanceResponseDto
+                        {
+                            Time = date,
+                            Quantity = 0,
+                            Value = 0,
+                            OrderCount = 0,
+                        };
+                    }
+                    break;
+            }
+
             // Group data by time period
             IEnumerable<IGrouping<DateTime, SalesOrder>> groupedOrders;
 
@@ -92,8 +179,7 @@ public static class GetShopPerformance
                     groupedOrders = orders.GroupBy(o => new DateTime(o.OrderTime.Year, 1, 1));
                     break;
                 default:
-                    // case TimeRange.All:
-                    // group by month to show historical trend
+                    // case TimeRange.All:  group by month
                     groupedOrders = orders.GroupBy(o => new DateTime(
                         o.OrderTime.Year,
                         o.OrderTime.Month,
@@ -102,7 +188,8 @@ public static class GetShopPerformance
                     break;
             }
 
-            foreach (var group in groupedOrders.OrderBy(g => g.Key))
+            // Fill in actual data where it exists
+            foreach (var group in groupedOrders)
             {
                 int orderCount = group.Count();
                 int totalQuantity = 0;
@@ -119,16 +206,21 @@ public static class GetShopPerformance
                     totalValue += shopOrderProducts.Sum(op => op.Subtotal);
                 }
 
-                performanceData.Add(
-                    new ShopPerformanceResponseDto
+                // Update the existing entry in our dictionary
+                if (allTimePeriods.ContainsKey(group.Key))
+                {
+                    allTimePeriods[group.Key] = new ShopPerformanceResponseDto
                     {
                         Time = group.Key,
                         Quantity = totalQuantity,
                         Value = totalValue,
                         OrderCount = orderCount,
-                    }
-                );
+                    };
+                }
             }
+
+            // Convert dictionary values to list and sort by time
+            performanceData = allTimePeriods.Values.OrderBy(d => d.Time).ToList();
 
             return Result<List<ShopPerformanceResponseDto>>.Success(performanceData);
         }
