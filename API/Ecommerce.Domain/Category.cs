@@ -6,4 +6,5 @@ public class Category : BaseEntity
     public required string Name { get; set; }
 
     public ICollection<Subcategory> Subcategories { get; set; } = [];
+    public ICollection<Coupon> Coupons { get; set; } = [];
 }
