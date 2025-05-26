@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router';
 import {
   IoStatsChartSharp,
   IoGrid,
-  IoLayersSharp,
   IoStorefront,
   IoCartSharp,
   IoTicketSharp,
@@ -21,11 +20,6 @@ const adminNavItems = [
   { icon: IoStorefront, label: 'Products', to: '/management/products' },
   { icon: IoTicketSharp, label: 'Coupons', to: '/management/coupons' },
   { icon: IoGrid, label: 'Categories', to: '/management/categories' },
-  {
-    icon: IoLayersSharp,
-    label: 'Subcategories',
-    to: '/management/subcategories',
-  },
 ];
 
 const shopNavItems = [
