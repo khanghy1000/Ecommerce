@@ -23,6 +23,7 @@ import RequireLogin from './lib/components/RequireLogin';
 import PerformancePage from './features/management/statistics/PerformancePage';
 import OrdersManagementPage from './features/management/orders/OrdersManagementPage';
 import ProductsManagementPage from './features/management/products/ProductsManagementPage';
+import CouponsManagementPage from './features/management/coupons/CouponsManagementPage';
 
 const router = createBrowserRouter([
   {
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: 'products',
         element: <ProductsManagementPage />,
+      },
+      {
+        path: 'coupons',
+        element: <CouponsManagementPage />,
       },
       {
         path: '*',

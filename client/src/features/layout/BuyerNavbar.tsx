@@ -18,6 +18,7 @@ import {
   FiShoppingCart,
   FiUser,
   FiShoppingBag,
+  FiGrid,
 } from 'react-icons/fi';
 import { useRef, useState } from 'react';
 import { useAccount } from '../../lib/hooks/useAccount';
@@ -90,17 +91,19 @@ export function BuyerNavbar() {
               {currentUserInfo && (
                 <>
                   {/* Cart button */}
-                  <ActionIcon
-                    component={Link}
-                    to="/cart"
-                    variant="subtle"
-                    aria-label="Cart"
-                    size="lg"
-                    radius="xl"
-                    color="gray"
-                  >
-                    <FiShoppingCart size={20} />
-                  </ActionIcon>
+                  {currentUserInfo.role === 'Buyer' && (
+                    <ActionIcon
+                      component={Link}
+                      to="/cart"
+                      variant="subtle"
+                      aria-label="Cart"
+                      size="lg"
+                      radius="xl"
+                      color="gray"
+                    >
+                      <FiShoppingCart size={20} />
+                    </ActionIcon>
+                  )}
 
                   {/* User profile dropdown */}
                   <Menu shadow="md" width={200} position="bottom-end">
@@ -126,15 +129,29 @@ export function BuyerNavbar() {
                       >
                         My Profile
                       </Menu.Item>
-                      <Menu.Item
-                        leftSection={
-                          <FiShoppingBag style={{ width: rem(14) }} />
-                        }
-                        component={Link}
-                        to="/orders"
-                      >
-                        Orders
-                      </Menu.Item>
+
+                      {currentUserInfo.role === 'Buyer' && (
+                        <Menu.Item
+                          leftSection={
+                            <FiShoppingBag style={{ width: rem(14) }} />
+                          }
+                          component={Link}
+                          to="/orders"
+                        >
+                          Orders
+                        </Menu.Item>
+                      )}
+
+                      {currentUserInfo.role !== 'Buyer' && (
+                        <Menu.Item
+                          leftSection={<FiGrid style={{ width: rem(14) }} />}
+                          component={Link}
+                          to={`/management`}
+                        >
+                          Management
+                        </Menu.Item>
+                      )}
+
                       <Menu.Divider />
                       <Menu.Item
                         color="red"
