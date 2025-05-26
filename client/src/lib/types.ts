@@ -140,6 +140,37 @@ export type CategoryResponseDto = {
   subcategories: SubcategoryIdNameResponseDto[];
 };
 
+export type CreateCategoryRequestDto = {
+  name: string;
+};
+
+export type EditCategoryRequestDto = {
+  name: string;
+};
+
+export type CategoryWithoutChildResponseDto = {
+  id: number;
+  name: string;
+};
+
+export type SubcategoryResponseDto = {
+  id: number;
+  name: string;
+  categoryId: number;
+  categoryName: string;
+};
+
+export type CreateSubcategoryRequestDto = {
+  name: string;
+  categoryId: number;
+};
+
+export type EditSubcategoryRequestDto = {
+  name: string;
+  categoryId: number;
+};
+
+
 export type CartItemResponseDto = {
   productId: number;
   quantity: number;
@@ -430,8 +461,8 @@ export type EditProductRequestDto = {
 export type ProductDiscountResponseDto = {
   id: number;
   discountPrice: number;
-  startTime: string,
-  endTime: string,
+  startTime: string;
+  endTime: string;
   productId: number;
   productName: string;
   regularPrice: number;
