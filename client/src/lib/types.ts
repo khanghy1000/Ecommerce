@@ -170,7 +170,6 @@ export type EditSubcategoryRequestDto = {
   categoryId: number;
 };
 
-
 export type CartItemResponseDto = {
   productId: number;
   quantity: number;
@@ -326,8 +325,8 @@ export type EditUserAddressRequestDto = {
 export type CouponResponseDto = {
   code: string;
   active: boolean;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
   type: 'Product' | 'Shipping';
   discountType: 'Percent' | 'Amount';
   value: number;
@@ -336,8 +335,9 @@ export type CouponResponseDto = {
   allowMultipleUse: boolean;
   maxUseCount: number;
   usedCount: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
+  categories: CategoryResponseDto[];
 };
 
 export type CreateCouponRequestDto = {

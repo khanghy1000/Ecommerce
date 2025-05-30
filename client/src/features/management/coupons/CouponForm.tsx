@@ -4,6 +4,7 @@ import {
   Group,
   NumberInput,
   Select,
+  MultiSelect,
   Stack,
   TextInput,
   Flex,
@@ -19,6 +20,7 @@ import {
 import { useForm, zodResolver } from '@mantine/form';
 import { z } from 'zod';
 import { DateTimePicker } from '@mantine/dates';
+import { parseISO, addDays } from 'date-fns';
 
 interface CouponFormProps {
   coupon?: CouponResponseDto;
@@ -27,25 +29,44 @@ interface CouponFormProps {
   loadingCategories: boolean;
 }
 
-const schema = z.object({
-  code: z
-    .string()
-    .min(3, 'Code must be at least 3 characters')
-    .max(20, 'Code must be at most 20 characters'),
-  active: z.boolean(),
-  startTime: z.date(),
-  endTime: z.date(),
-  type: z.enum(['Product', 'Shipping']),
-  discountType: z.enum(['Percent', 'Amount']),
-  value: z.number().positive('Value must be positive'),
-  minOrderValue: z.number().min(0, 'Min order value cannot be negative'),
-  maxDiscountAmount: z
-    .number()
-    .min(0, 'Max discount amount cannot be negative'),
-  allowMultipleUse: z.boolean(),
-  maxUseCount: z.number().int().min(0, 'Max use count cannot be negative'),
-  categoryIds: z.array(z.number()),
-});
+const schema = z
+  .object({
+    code: z
+      .string()
+      .min(3, 'Code must be at least 3 characters')
+      .max(20, 'Code must be at most 20 characters'),
+    active: z.boolean(),
+    startTime: z.union([
+      z.date(),
+      z.string().transform((val) => new Date(val)),
+    ]),
+    endTime: z.union([z.date(), z.string().transform((val) => new Date(val))]),
+    type: z.enum(['Product', 'Shipping']),
+    discountType: z.enum(['Percent', 'Amount']),
+    value: z.number().positive('Value must be positive'),
+    minOrderValue: z.number().min(0, 'Min order value cannot be negative'),
+    maxDiscountAmount: z
+      .number()
+      .min(0, 'Max discount amount cannot be negative'),
+    allowMultipleUse: z.boolean(),
+    maxUseCount: z.number().int().min(0, 'Max use count cannot be negative'),
+    categoryIds: z.array(z.number()),
+  })
+  .refine(
+    (data) => {
+      const startTime =
+        data.startTime instanceof Date
+          ? data.startTime
+          : new Date(data.startTime);
+      const endTime =
+        data.endTime instanceof Date ? data.endTime : new Date(data.endTime);
+      return endTime > startTime;
+    },
+    {
+      message: 'End time must be after start time',
+      path: ['endTime'],
+    }
+  );
 
 function CouponForm({
   coupon,
@@ -70,30 +91,14 @@ function CouponForm({
     categoryIds: number[];
   }
 
-  // Parse dates safely
-  const parseDate = (
-    dateString: string | Date | undefined,
-    defaultDate: Date
-  ): Date => {
-    if (!dateString) return defaultDate;
-    try {
-      const date = new Date(dateString);
-      return isNaN(date.getTime()) ? defaultDate : date;
-    } catch {
-      // Return default if any error occurs during date parsing
-      return defaultDate;
-    }
-  };
-
-  const now = new Date();
-  const oneWeekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
   const form = useForm<FormValues>({
     initialValues: {
       code: coupon?.code || '',
       active: coupon?.active ?? true,
-      startTime: parseDate(coupon?.startTime, now),
-      endTime: parseDate(coupon?.endTime, oneWeekLater),
+      startTime: coupon?.startTime ? parseISO(coupon.startTime) : new Date(),
+      endTime: coupon?.endTime
+        ? parseISO(coupon.endTime)
+        : addDays(new Date(), 7),
       type: (coupon?.type as 'Product' | 'Shipping') || 'Product',
       discountType: (coupon?.discountType as 'Percent' | 'Amount') || 'Percent',
       value: typeof coupon?.value === 'number' ? coupon.value : 10,
@@ -106,7 +111,7 @@ function CouponForm({
       allowMultipleUse: coupon?.allowMultipleUse ?? true,
       maxUseCount:
         typeof coupon?.maxUseCount === 'number' ? coupon.maxUseCount : 0,
-      categoryIds: [], // Initialize as empty array - will be populated from category selection
+      categoryIds: coupon?.categories?.map((cat) => cat.id) || [], // Initialize from existing coupon categories
     },
     validate: zodResolver(schema),
   });
@@ -121,8 +126,15 @@ function CouponForm({
             (id) => typeof id === 'number' && !isNaN(id)
           )
         : [],
-      startTime: values.startTime,
-      endTime: values.endTime,
+      // Ensure dates are proper Date objects
+      startTime:
+        values.startTime instanceof Date
+          ? values.startTime
+          : new Date(values.startTime),
+      endTime:
+        values.endTime instanceof Date
+          ? values.endTime
+          : new Date(values.endTime),
       // Ensure numeric values are proper numbers
       value: Number(values.value),
       minOrderValue: Number(values.minOrderValue),
@@ -144,12 +156,9 @@ function CouponForm({
 
   // Function to get select options with fallback for safety
   const getSelectData = () => {
-    // Default option as fallback
-    const defaultOptions = [{ value: '0', label: 'All Categories' }];
-
-    // Return default if no categories are available
+    // Return empty array if no categories are available
     if (!categories || !Array.isArray(categories) || categories.length === 0) {
-      return defaultOptions;
+      return [];
     }
 
     try {
@@ -157,13 +166,12 @@ function CouponForm({
       const options = categories.map((category) => ({
         value: String(category.id),
         label: category.name,
-        group: 'Categories',
       }));
 
-      return options.length > 0 ? options : defaultOptions;
+      return options;
     } catch (error) {
       console.error('Error processing categories:', error);
-      return defaultOptions;
+      return [];
     }
   };
 
@@ -290,25 +298,20 @@ function CouponForm({
         <Divider my="sm" />
         <Text fw={500}>Category Restrictions</Text>
 
-        {/* Simplified category selection */}
-        <Select
-          label="Applicable Category"
-          placeholder="Select a category"
-          description="Choose a category to apply this coupon to"
+        {/* Multiple category selection */}
+        <MultiSelect
+          label="Applicable Categories"
+          placeholder="Select categories"
+          description="Choose categories to apply this coupon to. If no categories are selected, the coupon applies to all categories."
           data={getSelectData()}
           clearable
           disabled={loadingCategories}
-          value={
-            form.values.categoryIds?.length > 0
-              ? String(form.values.categoryIds[0])
-              : null
-          }
-          onChange={(value) => {
-            const categoryId = parseInt(value || '0', 10);
-            form.setFieldValue(
-              'categoryIds',
-              categoryId > 0 ? [categoryId] : []
-            );
+          value={form.values.categoryIds?.map(String) || []}
+          onChange={(values) => {
+            const categoryIds = values
+              .map((val) => parseInt(val, 10))
+              .filter((id) => !isNaN(id));
+            form.setFieldValue('categoryIds', categoryIds);
           }}
         />
 

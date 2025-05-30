@@ -178,10 +178,12 @@ function CouponsManagementPage() {
         size="lg"
       >
         <CouponForm
-          onSubmit={(data: CreateCouponRequestDto) => {
-            createCoupon.mutateAsync(data).then(() => {
-              setCreateModalOpen(false);
-            });
+          onSubmit={(data: CreateCouponRequestDto | EditCouponRequestDto) => {
+            createCoupon
+              .mutateAsync(data as CreateCouponRequestDto)
+              .then(() => {
+                setCreateModalOpen(false);
+              });
           }}
           categories={categories || []}
           loadingCategories={loadingCategories || false}

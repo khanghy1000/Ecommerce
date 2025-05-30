@@ -1,3 +1,4 @@
+using Ecommerce.Application.Categories.DTOs;
 using Ecommerce.Domain;
 
 namespace Ecommerce.Application.Coupons.DTOs;
@@ -18,4 +19,5 @@ public class CouponResponseDto
     public int UsedCount { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public ICollection<CategoryResponseDto> Categories { get; set; } = [];
 }
