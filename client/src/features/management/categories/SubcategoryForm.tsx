@@ -1,6 +1,7 @@
 import { useForm } from '@mantine/form';
 import { z } from 'zod';
 import { zodResolver } from 'mantine-form-zod-resolver';
+import { useEffect } from 'react';
 import {
   TextInput,
   Button,
@@ -12,7 +13,6 @@ import {
 import {
   CategoryResponseDto,
   CreateSubcategoryRequestDto,
-  EditSubcategoryRequestDto,
 } from '../../../lib/types';
 
 const schema = z.object({
@@ -45,6 +45,17 @@ export function SubcategoryForm({
     validate: zodResolver(schema),
   });
 
+  // Update form values when initialValues change (for edit mode)
+  useEffect(() => {
+    if (
+      initialValues.name !== form.values.name ||
+      initialValues.categoryId !== form.values.categoryId
+    ) {
+      form.setValues(initialValues);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValues]);
+
   return (
     <Box pos="relative">
       <LoadingOverlay visible={isSubmitting} />
@@ -59,10 +70,13 @@ export function SubcategoryForm({
               label: category.name,
             })) || []
           }
-          {...form.getInputProps('categoryId')}
+          value={
+            form.values.categoryId > 0 ? form.values.categoryId.toString() : ''
+          }
           onChange={(value) =>
             form.setFieldValue('categoryId', value ? parseInt(value) : 0)
           }
+          error={form.errors.categoryId}
         />
 
         <TextInput

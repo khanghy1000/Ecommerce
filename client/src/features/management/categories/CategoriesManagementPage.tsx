@@ -26,8 +26,6 @@ import {
   EditCategoryRequestDto,
   CreateSubcategoryRequestDto,
   EditSubcategoryRequestDto,
-  CategoryResponseDto,
-  SubcategoryResponseDto,
 } from '../../../lib/types';
 import { FiPlus, FiEdit, FiTrash2, FiAlertCircle } from 'react-icons/fi';
 import { notifications } from '@mantine/notifications';
@@ -64,7 +62,6 @@ function CategoriesManagementPage() {
     createSubcategory,
     editSubcategory,
     deleteSubcategory,
-    subcategory,
   } = useCategories(
     selectedCategory || undefined,
     selectedSubcategory || undefined
@@ -73,11 +70,6 @@ function CategoriesManagementPage() {
   // Initial form values
   const initialCategoryValues: CreateCategoryRequestDto = {
     name: '',
-  };
-
-  const initialSubcategoryValues: CreateSubcategoryRequestDto = {
-    name: '',
-    categoryId: selectedCategory || 0,
   };
 
   // Handler for opening modal with different forms
@@ -224,13 +216,24 @@ function CategoriesManagementPage() {
   };
 
   const getSubcategoryFormValues = () => {
-    if (modalType === 'editSubcategory' && selectedSubcategory && subcategory) {
-      return {
-        name: subcategory.name,
-        categoryId: subcategory.categoryId,
-      };
+    if (modalType === 'editSubcategory' && selectedSubcategory && categories) {
+      // Find the subcategory in the categories data
+      for (const category of categories) {
+        const subcat = category.subcategories.find(
+          (sub) => sub.id === selectedSubcategory
+        );
+        if (subcat) {
+          return {
+            name: subcat.name,
+            categoryId: category.id,
+          };
+        }
+      }
     }
-    return initialSubcategoryValues;
+    return {
+      name: '',
+      categoryId: selectedCategory || 0,
+    };
   };
 
   // Render categories table
@@ -274,7 +277,9 @@ function CategoriesManagementPage() {
                 <Table.Td>
                   <Group gap={5} wrap="wrap">
                     {category.subcategories.map((subcat) => (
-                      <Badge variant='default' key={subcat.id}>{subcat.name}</Badge>
+                      <Badge variant="default" key={subcat.id}>
+                        {subcat.name}
+                      </Badge>
                     ))}
                     {category.subcategories.length === 0 && (
                       <Text size="sm" c="dimmed">
