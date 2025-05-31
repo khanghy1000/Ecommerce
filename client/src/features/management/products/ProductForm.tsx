@@ -355,6 +355,9 @@ function ProductForm({
           <Text size="lg" fw={500} mb="md">
             Product Photos
           </Text>
+          <Text c="dimmed" mb="md">
+            Upload high-quality images to showcase your product
+          </Text>
           <ProductPhotosSection
             productId={product?.id}
             photos={product?.photos || []}

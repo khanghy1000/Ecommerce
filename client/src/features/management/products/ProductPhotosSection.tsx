@@ -2,7 +2,6 @@ import {
   Stack,
   Text,
   Group,
-  Button,
   Image,
   ActionIcon,
   Box,
@@ -17,6 +16,7 @@ import {
   FiX,
   FiAlertCircle,
   FiMove,
+  FiInfo,
 } from 'react-icons/fi';
 import { useProductPhotos } from '../../../lib/hooks/useProductPhotos';
 import { ProductPhotoDto } from '../../../lib/types';
@@ -138,12 +138,9 @@ export function ProductPhotosSection({
 
   if (!isEditing) {
     return (
-      <Stack gap="md">
-        <Text c="dimmed">Save the product first to add and manage photos</Text>
-        <Button variant="outline" disabled>
-          Upload Photos
-        </Button>
-      </Stack>
+      <Alert icon={<FiInfo size={16} />} color="blue">
+        Photo management is available after creating the product.
+      </Alert>
     );
   }
 
