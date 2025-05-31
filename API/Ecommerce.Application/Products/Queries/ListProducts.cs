@@ -48,7 +48,8 @@ public static class ListProducts
             if (!string.IsNullOrEmpty(request.Keyword))
             {
                 query = query.Where(x =>
-                    x.SearchVector.Matches(
+                    x.Id.ToString() == request.Keyword
+                    || x.SearchVector.Matches(
                         EF.Functions.PlainToTsQuery("vietnamese", request.Keyword)
                     )
                 );
