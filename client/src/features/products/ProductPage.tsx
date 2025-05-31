@@ -290,7 +290,7 @@ function ProductPage() {
           {/* Shop info */}
           <Group mb="xl">
             <Image
-              src={product.shopImageUrl || '/placeholder.svg'}
+              src={baseImageUrl + product.shopImageUrl || '/placeholder.svg'}
               alt={product.shopName}
               width={30}
               height={30}
