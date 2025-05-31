@@ -2,10 +2,7 @@ import { useForm } from '@mantine/form';
 import { z } from 'zod';
 import { zodResolver } from 'mantine-form-zod-resolver';
 import { TextInput, Button, Group, Box, LoadingOverlay } from '@mantine/core';
-import {
-  CreateCategoryRequestDto,
-  EditCategoryRequestDto,
-} from '../../../lib/types';
+import { CreateCategoryRequestDto } from '../../../lib/types';
 
 const schema = z.object({
   name: z

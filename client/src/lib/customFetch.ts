@@ -24,9 +24,9 @@ const getBody = <T>(c: Response | Request): Promise<T> => {
   return c.text() as Promise<T>;
 };
 
-async function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+// async function sleep(ms: number) {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// }
 
 async function customFetch<T>(
   path: string,
