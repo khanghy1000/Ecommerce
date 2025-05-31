@@ -17,6 +17,8 @@ import { useAccount } from '../../lib/hooks/useAccount';
 export default function ManagementNavbar() {
   const { currentUserInfo, logoutUser, loadingUserInfo } = useAccount();
 
+  const baseImageUrl = import.meta.env.VITE_BASE_IMAGE_URL;
+
   return (
     <Container h="100%">
       <Flex align="center" justify="space-between" h="100%">
@@ -33,7 +35,7 @@ export default function ManagementNavbar() {
                 <Menu.Target>
                   <Button variant="subtle" px="xs">
                     <Avatar
-                      src={currentUserInfo.imageUrl}
+                      src={baseImageUrl + currentUserInfo.imageUrl}
                       alt={currentUserInfo.displayName}
                       size="sm"
                       style={{ marginRight: rem(5) }}

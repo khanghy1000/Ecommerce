@@ -30,6 +30,8 @@ export function BuyerNavbar() {
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
+  const baseImageUrl = import.meta.env.VITE_BASE_IMAGE_URL;
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchValue.trim()) {
@@ -110,7 +112,7 @@ export function BuyerNavbar() {
                     <Menu.Target>
                       <Button variant="subtle" px="xs">
                         <Avatar
-                          src={currentUserInfo.imageUrl}
+                          src={baseImageUrl + currentUserInfo.imageUrl}
                           alt={currentUserInfo.displayName}
                           size="sm"
                           style={{ marginRight: rem(5) }}
