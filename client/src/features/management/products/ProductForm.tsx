@@ -25,6 +25,7 @@ import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useMemo } from 'react';
 import { ProductPhotosSection } from './ProductPhotosSection';
+import { ProductDiscountsSection } from './ProductDiscountsSection';
 
 interface ProductFormProps {
   product?: ProductResponseDto;
@@ -368,9 +369,11 @@ function ProductForm({
           <Text c="dimmed" mb="md">
             Set up time-limited discounts and promotional pricing
           </Text>
-          <Button variant="outline" disabled>
-            Manage Discounts (Coming Soon)
-          </Button>
+          <ProductDiscountsSection
+            productId={product?.id}
+            regularPrice={form.values.regularPrice}
+            isEditing={isEditing}
+          />
         </Paper>
 
         <Divider />
