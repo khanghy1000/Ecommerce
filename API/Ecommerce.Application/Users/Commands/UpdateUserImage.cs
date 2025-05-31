@@ -22,6 +22,11 @@ public class UpdateUserImage
         public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
             var user = await userAccessor.GetUserAsync();
+            
+            if (user.ImageUrl != null)
+            {
+                await photoService.DeletePhoto(user.ImageUrl);
+            }
 
             var uploadResult = await photoService.UploadPhoto(
                 request.File,
@@ -33,11 +38,9 @@ public class UpdateUserImage
 
             user.ImageUrl = uploadResult.Key;
             dbContext.Users.Update(user);
-            var result = await dbContext.SaveChangesAsync(cancellationToken) > 0;
+            await dbContext.SaveChangesAsync(cancellationToken);
 
-            return !result
-                ? Result<Unit>.Failure("Failed to update user photo", 400)
-                : Result<Unit>.Success(Unit.Value);
+            return Result<Unit>.Success(Unit.Value);
         }
     }
 }

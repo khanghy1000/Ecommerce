@@ -12,13 +12,10 @@ namespace Ecommerce.API.Controllers;
 [Authorize]
 public class UsersController : BaseApiController
 {
-    // display name
-    [HttpPut("display-name")]
-    public async Task<ActionResult<Unit>> UpdateDisplayName(string displayName)
+    [HttpPut("profile")]
+    public async Task<ActionResult<Unit>> ChangeDisplayName(UpdateUserProfile.Command command)
     {
-        var result = await Mediator.Send(
-            new UpdateUserDisplayName.Command { DisplayName = displayName }
-        );
+        var result = await Mediator.Send(command);
         return HandleResult(result);
     }
 

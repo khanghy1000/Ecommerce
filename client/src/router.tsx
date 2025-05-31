@@ -20,6 +20,7 @@ import Unauthorized from './features/errors/Unauthorized';
 import RequireShopOrAdminRole from './lib/components/RequireShopOrAdminRole';
 import RequireBuyerRole from './lib/components/RequireBuyerRole';
 import RequireLogin from './lib/components/RequireLogin';
+import ProfilePage from './features/profile/ProfilePage';
 import PerformancePage from './features/management/statistics/PerformancePage';
 import OrdersManagementPage from './features/management/orders/OrdersManagementPage';
 import ProductsManagementPage from './features/management/products/ProductsManagementPage';
@@ -128,7 +129,7 @@ const router = createBrowserRouter([
         path: '/profile',
         element: (
           <RequireLogin>
-            <div>Profile page</div>
+            <ProfilePage />
           </RequireLogin>
         ),
       },

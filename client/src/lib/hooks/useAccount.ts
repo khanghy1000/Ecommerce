@@ -50,7 +50,6 @@ export const useAccount = () => {
     },
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: ['user'] });
-      queryClient.removeQueries({ queryKey: ['activities'] });
       navigate('/');
     },
   });
@@ -64,12 +63,46 @@ export const useAccount = () => {
     },
   });
 
+  const updateProfile = useMutation({
+    mutationFn: async (data: { displayName: string }) => {
+      await customFetch('/users/profile', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+    onSuccess: async () => {
+      queryClient.removeQueries({ queryKey: ['user'] });
+      navigate('/profile');
+    },
+  });
+
+  const updateUserImage = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      await customFetch('/users/image', {
+        method: 'PUT',
+        body: formData,
+        headers: {},
+      });
+    },
+    onSuccess: async () => {
+      queryClient.removeQueries({ queryKey: ['user'] });
+      navigate('/profile');
+    },
+  });
+
   return {
     currentUserInfo,
     loadingUserInfo,
+
     loginUser,
     logoutUser,
     registerUser,
     changePassword,
+
+    updateProfile,
+    updateUserImage,
   };
 };
