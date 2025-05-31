@@ -11,6 +11,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^18.0.1",
     "@mantine/carousel": "^7.17.7",
     "@mantine/charts": "^8.0.1",
     "@mantine/core": "^7.17.7",

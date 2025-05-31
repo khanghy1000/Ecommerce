@@ -151,6 +151,23 @@ function ProductsManagementPage() {
     }
   };
 
+  const handleCopyShopId = async (shopId: string) => {
+    try {
+      await navigator.clipboard.writeText(shopId.toString());
+      notifications.show({
+        title: 'Copied to clipboard',
+        message: `Shop ID ${shopId} has been copied to clipboard`,
+        color: 'green',
+      });
+    } catch {
+      notifications.show({
+        title: 'Copy failed',
+        message: 'Failed to copy shop ID to clipboard',
+        color: 'red',
+      });
+    }
+  };
+
   const pageSizeOptions = [
     { value: '5', label: '5' },
     { value: '10', label: '10' },
@@ -269,7 +286,7 @@ function ProductsManagementPage() {
                           >
                             <Text
                               component={Link}
-                              to={`/products/${product.id}`}
+                              to={`/management/products/edit/${product.id}`}
                               style={{
                                 textDecoration: 'none',
                                 color: 'inherit',
@@ -302,7 +319,13 @@ function ProductsManagementPage() {
                           <Table.Td>
                             <Text
                               size="sm"
-                              title={`${product.shopName} (ID: ${product.shopId})`}
+                              title={`${product.shopName} (ID: ${product.shopId}) - Click to copy ID`}
+                              style={{
+                                cursor: 'pointer',
+                                textDecoration: 'underline',
+                                color: 'var(--mantine-color-blue-6)',
+                              }}
+                              onClick={() => handleCopyShopId(product.shopId)}
                             >
                               {product.shopName}
                             </Text>

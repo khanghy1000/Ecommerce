@@ -24,6 +24,7 @@ import { RichTextEditor, Link } from '@mantine/tiptap';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useMemo } from 'react';
+import { ProductPhotosSection } from './ProductPhotosSection';
 
 interface ProductFormProps {
   product?: ProductResponseDto;
@@ -348,17 +349,16 @@ function ProductForm({
           </Grid>
         </Paper>
 
-        {/* Placeholder sections */}
+        {/* Product Photos */}
         <Paper p="md" withBorder>
           <Text size="lg" fw={500} mb="md">
             Product Photos
           </Text>
-          <Text c="dimmed" mb="md">
-            Upload and manage product images to showcase your product
-          </Text>
-          <Button variant="outline" disabled>
-            Manage Photos (Coming Soon)
-          </Button>
+          <ProductPhotosSection
+            productId={product?.id}
+            photos={product?.photos || []}
+            isEditing={isEditing}
+          />
         </Paper>
 
         <Paper p="md" withBorder>

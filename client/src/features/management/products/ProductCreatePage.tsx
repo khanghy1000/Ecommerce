@@ -28,7 +28,7 @@ function ProductCreatePage() {
           message: `Product "${createdProduct.name}" has been created successfully`,
           color: 'green',
         });
-        navigate('/management/products');
+        navigate(`/management/products/edit/${createdProduct.id}`);
       },
       onError: (error: unknown) => {
         console.error('Error creating product:', error);
