@@ -18,7 +18,7 @@ import {
   EditProductRequestDto,
   CategoryResponseDto,
 } from '../../../lib/types';
-import { useForm, zodResolver } from '@mantine/form';
+import { FormErrors, useForm, zodResolver } from '@mantine/form';
 import { z } from 'zod';
 import { RichTextEditor, Link } from '@mantine/tiptap';
 import { useEditor } from '@tiptap/react';
@@ -168,8 +168,13 @@ function ProductForm({
     onSubmit(formData as CreateProductRequestDto | EditProductRequestDto);
   };
 
+  const handleSubmitError = (errors: FormErrors) => {
+    const firstErrorPath = Object.keys(errors)[0];
+    form.getInputNode(firstErrorPath)?.focus();
+  };
+
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
+    <form onSubmit={form.onSubmit(handleSubmit, handleSubmitError)}>
       <Stack gap="lg">
         {/* Basic Information */}
         <Paper p="md" withBorder>
