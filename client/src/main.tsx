@@ -14,6 +14,8 @@ import '@mantine/nprogress/styles.css';
 import Loading from './lib/components/Loading';
 import '@mantine/charts/styles.css';
 import '@mantine/dates/styles.css';
+import '@mantine/dropzone/styles.css';
+import '@mantine/tiptap/styles.css';
 
 const queryClient = new QueryClient();
 

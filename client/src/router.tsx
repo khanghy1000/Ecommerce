@@ -23,6 +23,8 @@ import RequireLogin from './lib/components/RequireLogin';
 import PerformancePage from './features/management/statistics/PerformancePage';
 import OrdersManagementPage from './features/management/orders/OrdersManagementPage';
 import ProductsManagementPage from './features/management/products/ProductsManagementPage';
+import ProductCreatePage from './features/management/products/ProductCreatePage';
+import ProductEditPage from './features/management/products/ProductEditPage';
 import CouponsManagementPage from './features/management/coupons/CouponsManagementPage';
 import CategoriesManagementPage from './features/management/categories/CategoriesManagementPage';
 
@@ -57,7 +59,20 @@ const router = createBrowserRouter([
       },
       {
         path: 'products',
-        element: <ProductsManagementPage />,
+        children: [
+          {
+            index: true,
+            element: <ProductsManagementPage />,
+          },
+          {
+            path: 'create',
+            element: <ProductCreatePage />,
+          },
+          {
+            path: 'edit/:productId',
+            element: <ProductEditPage />,
+          },
+        ],
       },
       {
         path: 'coupons',

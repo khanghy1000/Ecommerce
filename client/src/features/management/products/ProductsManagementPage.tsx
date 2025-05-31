@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Container,
   Title,
@@ -44,8 +44,9 @@ function ProductsManagementPage() {
   const [deleteProductId, setDeleteProductId] = useState<number | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
 
-  // Form for filtering
+  // Form for filtering (user input state)
   const form = useForm<ListProductsRequest>({
+    mode: 'uncontrolled',
     initialValues: {
       pageNumber: page,
       pageSize: pageSize,
@@ -55,13 +56,35 @@ function ProductsManagementPage() {
     },
   });
 
+  // Query parameters state (separate from form state)
+  const [queryParams, setQueryParams] = useState<ListProductsRequest>({
+    pageNumber: page,
+    pageSize: pageSize,
+    keyword: '',
+    shopId: isAdmin ? '' : currentUserInfo?.id,
+    includeInactive: true,
+  });
+
   // Query products with filter
   const { products, loadingProducts, setProductActiveState, deleteProduct } =
-    useProducts(undefined, form.values);
+    useProducts(undefined, queryParams);
+
+  // Initialize query parameters when component mounts or when user info changes
+  useEffect(() => {
+    const initialParams = {
+      pageNumber: 1,
+      pageSize: pageSize,
+      keyword: '',
+      shopId: isAdmin ? '' : currentUserInfo?.id,
+      includeInactive: true,
+    };
+    setQueryParams(initialParams);
+  }, [currentUserInfo?.id, isAdmin, pageSize]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
     form.setFieldValue('pageNumber', newPage);
+    setQueryParams((prev) => ({ ...prev, pageNumber: newPage }));
   };
 
   const handlePageSizeChange = (newSize: string | null) => {
@@ -71,23 +94,25 @@ function ProductsManagementPage() {
       form.setFieldValue('pageSize', size);
       setPage(1); // Reset to first page when changing page size
       form.setFieldValue('pageNumber', 1);
+      setQueryParams((prev) => ({ ...prev, pageSize: size, pageNumber: 1 }));
     }
   };
 
   const handleSearch = () => {
     setPage(1); // Reset page on new search
     form.setFieldValue('pageNumber', 1);
+    // Update query params with current form values to trigger API call
+    const currentValues = form.getValues();
+    setQueryParams({
+      ...currentValues,
+      pageNumber: 1,
+    });
   };
 
   const handleResetFilters = () => {
     form.reset();
-    // If shop role, keep the shopId filter
-    if (!isAdmin && currentUserInfo?.id) {
-      form.setFieldValue('shopId', currentUserInfo.id);
-    }
-    form.setFieldValue('includeInactive', true);
     setPage(1);
-    form.setFieldValue('pageNumber', 1);
+    setQueryParams(form.getValues());
   };
 
   const handleActiveStateChange = (id: number, currentState: boolean) => {
@@ -153,12 +178,8 @@ function ProductsManagementPage() {
               label="Search Products"
               placeholder="Enter keyword"
               {...form.getInputProps('keyword')}
+              key={form.key('keyword')}
               style={{ flex: 1 }}
-              rightSection={
-                <ActionIcon onClick={handleSearch}>
-                  <FiSearch size={16} />
-                </ActionIcon>
-              }
             />
 
             {isAdmin && (
@@ -166,9 +187,18 @@ function ProductsManagementPage() {
                 label="Shop ID"
                 placeholder="Filter by shop ID"
                 {...form.getInputProps('shopId')}
+                key={form.key('shopId')}
                 style={{ width: '200px' }}
               />
             )}
+
+            <Button
+              type="submit"
+              leftSection={<FiSearch size={16} />}
+              style={{ marginTop: 'auto' }}
+            >
+              Search
+            </Button>
 
             <Button
               variant="outline"
