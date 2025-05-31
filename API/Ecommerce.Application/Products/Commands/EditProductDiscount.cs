@@ -44,6 +44,7 @@ public static class EditProductDiscount
             var hasOverlap = await dbContext.ProductDiscounts.AnyAsync(
                 pd =>
                     pd.ProductId == request.ProductId
+                    && pd.Id != request.DiscountId
                     && (
                         // request start time is in the range of existing discount
                         (
