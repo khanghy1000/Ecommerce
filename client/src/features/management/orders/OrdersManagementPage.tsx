@@ -23,6 +23,7 @@ import { useOrders } from '../../../lib/hooks/useOrders';
 import { startOfDay, endOfDay, format } from 'date-fns';
 import { useAccount } from '../../../lib/hooks/useAccount';
 import { formatPrice } from '../../../lib/utils';
+import { Link } from 'react-router';
 
 function OrdersManagementPage() {
   const { currentUserInfo } = useAccount();
@@ -109,122 +110,122 @@ function OrdersManagementPage() {
       </Title>
 
       <Paper p="md" mb="lg" withBorder>
-          <Stack gap="md">
-            <Group>
-              <NumberInput
-                label="Order ID"
-                placeholder="Search by Order ID"
-                min={1}
-                {...form.getInputProps('orderId')}
-                w={{ base: '100%', sm: '48%', md: '32%' }}
-                hideControls
-                // rightSection={
-                //   form.values.orderId ? (
-                //     <ActionIcon
-                //       size="sm"
-                //       variant="transparent"
-                //       onClick={() => form.setFieldValue('orderId', undefined)}
-                //     >
-                //       <FiX size={16} />
-                //     </ActionIcon>
-                //   ) : null
-                // }
-              />
+        <Stack gap="md">
+          <Group>
+            <NumberInput
+              label="Order ID"
+              placeholder="Search by Order ID"
+              min={1}
+              {...form.getInputProps('orderId')}
+              w={{ base: '100%', sm: '48%', md: '32%' }}
+              hideControls
+              // rightSection={
+              //   form.values.orderId ? (
+              //     <ActionIcon
+              //       size="sm"
+              //       variant="transparent"
+              //       onClick={() => form.setFieldValue('orderId', undefined)}
+              //     >
+              //       <FiX size={16} />
+              //     </ActionIcon>
+              //   ) : null
+              // }
+            />
 
+            <TextInput
+              label="Buyer"
+              placeholder="Search by Buyer ID"
+              {...form.getInputProps('buyerId')}
+              w={{ base: '100%', sm: '48%', md: '32%' }}
+              // rightSection={
+              //   form.values.buyerId ? (
+              //     <ActionIcon
+              //       size="sm"
+              //       variant="transparent"
+              //       onClick={() => form.setFieldValue('buyerId', '')}
+              //     >
+              //       <FiX size={16} />
+              //     </ActionIcon>
+              //   ) : null
+              // }
+            />
+
+            {isAdmin && (
               <TextInput
-                label="Buyer"
-                placeholder="Search by Buyer ID"
-                {...form.getInputProps('buyerId')}
+                label="Shop"
+                placeholder="Search by Shop ID"
+                {...form.getInputProps('shopId')}
                 w={{ base: '100%', sm: '48%', md: '32%' }}
                 // rightSection={
-                //   form.values.buyerId ? (
+                //   form.values.shopId ? (
                 //     <ActionIcon
                 //       size="sm"
                 //       variant="transparent"
-                //       onClick={() => form.setFieldValue('buyerId', '')}
+                //       onClick={() => form.setFieldValue('shopId', '')}
                 //     >
                 //       <FiX size={16} />
                 //     </ActionIcon>
                 //   ) : null
                 // }
               />
+            )}
+          </Group>
 
-              {isAdmin && (
-                <TextInput
-                  label="Shop"
-                  placeholder="Search by Shop ID"
-                  {...form.getInputProps('shopId')}
-                  w={{ base: '100%', sm: '48%', md: '32%' }}
-                  // rightSection={
-                  //   form.values.shopId ? (
-                  //     <ActionIcon
-                  //       size="sm"
-                  //       variant="transparent"
-                  //       onClick={() => form.setFieldValue('shopId', '')}
-                  //     >
-                  //       <FiX size={16} />
-                  //     </ActionIcon>
-                  //   ) : null
-                  // }
-                />
-              )}
-            </Group>
+          <Group>
+            <DatePickerInput
+              label="From Date"
+              placeholder="Select start date"
+              valueFormat="DD/MM/YYYY"
+              onChange={(date) => {
+                if (date) {
+                  // Format the date in ISO string with proper UTC time for start of day
+                  form.setFieldValue(
+                    'fromDate',
+                    startOfDay(new Date(date)).toISOString()
+                  );
+                } else {
+                  form.setFieldValue('fromDate', undefined);
+                }
+              }}
+              w={{ base: '100%', sm: '48%', md: '32%' }}
+              clearable
+            />
 
-            <Group>
-              <DatePickerInput
-                label="From Date"
-                placeholder="Select start date"
-                valueFormat="DD/MM/YYYY"
-                onChange={(date) => {
-                  if (date) {
-                    // Format the date in ISO string with proper UTC time for start of day
-                    form.setFieldValue(
-                      'fromDate',
-                      startOfDay(new Date(date)).toISOString()
-                    );
-                  } else {
-                    form.setFieldValue('fromDate', undefined);
-                  }
-                }}
-                w={{ base: '100%', sm: '48%', md: '32%' }}
-                clearable
-              />
+            <DatePickerInput
+              label="To Date"
+              placeholder="Select end date"
+              valueFormat="DD/MM/YYYY"
+              onChange={(date) => {
+                if (date) {
+                  // Format the date in ISO string with proper UTC time for end of day
+                  form.setFieldValue(
+                    'toDate',
+                    endOfDay(new Date(date)).toISOString()
+                  );
+                } else {
+                  form.setFieldValue('toDate', undefined);
+                }
+              }}
+              w={{ base: '100%', sm: '48%', md: '32%' }}
+              clearable
+            />
 
-              <DatePickerInput
-                label="To Date"
-                placeholder="Select end date"
-                valueFormat="DD/MM/YYYY"
-                onChange={(date) => {
-                  if (date) {
-                    // Format the date in ISO string with proper UTC time for end of day
-                    form.setFieldValue(
-                      'toDate',
-                      endOfDay(new Date(date)).toISOString()
-                    );
-                  } else {
-                    form.setFieldValue('toDate', undefined);
-                  }
-                }}
-                w={{ base: '100%', sm: '48%', md: '32%' }}
-                clearable
-              />
+            <Select
+              label="Order Status"
+              placeholder="Select status"
+              data={statusOptions}
+              {...form.getInputProps('status')}
+              w={{ base: '100%', sm: '48%', md: '32%' }}
+              clearable
+            />
+          </Group>
 
-              <Select
-                label="Order Status"
-                placeholder="Select status"
-                data={statusOptions}
-                {...form.getInputProps('status')}
-                w={{ base: '100%', sm: '48%', md: '32%' }}
-                clearable
-              />
-            </Group>
-
-            <Group justify="flex-end">
-              <Button variant="outline" onClick={resetForm}>
-                Reset Filters
-              </Button>
-            </Group>
-          </Stack>
+          <Group justify="flex-end">
+            <Button variant="outline" onClick={resetForm}>
+              Reset Filters
+            </Button>
+          </Group>
+        </Stack>
       </Paper>
 
       <Paper p="md" withBorder>
@@ -271,7 +272,21 @@ function OrdersManagementPage() {
                   {orders && orders.items.length > 0 ? (
                     orders.items.map((order) => (
                       <Table.Tr key={order.id}>
-                        <Table.Td>{order.id}</Table.Td>
+                        <Table.Td>
+                          <Text
+                            component={Link}
+                            to={`/management/orders/${order.id}`}
+                            size="sm"
+                            fw={500}
+                            c="blue"
+                            style={{
+                              textDecoration: 'underline',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {order.id}
+                          </Text>
+                        </Table.Td>
                         <Table.Td>
                           {format(new Date(order.orderTime), 'PPpp')}
                         </Table.Td>

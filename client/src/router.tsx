@@ -28,6 +28,7 @@ import ProductCreatePage from './features/management/products/ProductCreatePage'
 import ProductEditPage from './features/management/products/ProductEditPage';
 import CouponsManagementPage from './features/management/coupons/CouponsManagementPage';
 import CategoriesManagementPage from './features/management/categories/CategoriesManagementPage';
+import OrderDetailsManagementPage from './features/management/orders/OrderDetailsManagementPage';
 
 const router = createBrowserRouter([
   {
@@ -56,7 +57,16 @@ const router = createBrowserRouter([
       },
       {
         path: 'orders',
-        element: <OrdersManagementPage />,
+        children: [
+          {
+            index: true,
+            element: <OrdersManagementPage />,
+          },
+          {
+            path: ':id',
+            element: <OrderDetailsManagementPage />,
+          },
+        ],
       },
       {
         path: 'products',
