@@ -12,6 +12,8 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { useNavigate, Link, useParams } from 'react-router';
 import { FiChevronLeft } from 'react-icons/fi';
+import { } from '../../features/orders/OrdersPage';
+import { getOrderStatusText } from '../../lib/utils';
 
 const baseImageUrl = import.meta.env.VITE_BASE_IMAGE_URL;
 
@@ -59,7 +61,7 @@ function OrderDetailPage() {
             <b>Order time:</b> {new Date(order.orderTime).toLocaleString()}
           </div>
           <div>
-            <b>Status:</b> {order.status}
+            <b>Status:</b> {getOrderStatusText(order.status)}
           </div>
           {(order.status === 'PendingConfirmation' ||
             order.status === 'PendingPayment') && (

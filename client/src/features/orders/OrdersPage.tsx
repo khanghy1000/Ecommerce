@@ -13,6 +13,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { useSearchParams, useNavigate, Link } from 'react-router';
 import { useState } from 'react';
 import { SalesOrderStatus } from '../../lib/types';
+import { getOrderStatusText } from '../../lib/utils';
 
 const baseImageUrl = import.meta.env.VITE_BASE_IMAGE_URL;
 
@@ -24,6 +25,7 @@ const navOptions = [
   { label: 'Delivered', value: 'Delivered' },
   { label: 'Cancelled', value: 'Cancelled' },
 ];
+
 
 function OrdersPage() {
   const navigate = useNavigate();
@@ -40,6 +42,7 @@ function OrdersPage() {
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   console.log(orders);
+
 
   return (
     <Box component="nav" style={{ borderBottom: '1px solid #ccc' }}>
@@ -102,7 +105,7 @@ function OrdersPage() {
                             color: 'var(--mantine-primary-color-filled)',
                           }}
                         >
-                          {order.status}
+                          {getOrderStatusText(order.status)}
                         </b>
                         <span style={{ color: '#666', fontSize: 14 }}>
                           {new Date(order.orderTime).toLocaleString()}
