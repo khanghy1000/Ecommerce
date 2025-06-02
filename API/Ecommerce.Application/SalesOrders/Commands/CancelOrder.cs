@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Ecommerce.Application.Core;
 using Ecommerce.Application.Interfaces;
 using Ecommerce.Application.SalesOrders.DTOs;
@@ -44,9 +45,14 @@ public class CancelOrder
             salesOrder.Status = SalesOrderStatus.Cancelled;
             await dbContext.SaveChangesAsync(cancellationToken);
 
-            return Result<SalesOrderResponseDto>.Success(
-                mapper.Map<SalesOrderResponseDto>(salesOrder)
-            );
+            var resultOrder = await dbContext
+                .SalesOrders.ProjectTo<SalesOrderResponseDto>(mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+
+            if (resultOrder == null)
+                return Result<SalesOrderResponseDto>.Failure("Sales order not found", 404);
+
+            return Result<SalesOrderResponseDto>.Success(resultOrder);
         }
     }
 }
