@@ -19,6 +19,8 @@ import {
 import { useForm, zodResolver } from '@mantine/form';
 import { z } from 'zod';
 import { useAccount } from '../../lib/hooks/useAccount';
+import { useAddresses } from '../../lib/hooks/useAddresses';
+import { UserAddressResponseDto } from '../../lib/types';
 import { notifications } from '@mantine/notifications';
 import {
   FiUser,
@@ -26,7 +28,10 @@ import {
   FiCamera,
   FiCheckCircle,
   FiAlertCircle,
+  FiMapPin,
 } from 'react-icons/fi';
+import { AddressesSection } from './AddressesSection';
+import { AddressFormModal } from './AddressFormModal';
 
 // Validation schemas
 const profileSchema = z.object({
@@ -55,6 +60,10 @@ function ProfilePage() {
 
   const [activeTab, setActiveTab] = useState<string | null>('profile');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [addressFormModalOpened, setAddressFormModalOpened] = useState(false);
+  const [editingAddress, setEditingAddress] = useState<
+    UserAddressResponseDto | undefined
+  >(undefined);
 
   const {
     currentUserInfo,
@@ -63,6 +72,15 @@ function ProfilePage() {
     changePassword,
     updateUserImage,
   } = useAccount();
+
+  const {
+    addresses,
+    loadingAddresses,
+    addAddress,
+    editAddress,
+    deleteAddress,
+    setDefaultAddress,
+  } = useAddresses();
 
   // Profile form
   const profileForm = useForm<ProfileFormValues>({
@@ -129,6 +147,81 @@ function ProfilePage() {
     });
   };
 
+  // Handle address form submission
+  const handleAddressSubmit = (
+    values: {
+      name: string;
+      phoneNumber: string;
+      address: string;
+      provinceId: number;
+      districtId: number;
+      wardId: number;
+      isDefault: boolean;
+    },
+    isEdit: boolean
+  ) => {
+    if (isEdit && editingAddress) {
+      const editData = {
+        name: values.name,
+        phoneNumber: values.phoneNumber,
+        address: values.address,
+        wardId: values.wardId,
+        isDefault: values.isDefault,
+      };
+      editAddress.mutate(
+        { id: editingAddress.id, addressData: editData },
+        {
+          onSuccess: () => {
+            setAddressFormModalOpened(false);
+            notifications.show({
+              title: 'Success',
+              message: 'Address updated successfully',
+              color: 'green',
+              icon: <FiCheckCircle />,
+            });
+          },
+          onError: (error) => {
+            console.error('Address update error:', error);
+            notifications.show({
+              title: 'Error',
+              message: 'Failed to update address. Please try again.',
+              color: 'red',
+              icon: <FiAlertCircle />,
+            });
+          },
+        }
+      );
+    } else {
+      const addData = {
+        name: values.name,
+        phoneNumber: values.phoneNumber,
+        address: values.address,
+        wardId: values.wardId,
+        isDefault: values.isDefault,
+      };
+      addAddress.mutate(addData, {
+        onSuccess: () => {
+          setAddressFormModalOpened(false);
+          notifications.show({
+            title: 'Success',
+            message: 'Address added successfully',
+            color: 'green',
+            icon: <FiCheckCircle />,
+          });
+        },
+        onError: (error) => {
+          console.error('Address add error:', error);
+          notifications.show({
+            title: 'Error',
+            message: 'Failed to add address. Please try again.',
+            color: 'red',
+            icon: <FiAlertCircle />,
+          });
+        },
+      });
+    }
+  };
+
   const handleImageUpload = (file: File | null) => {
     if (file) {
       setSelectedFile(file);
@@ -192,6 +285,9 @@ function ProfilePage() {
             </Tabs.Tab>
             <Tabs.Tab value="avatar" leftSection={<FiCamera />}>
               Profile Picture
+            </Tabs.Tab>
+            <Tabs.Tab value="addresses" leftSection={<FiMapPin />}>
+              Addresses
             </Tabs.Tab>
           </Tabs.List>
 
@@ -367,8 +463,43 @@ function ProfilePage() {
               </Group>
             </Stack>
           </Tabs.Panel>
+
+          <Tabs.Panel value="addresses" pt="xl">
+            <AddressesSection
+              addresses={addresses}
+              loadingAddresses={loadingAddresses}
+              onDeleteAddress={(addressId) => {
+                if (
+                  window.confirm(
+                    'Are you sure you want to delete this address?'
+                  )
+                ) {
+                  deleteAddress.mutate(addressId);
+                }
+              }}
+              onSetDefaultAddress={(addressId) =>
+                setDefaultAddress.mutate(addressId)
+              }
+              onAddNewAddress={() => {
+                setEditingAddress(undefined);
+                setAddressFormModalOpened(true);
+              }}
+              onEditAddressClick={(address) => {
+                setEditingAddress(address);
+                setAddressFormModalOpened(true);
+              }}
+            />
+          </Tabs.Panel>
         </Tabs>
       </Paper>
+
+      <AddressFormModal
+        opened={addressFormModalOpened}
+        onClose={() => setAddressFormModalOpened(false)}
+        editingAddress={editingAddress}
+        onSubmit={handleAddressSubmit}
+        isSubmitting={addAddress.isPending || editAddress.isPending}
+      />
     </Container>
   );
 }
