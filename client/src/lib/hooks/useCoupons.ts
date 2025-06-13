@@ -5,8 +5,12 @@ import {
   CreateCouponRequestDto,
   EditCouponRequestDto,
 } from '../types';
+import queryString from 'query-string';
 
-export const useCoupons = () => {
+export const useCoupons = (
+  orderSubtotal?: number,
+  productCategoryIds?: number[]
+) => {
   const queryClient = useQueryClient();
 
   const { data: coupons, isLoading: loadingCoupons } = useQuery({
@@ -15,6 +19,30 @@ export const useCoupons = () => {
       return await customFetch<CouponResponseDto[]>('/coupons');
     },
   });
+
+  const { data: applicableCoupons, isLoading: loadingApplicableCoupons } =
+    useQuery({
+      queryKey: ['coupons', 'applicable', orderSubtotal, productCategoryIds],
+      queryFn: async () => {
+        if (orderSubtotal === undefined || !productCategoryIds?.length)
+          return [];
+
+        let url = '/coupons/valid';
+        const stringifiedParams = queryString.stringify(
+          { orderSubtotal, productCategoryIds },
+          {
+            arrayFormat: 'none',
+          }
+        );
+        url = `${url}?${stringifiedParams}`;
+
+        return await customFetch<CouponResponseDto[]>(url);
+      },
+      enabled:
+        !!orderSubtotal &&
+        productCategoryIds != null &&
+        productCategoryIds.length > 0,
+    });
 
   const createCoupon = useMutation({
     mutationFn: async (couponRequest: CreateCouponRequestDto) => {
@@ -66,6 +94,10 @@ export const useCoupons = () => {
   return {
     coupons,
     loadingCoupons,
+
+    applicableCoupons,
+    loadingApplicableCoupons,
+
     createCoupon,
     editCoupon,
     deleteCoupon,

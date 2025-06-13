@@ -15,6 +15,23 @@ public class CouponsController : BaseApiController
         return HandleResult(await Mediator.Send(new ListCoupons.Query()));
     }
 
+    [HttpGet("valid")]
+    public async Task<ActionResult<List<CouponResponseDto>>> GetValidCoupons(
+        [FromQuery] decimal orderSubtotal,
+        [FromQuery] List<int> productCategoryIds
+    )
+    {
+        return HandleResult(
+            await Mediator.Send(
+                new ListValidCoupons.Query
+                {
+                    OrderSubtotal = orderSubtotal,
+                    ProductCategoryIds = productCategoryIds,
+                }
+            )
+        );
+    }
+
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<CouponResponseDto>> CreateCoupon(

@@ -15,4 +15,5 @@ public class CartItemResponseDto
     public string ShopId { get; set; } = "";
     public string ShopName { get; set; } = "";
     public string ShopImageUrl { get; set; } = "";
+    public List<int> CategoryIds { get; set; } = [];
 }

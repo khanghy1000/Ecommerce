@@ -105,6 +105,13 @@ public class MappingProfiles : Profile
             .ForMember(
                 dest => dest.ShopImageUrl,
                 opt => opt.MapFrom(src => src.Product.Shop.ImageUrl)
+            )
+            .ForMember(
+                dest => dest.CategoryIds,
+                opt =>
+                    opt.MapFrom(src =>
+                        src.Product.Subcategories.Select(s => s.CategoryId).Distinct().ToList()
+                    )
             );
 
         CreateMap<Province, ProvinceResponseDto>();

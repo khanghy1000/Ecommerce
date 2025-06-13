@@ -41,7 +41,6 @@ function CheckoutPage() {
     editAddress,
     deleteAddress,
   } = useAddresses();
-  const { coupons, loadingCoupons } = useCoupons();
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
     null
   );
@@ -68,6 +67,25 @@ function CheckoutPage() {
   // Get product IDs from URL search params
   const selectedProductIds = searchParams.getAll('productId').map(Number);
 
+  // Filter cart items to only include selected products
+  const selectedItems = cartItems
+    ? cartItems.filter((item) => selectedProductIds.includes(item.productId))
+    : [];
+
+  // Calculate order subtotal and product category IDs for applicable coupons
+  const orderSubtotal = selectedItems.reduce(
+    (sum, item) => sum + item.subtotal,
+    0
+  );
+  const productCategoryIds = [
+    ...new Set(selectedItems.flatMap((item) => item.categoryIds)),
+  ];
+
+  const { applicableCoupons, loadingApplicableCoupons } = useCoupons(
+    orderSubtotal,
+    productCategoryIds
+  );
+
   // Find default address and set it as selected initially
   useEffect(() => {
     if (selectedAddressId) return;
@@ -83,20 +101,10 @@ function CheckoutPage() {
 
   // Filter coupons by type
   const productCoupons =
-    coupons?.filter(
-      (coupon) =>
-        coupon.type === 'Product' &&
-        coupon.active &&
-        new Date(coupon.endTime) > new Date()
-    ) || [];
+    applicableCoupons?.filter((coupon) => coupon.type === 'Product') || [];
 
   const shippingCoupons =
-    coupons?.filter(
-      (coupon) =>
-        coupon.type === 'Shipping' &&
-        coupon.active &&
-        new Date(coupon.endTime) > new Date()
-    ) || [];
+    applicableCoupons?.filter((coupon) => coupon.type === 'Shipping') || [];
 
   // Create checkout preview request
   const selectedAddress = addresses?.find(
@@ -192,11 +200,6 @@ function CheckoutPage() {
     });
   };
 
-  // Filter cart items to only include selected products
-  const selectedItems = cartItems
-    ? cartItems.filter((item) => selectedProductIds.includes(item.productId))
-    : [];
-
   const groupedSelectedItems: ShopItemGroup[] =
     selectedItems.length > 0
       ? Object.values(
@@ -217,16 +220,13 @@ function CheckoutPage() {
       : [];
 
   // Calculate totals
-  const selectedItemsTotal = selectedItems.reduce(
-    (sum, item) => sum + item.subtotal,
-    0
-  );
+  const selectedItemsTotal = orderSubtotal; // Already calculated above
   const selectedItemsCount = selectedItems.reduce(
     (sum, item) => sum + item.quantity,
     0
   );
 
-  if (isLoadingCart || loadingAddresses || loadingCoupons) {
+  if (isLoadingCart || loadingAddresses || loadingApplicableCoupons) {
     return (
       <Container size="xl" py="xl" style={{ position: 'relative' }}>
         <LoadingOverlay visible={true} />
