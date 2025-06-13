@@ -179,13 +179,15 @@ function ProductsManagementPage() {
     <Container size="xl" py="xl">
       <Group justify="space-between" mb="md">
         <Title order={2}>Products Management</Title>
-        <Button
-          component={Link}
-          to="/management/products/create"
-          leftSection={<FiPlus size={16} />}
-        >
-          Add New Product
-        </Button>
+        {!isAdmin && (
+          <Button
+            component={Link}
+            to="/management/products/create"
+            leftSection={<FiPlus size={16} />}
+          >
+            Add New Product
+          </Button>
+        )}
       </Group>
 
       <Paper p="md" mb="lg" withBorder>

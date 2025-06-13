@@ -63,7 +63,7 @@ public class ProductsController : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(Roles = "Shop,Admin")]
+    [Authorize(Roles = "Shop")]
     public async Task<ActionResult<ProductResponseDto>> CreateProduct(
         CreateProductRequestDto createProductRequestDto
     )
