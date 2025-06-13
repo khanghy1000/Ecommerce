@@ -94,11 +94,11 @@ function LoginPage() {
                 {...form.getInputProps('password')}
               />
 
-              <Group justify="space-between" mt="sm">
+              {/* <Group justify="space-between" mt="sm">
                 <Anchor size="sm" onClick={() => navigate('/forgot-password')}>
                   Forgot password?
                 </Anchor>
-              </Group>
+              </Group> */}
 
               <Button
                 fullWidth
