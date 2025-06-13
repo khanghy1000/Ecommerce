@@ -47,7 +47,7 @@ const schema = z.object({
   regularPrice: z
     .number()
     .positive('Regular price must be positive')
-    .min(0.01, 'Regular price must be at least $0.01'),
+    .min(1000, 'Regular price must be at least 1000 VND'),
   quantity: z
     .number()
     .int('Quantity must be a whole number')
