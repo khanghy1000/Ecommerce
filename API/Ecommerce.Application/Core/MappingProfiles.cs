@@ -294,7 +294,12 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Photos, opt => opt.MapFrom(src => src.Product.Photos));
 
         // Review mappings
-        CreateMap<ProductReview, ReviewResponseDto>();
+        CreateMap<ProductReview, ReviewResponseDto>()
+            .ForMember(
+                dest => dest.UserDisplayName,
+                opt => opt.MapFrom(src => src.User.DisplayName)
+            )
+            .ForMember(dest => dest.UserImageUrl, opt => opt.MapFrom(src => src.User.ImageUrl));
 
         // Coupon mappings
         CreateMap<Coupon, CouponResponseDto>();

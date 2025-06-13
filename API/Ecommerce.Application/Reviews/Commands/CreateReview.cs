@@ -37,6 +37,21 @@ public static class CreateReview
                 return Result<ReviewResponseDto>.Failure("Product not found", 404);
             }
 
+            var userBoughtProduct = await dbContext.SalesOrders.AnyAsync(
+                o =>
+                    o.UserId == user.Id
+                    && o.OrderProducts.Any(op => op.ProductId == request.ReviewDto.ProductId),
+                cancellationToken
+            );
+
+            if (!userBoughtProduct)
+            {
+                return Result<ReviewResponseDto>.Failure(
+                    "You can only review products you have purchased",
+                    400
+                );
+            }
+
             var existingReview = await dbContext.ProductReviews.FirstOrDefaultAsync(
                 r => r.ProductId == request.ReviewDto.ProductId && r.UserId == user.Id,
                 cancellationToken

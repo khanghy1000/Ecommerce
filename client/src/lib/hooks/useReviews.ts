@@ -3,15 +3,18 @@ import { customFetch } from '../customFetch';
 import queryString from 'query-string';
 import {
   CreateReviewRequestDto,
+  HasUserPurchasedProductDto,
   ListReviewsRequest,
   PagedList,
+  ProductReviewSummaryDto,
   ReviewResponseDto,
   UpdateReviewRequestDto,
 } from '../types';
 
 export const useReviews = (
   reviewId?: number,
-  listReviewsRequest?: ListReviewsRequest
+  listReviewsRequest?: ListReviewsRequest,
+  productId?: number
 ) => {
   const queryClient = useQueryClient();
 
@@ -25,7 +28,7 @@ export const useReviews = (
     enabled: !!reviewId,
   });
 
-  // Get a list of reviews with optional filtering
+  // Get a list of reviews
   const { data: reviews, isLoading: loadingReviews } = useQuery({
     queryKey: ['reviews', listReviewsRequest],
     queryFn: async () => {
@@ -40,7 +43,32 @@ export const useReviews = (
 
       return await customFetch<PagedList<ReviewResponseDto>>(url);
     },
-    enabled: !reviewId,
+    enabled: !reviewId && !!listReviewsRequest,
+  });
+
+  const { data: hasPurchased, isLoading: loadingHasPurchased } = useQuery({
+    queryKey: ['hasPurchased', productId],
+    queryFn: async () => {
+      if (!productId) return false;
+      return (
+        await customFetch<HasUserPurchasedProductDto>(
+          `/reviews/has-purchased/${productId}`
+        )
+      ).hasPurchased;
+    },
+    enabled: !!productId,
+  });
+
+  // Get review summary for a product
+  const { data: reviewSummary, isLoading: loadingReviewSummary } = useQuery({
+    queryKey: ['reviewSummary', productId],
+    queryFn: async () => {
+      if (!productId) return null;
+      return await customFetch<ProductReviewSummaryDto>(
+        `/reviews/summary/${productId}`
+      );
+    },
+    enabled: !!productId,
   });
 
   // Create a new review
@@ -58,6 +86,9 @@ export const useReviews = (
       });
       queryClient.invalidateQueries({
         queryKey: ['review', data.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['reviewSummary', data.productId],
       });
       // If this is a review for a product, invalidate the product queries too
       if (data.productId) {
@@ -89,6 +120,9 @@ export const useReviews = (
       queryClient.invalidateQueries({
         queryKey: ['review', data.id],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['reviewSummary', data.productId],
+      });
       if (data.productId) {
         queryClient.invalidateQueries({
           queryKey: ['product', data.productId],
@@ -99,21 +133,35 @@ export const useReviews = (
 
   // Delete a review
   const deleteReview = useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async ({
+      id,
+      productId,
+    }: {
+      id: number;
+      productId?: number;
+    }) => {
       await customFetch(`/reviews/${id}`, {
         method: 'DELETE',
       });
+      return { id, productId };
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ['reviews'],
       });
       // Invalidate the individual review query
       queryClient.removeQueries({
-        queryKey: ['review', variables],
+        queryKey: ['review', data.id],
       });
-      // We don't have the product ID here to invalidate the product query
-      // but generally this would be handled in the component using this hook
+      // Invalidate review summary if productId is available
+      if (data.productId) {
+        queryClient.invalidateQueries({
+          queryKey: ['reviewSummary', data.productId],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ['product', data.productId],
+        });
+      }
     },
   });
 
@@ -125,6 +173,14 @@ export const useReviews = (
     // List of reviews
     reviews,
     loadingReviews,
+
+    // Review summary
+    reviewSummary,
+    loadingReviewSummary,
+
+    // Check if user has purchased the product
+    hasPurchased,
+    loadingHasPurchased,
 
     // Mutations
     createReview,

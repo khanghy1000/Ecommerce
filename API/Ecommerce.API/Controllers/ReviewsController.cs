@@ -1,9 +1,4 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Ecommerce.Application.Core;
-using Ecommerce.Application.Products.Commands;
-using Ecommerce.Application.Products.DTOs;
-using Ecommerce.Application.Products.Queries;
 using Ecommerce.Application.Reviews.Commands;
 using Ecommerce.Application.Reviews.DTOs;
 using Ecommerce.Application.Reviews.Queries;
@@ -44,6 +39,17 @@ public class ReviewsController : BaseApiController
         return HandleResult(result);
     }
 
+    [HttpGet("has-purchased/{productId}")]
+    public async Task<ActionResult<HasUserPurchasedProductDto>> HasUserPurchasedProduct(
+        int productId
+    )
+    {
+        var result = await Mediator.Send(
+            new HasUserPurchasedProduct.Query { ProductId = productId }
+        );
+        return HandleResult(result);
+    }
+
     [HttpPost]
     [Authorize(Roles = "Buyer")]
     public async Task<ActionResult<ReviewResponseDto>> CreateReview(
@@ -72,6 +78,16 @@ public class ReviewsController : BaseApiController
     public async Task<ActionResult<Unit>> DeleteReview(int id)
     {
         var result = await Mediator.Send(new DeleteReview.Command { ReviewId = id });
+        return HandleResult(result);
+    }
+
+    [HttpGet("summary/{productId}")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ProductReviewSummaryDto>> GetProductReviewSummary(int productId)
+    {
+        var result = await Mediator.Send(
+            new GetProductReviewSummary.Query { ProductId = productId }
+        );
         return HandleResult(result);
     }
 }

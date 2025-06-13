@@ -23,6 +23,7 @@ import { formatPrice } from '../../lib/utils';
 import { FiShoppingCart, FiShoppingBag, FiCheckCircle } from 'react-icons/fi';
 import { useState } from 'react';
 import { Link } from 'react-router';
+import ProductReviews from '../reviews/ProductReviews';
 
 function ProductPage() {
   const { productId } = useParams();
@@ -290,7 +291,11 @@ function ProductPage() {
           {/* Shop info */}
           <Group mb="xl">
             <Image
-              src={product.shopImageUrl ? `${baseImageUrl}${product.shopImageUrl}` : '/placeholder.svg'}
+              src={
+                product.shopImageUrl
+                  ? `${baseImageUrl}${product.shopImageUrl}`
+                  : '/placeholder.svg'
+              }
               alt={product.shopName}
               width={30}
               height={30}
@@ -309,6 +314,10 @@ function ProductPage() {
             dangerouslySetInnerHTML={{ __html: product.description }}
             mb="xl"
           />
+
+          {/* Reviews Section */}
+          <Divider my="xl" />
+          <ProductReviews productId={product.id} productName={product.name} />
         </Grid.Col>
       </Grid>
     </Container>

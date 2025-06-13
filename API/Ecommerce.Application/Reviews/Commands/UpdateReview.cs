@@ -18,7 +18,7 @@ public static class UpdateReview
         public UpdateReviewRequestDto ReviewDto { get; set; } = null!;
     }
 
-    public class Handler(AppDbContext dbContext, IMapper mapper, IUserAccessor userAccessor)
+    public class Handler(AppDbContext dbContext, IMapper mapper)
         : IRequestHandler<Command, Result<ReviewResponseDto>>
     {
         public async Task<Result<ReviewResponseDto>> Handle(
@@ -26,8 +26,6 @@ public static class UpdateReview
             CancellationToken cancellationToken
         )
         {
-            var user = await userAccessor.GetUserAsync();
-
             var review = await dbContext
                 .ProductReviews.Include(r => r.User)
                 .FirstOrDefaultAsync(r => r.Id == request.ReviewId, cancellationToken);

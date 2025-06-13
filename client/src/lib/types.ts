@@ -403,14 +403,22 @@ export type ShopOrderStatsResponseDto = {
   averageRating: number;
 }; // Define types needed for reviews
 
+export type HasUserPurchasedProductDto = {
+  productId: number;
+  userId: string;
+  hasPurchased: boolean;
+};
+
 export type ReviewResponseDto = {
   id: number;
   productId: number;
   userId: string;
+  userDisplayName: string;
+  userImageUrl: string | null;
   rating: number;
   review: string | null;
   createdAt: string;
-  updatedAt: string | null;
+  updatedAt: string;
 };
 
 export type CreateReviewRequestDto = {
@@ -429,6 +437,15 @@ export type ListReviewsRequest = {
   userId?: string;
   pageSize?: number;
   pageNumber?: number;
+};
+
+export type ProductReviewSummaryDto = {
+  productId: number;
+  averageRating: number;
+  totalReviews: number;
+  ratingDistribution: {
+    [key: number]: number;
+  };
 };
 
 // Product types
