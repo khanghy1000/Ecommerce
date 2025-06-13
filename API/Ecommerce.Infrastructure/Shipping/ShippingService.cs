@@ -5,7 +5,8 @@ using Microsoft.Extensions.Options;
 
 namespace Ecommerce.Infrastructure.Shipping;
 
-public class ShippingService(IOptions<GHNSettings> config) : IShippingService
+public class ShippingService(IOptions<GHNSettings> config, FakeShippingService fakeShippingService)
+    : IShippingService
 {
     private readonly string _shopId = config.Value.ShopId;
     private readonly string _clientId = config.Value.ClientId;
@@ -52,7 +53,9 @@ public class ShippingService(IOptions<GHNSettings> config) : IShippingService
         );
         if (!response.IsSuccessStatusCode)
         {
-            throw new HttpRequestException(content?.Message ?? "Failed to get shipping preview");
+            // throw new HttpRequestException(content?.Message ?? "Failed to get shipping preview");
+            // FIXME: Use fake service for preview shipping
+            return await fakeShippingService.PreviewShipping(shippingRequest);
         }
         return content;
     }

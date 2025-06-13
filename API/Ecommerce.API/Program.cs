@@ -150,6 +150,7 @@ builder.Services.AddSingleton<IVnpay, Vnpay>(sp =>
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.Configure<GHNSettings>(builder.Configuration.GetSection("GHN"));
 builder.Services.AddSingleton<IShippingService, ShippingService>();
+builder.Services.AddSingleton<FakeShippingService>();
 
 builder.Services.AddHostedService<UpdateTrackingOrdersTask>();
 builder.Services.AddHostedService<UpdatePopularProductsTask>();
