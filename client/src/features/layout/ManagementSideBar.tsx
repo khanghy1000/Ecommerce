@@ -25,8 +25,8 @@ const adminNavItems = [
 const shopNavItems = [
   {
     icon: IoStatsChartSharp,
-    label: 'Statistics',
-    to: '/management/statistics',
+    label: 'Performance',
+    to: '/management/performance',
   },
   { icon: IoCartSharp, label: 'Orders', to: '/management/orders' },
   { icon: IoStorefront, label: 'Products', to: '/management/products' },
