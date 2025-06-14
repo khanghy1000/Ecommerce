@@ -10,6 +10,7 @@ import {
   ReviewResponseDto,
   UpdateReviewRequestDto,
 } from '../types';
+import { useAccount } from './useAccount';
 
 export const useReviews = (
   reviewId?: number,
@@ -17,6 +18,8 @@ export const useReviews = (
   productId?: number
 ) => {
   const queryClient = useQueryClient();
+
+  const { currentUserInfo } = useAccount();
 
   // Get a single review by ID
   const { data: review, isLoading: loadingReview } = useQuery({
@@ -56,7 +59,7 @@ export const useReviews = (
         )
       ).hasPurchased;
     },
-    enabled: !!productId,
+    enabled: !!productId && !!currentUserInfo,
   });
 
   // Get review summary for a product
