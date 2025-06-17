@@ -15,7 +15,7 @@ public class ListCategoriesTests
         .GetResult();
 
     [Fact]
-    public async Task ListCategories_ShouldReturnAllCategories()
+    public async Task ListCategories_ShouldReturnAllCategoriesWithSubcategories()
     {
         // Arrange
         var query = new ListCategories.Query();
@@ -29,22 +29,7 @@ public class ListCategoriesTests
         result.Value.ShouldNotBeNull();
         result.Value.ShouldBeOfType<List<CategoryResponseDto>>();
         result.Value.Count.ShouldBeGreaterThan(0);
-    }
 
-    [Fact]
-    public async Task ListCategories_ShouldIncludeSubcategories()
-    {
-        // Arrange
-        var query = new ListCategories.Query();
-        var handler = new ListCategories.Handler(_dbContext, _mapper);
-
-        // Act
-        var result = await handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.ShouldBeTrue();
-
-        // Find a category that we know has subcategories
         var categoryWithSubcategories = result.Value.FirstOrDefault(c => c.Subcategories.Count > 0);
         categoryWithSubcategories.ShouldNotBeNull();
         categoryWithSubcategories.Subcategories.ShouldNotBeEmpty();

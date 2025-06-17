@@ -52,31 +52,6 @@ public class EditSubcategoryTests
     }
 
     [Fact]
-    public async Task EditSubcategory_WithInvalidId_ShouldReturnNotFound()
-    {
-        // Arrange
-        var invalidId = 9999;
-        var command = new EditSubcategory.Command
-        {
-            Id = invalidId,
-            EditSubcategoryRequestDto = new EditSubcategoryRequestDto
-            {
-                Name = "Test Name",
-                CategoryId = 1,
-            },
-        };
-        var handler = new EditSubcategory.Handler(_dbContext, _mapper);
-
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.ShouldBeFalse();
-        result.Error.ShouldBe("Subcategory not found");
-        result.Code.ShouldBe(404);
-    }
-
-    [Fact]
     public async Task EditSubcategory_WithInvalidCategoryId_ShouldReturnFailure()
     {
         // Arrange

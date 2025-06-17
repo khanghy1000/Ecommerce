@@ -17,10 +17,14 @@ public class GetCategoryByIdTests
         .GetResult();
 
     [Fact]
-    public async Task GetCategoryById_WithValidId_ShouldReturnCategory()
+    public async Task GetCategoryById_WithValidId_ShouldReturnCategoryAndSubcategories()
     {
         // Arrange
-        var existingCategory = await _dbContext.Categories.FirstAsync();
+        var existingCategory = await _dbContext
+            .Categories.Include(c => c.Subcategories)
+            .Where(c => c.Subcategories.Any())
+            .FirstAsync();
+
         var query = new GetCategoryById.Query { Id = existingCategory.Id };
         var handler = new GetCategoryById.Handler(_dbContext, _mapper);
 
@@ -32,6 +36,9 @@ public class GetCategoryByIdTests
         result.Value.ShouldNotBeNull();
         result.Value.Id.ShouldBe(existingCategory.Id);
         result.Value.Name.ShouldBe(existingCategory.Name);
+
+        result.Value.Subcategories.ShouldNotBeEmpty();
+        result.Value.Subcategories.Count.ShouldBe(existingCategory.Subcategories.Count);
     }
 
     [Fact]
@@ -49,26 +56,5 @@ public class GetCategoryByIdTests
         result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe("Category not found");
         result.Code.ShouldBe(404);
-    }
-
-    [Fact]
-    public async Task GetCategoryById_ShouldIncludeSubcategories()
-    {
-        // Arrange - Find a category with subcategories
-        var categoryWithSubcategories = await _dbContext
-            .Categories.Include(c => c.Subcategories)
-            .Where(c => c.Subcategories.Any())
-            .FirstAsync();
-
-        var query = new GetCategoryById.Query { Id = categoryWithSubcategories.Id };
-        var handler = new GetCategoryById.Handler(_dbContext, _mapper);
-
-        // Act
-        var result = await handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.Subcategories.ShouldNotBeEmpty();
-        result.Value.Subcategories.Count.ShouldBe(categoryWithSubcategories.Subcategories.Count);
     }
 }

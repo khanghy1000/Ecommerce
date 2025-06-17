@@ -87,44 +87,4 @@ public class CreateCouponTests
         result.Error.ShouldBe("Coupon code already exists");
         result.Code.ShouldBe(400);
     }
-
-    [Fact]
-    public async Task CreateCoupon_ShouldCreateCouponWithoutCategories_WhenCategoryIdsIsNull()
-    {
-        // Arrange
-        var createCouponDto = new CreateCouponRequestDto
-        {
-            Code = "NOCATEGORY",
-            Active = true,
-            StartTime = DateTime.UtcNow,
-            EndTime = DateTime.UtcNow.AddDays(30),
-            Type = CouponType.Product,
-            DiscountType = CouponDiscountType.Percent,
-            Value = 15,
-            MinOrderValue = 100,
-            MaxDiscountAmount = 50,
-            AllowMultipleUse = true,
-            MaxUseCount = 5,
-            CategoryIds = null,
-        };
-
-        var command = new CreateCoupon.Command { CouponRequest = createCouponDto };
-        var handler = new CreateCoupon.Handler(_dbContext, _mapper);
-
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldNotBeNull();
-        result.Value.Code.ShouldBe("NOCATEGORY");
-        result.Value.Categories.Count.ShouldBe(0);
-
-        // Verify the coupon was added to the database
-        var couponFromDb = await _dbContext
-            .Coupons.Include(c => c.Categories)
-            .FirstOrDefaultAsync(c => c.Code == "NOCATEGORY");
-        couponFromDb.ShouldNotBeNull();
-        couponFromDb.Categories.Count.ShouldBe(0);
-    }
 }

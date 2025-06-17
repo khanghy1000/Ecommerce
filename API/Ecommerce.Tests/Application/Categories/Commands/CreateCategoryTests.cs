@@ -16,10 +16,9 @@ public class CreateCategoryTests
         .GetResult();
 
     [Fact]
-    public async Task CreateCategory_ShouldAddCategoryToDatabase()
+    public async Task CreateCategory_ShouldCreateNewCategory()
     {
         // Arrange
-        var initialCategoryCount = await _dbContext.Categories.CountAsync();
         var command = new CreateCategory.Command
         {
             CreateCategoryRequestDto = new CreateCategoryRequestDto { Name = "Test Category" },
@@ -29,34 +28,15 @@ public class CreateCategoryTests
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
 
-        // Assert
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldNotBeNull();
-        result.Value.Name.ShouldBe("Test Category");
-
-        var updatedCategoryCount = await _dbContext.Categories.CountAsync();
-        updatedCategoryCount.ShouldBe(initialCategoryCount + 1);
-    }
-
-    [Fact]
-    public async Task CreateCategory_ShouldReturnCategoryWithCorrectId()
-    {
-        // Arrange
-        var command = new CreateCategory.Command
-        {
-            CreateCategoryRequestDto = new CreateCategoryRequestDto { Name = "New Category" },
-        };
-        var handler = new CreateCategory.Handler(_dbContext, _mapper);
-
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        var createdCategory = await _dbContext.Categories.FirstOrDefaultAsync(c =>
+            c.Id == result.Value.Id
+        );
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBeNull();
-
-        var storedCategory = await _dbContext.Categories.FindAsync(result.Value.Id);
-        storedCategory.ShouldNotBeNull();
-        storedCategory.Name.ShouldBe("New Category");
+        createdCategory.ShouldNotBeNull();
+        createdCategory.Name.ShouldBe("Test Category");
+        createdCategory.Id.ShouldBe(result.Value.Id);
     }
 }

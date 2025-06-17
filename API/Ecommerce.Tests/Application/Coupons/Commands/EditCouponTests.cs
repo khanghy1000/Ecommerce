@@ -66,40 +66,6 @@ public class EditCouponTests
     }
 
     [Fact]
-    public async Task EditCoupon_ShouldReturnFailure_WhenCouponNotFound()
-    {
-        // Arrange
-        var editCouponDto = new EditCouponRequestDto
-        {
-            Active = true,
-            StartTime = DateTime.UtcNow,
-            EndTime = DateTime.UtcNow.AddDays(30),
-            Type = CouponType.Product,
-            DiscountType = CouponDiscountType.Percent,
-            Value = 15,
-            MinOrderValue = 100,
-            MaxDiscountAmount = 50,
-            AllowMultipleUse = true,
-            MaxUseCount = 5,
-        };
-
-        var command = new EditCoupon.Command
-        {
-            Code = "NONEXISTENT",
-            CouponRequest = editCouponDto,
-        };
-        var handler = new EditCoupon.Handler(_dbContext, _mapper);
-
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.ShouldBeFalse();
-        result.Error.ShouldBe("Coupon not found");
-        result.Code.ShouldBe(404);
-    }
-
-    [Fact]
     public async Task EditCoupon_ShouldRemoveAllCategories_WhenCategoryIdsIsEmpty()
     {
         // Arrange

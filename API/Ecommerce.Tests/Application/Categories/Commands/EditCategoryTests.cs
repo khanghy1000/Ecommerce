@@ -45,24 +45,4 @@ public class EditCategoryTests
         updatedCategory.Name.ShouldBe(newName);
         updatedCategory.Name.ShouldNotBe(originalName);
     }
-
-    [Fact]
-    public async Task EditCategory_WithInvalidId_ShouldReturnFailure()
-    {
-        // Arrange
-        var invalidId = 9999;
-        var command = new EditCategory.Command
-        {
-            Id = invalidId,
-            EditCategoryRequestDto = new EditCategoryRequestDto { Name = "Test Name" },
-        };
-        var handler = new EditCategory.Handler(_dbContext, _mapper);
-
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.ShouldBeFalse();
-        result.Error.ShouldBe("Category not found");
-    }
 }

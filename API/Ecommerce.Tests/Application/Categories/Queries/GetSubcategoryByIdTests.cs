@@ -17,10 +17,12 @@ public class GetSubcategoryByIdTests
         .GetResult();
 
     [Fact]
-    public async Task GetSubcategoryById_WithValidId_ShouldReturnSubcategory()
+    public async Task GetSubcategoryById_WithValidId_ShouldReturnSubcategoryAndCategory()
     {
         // Arrange
-        var existingSubcategory = await _dbContext.Subcategories.FirstAsync();
+        var existingSubcategory = await _dbContext
+            .Subcategories.Include(s => s.Category)
+            .FirstAsync();
         var query = new GetSubcategoryById.Query { Id = existingSubcategory.Id };
         var handler = new GetSubcategoryById.Handler(_dbContext, _mapper);
 
@@ -33,6 +35,7 @@ public class GetSubcategoryByIdTests
         result.Value.Id.ShouldBe(existingSubcategory.Id);
         result.Value.Name.ShouldBe(existingSubcategory.Name);
         result.Value.CategoryId.ShouldBe(existingSubcategory.CategoryId);
+        result.Value.CategoryName.ShouldBe(existingSubcategory.Category.Name);
     }
 
     [Fact]
@@ -50,25 +53,5 @@ public class GetSubcategoryByIdTests
         result.IsSuccess.ShouldBeFalse();
         result.Error.ShouldBe("Subcategory not found");
         result.Code.ShouldBe(404);
-    }
-
-    [Fact]
-    public async Task GetSubcategoryById_ShouldReturnCategoryInfo()
-    {
-        // Arrange
-        var existingSubcategory = await _dbContext
-            .Subcategories.Include(s => s.Category)
-            .FirstAsync();
-
-        var query = new GetSubcategoryById.Query { Id = existingSubcategory.Id };
-        var handler = new GetSubcategoryById.Handler(_dbContext, _mapper);
-
-        // Act
-        var result = await handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.CategoryId.ShouldBe(existingSubcategory.CategoryId);
-        result.Value.CategoryName.ShouldBe(existingSubcategory.Category.Name);
     }
 }

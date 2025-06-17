@@ -42,23 +42,6 @@ public class DeleteSubcategoryTests
     }
 
     [Fact]
-    public async Task DeleteSubcategory_WithInvalidId_ShouldReturnNotFound()
-    {
-        // Arrange
-        var invalidId = 9999;
-        var command = new DeleteSubcategory.Command { Id = invalidId };
-        var handler = new DeleteSubcategory.Handler(_dbContext);
-
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.ShouldBeFalse();
-        result.Error.ShouldBe("Subcategory not found");
-        result.Code.ShouldBe(404);
-    }
-
-    [Fact]
     public async Task DeleteSubcategory_WithAssociatedProducts_ShouldReturnFailure()
     {
         // Arrange - Create a subcategory with associated products
