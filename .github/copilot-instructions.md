@@ -20,7 +20,8 @@ We use ASP.NET to make API for our e-commerce website. This project uses .NET 9 
 
 -   Project: Ecommerce.Tests.
 -   We use XUnit and FakeItEasy to write unit tests for the business layer.
--   Each command/query should have a unit test in a class file, for example, ProductsTests.cs for all commands/queries related to products.
+-   Each command/query should have a corresponding test class in the Ecommerce.Tests.Application namespace.
+-   For example, ListProducts query should have a test class in Ecommerce.Tests.Application.Products.Queries.ListProductsTests.
 
 ## Business layer structure:
 
