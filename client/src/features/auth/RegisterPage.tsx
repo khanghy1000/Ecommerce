@@ -193,18 +193,21 @@ function RegisterPage() {
                   <TextInput
                     label="Full name"
                     placeholder="Your name"
+                    className="register-displayName"
                     {...form.getInputProps('displayName')}
                   />
 
                   <TextInput
                     label="Email"
                     placeholder="your@email.com"
+                    className="register-email"
                     {...form.getInputProps('email')}
                   />
 
                   <PasswordInput
                     label="Password"
                     placeholder="Create a password"
+                    className="register-password"
                     {...form.getInputProps('password')}
                   />
 
@@ -212,12 +215,14 @@ function RegisterPage() {
                     label="Phone number"
                     placeholder="Your phone number"
                     type="number"
+                    className="register-phoneNumber"
                     {...form.getInputProps('phoneNumber')}
                   />
 
                   <Select
                     label="Are you a buyer or seller?"
                     placeholder="Select role"
+                    className="register-role"
                     data={[
                       { value: 'Buyer', label: 'I want to shop' },
                       { value: 'Shop', label: 'I want to sell products' },
@@ -233,12 +238,14 @@ function RegisterPage() {
                   <TextInput
                     label="Address"
                     placeholder="Street address"
+                    className="register-address"
                     {...form.getInputProps('address')}
                   />
 
                   <Select
                     label="Province"
                     placeholder="Select province"
+                    className="register-province"
                     data={
                       provinces?.map((province) => ({
                         value: province.id.toString(),
@@ -253,6 +260,7 @@ function RegisterPage() {
                   <Select
                     label="District"
                     placeholder="Select district"
+                    className="register-district"
                     data={
                       districts?.map((district) => ({
                         value: district.id.toString(),
@@ -267,6 +275,7 @@ function RegisterPage() {
                   <Select
                     label="Ward"
                     placeholder="Select ward"
+                    className="register-ward"
                     data={
                       wards?.map((ward) => ({
                         value: ward.id.toString(),
@@ -291,6 +300,7 @@ function RegisterPage() {
                   type="submit"
                   loading={registerUser.isPending}
                   disabled={loadingUserInfo}
+                  className="register-button"
                 >
                   Register
                 </Button>
