@@ -121,6 +121,7 @@ function Homepage() {
                 slidesToScroll={3}
                 containScroll="trimSnaps"
                 classNames={classes}
+                className="homepage-product-carousel"
               >
                 {category.products.map((product: PopularProductResponseDto) => (
                   <Carousel.Slide key={product.productId}>

@@ -32,6 +32,8 @@ export function ProductCard({ product }: ProductCardProps) {
       radius="md"
       withBorder
       style={{ width: 180, textDecoration: 'none' }}
+      className="product-card"
+      data-product-name={productName}
     >
       {discountPercent > 0 && (
         <Badge
@@ -62,7 +64,13 @@ export function ProductCard({ product }: ProductCardProps) {
         />
       </Box>
 
-      <Text size="sm" mt="xs" lineClamp={2} style={{ minHeight: '2.6em' }}>
+      <Text
+        size="sm"
+        mt="xs"
+        lineClamp={2}
+        style={{ minHeight: '2.6em' }}
+        className="product-card-name"
+      >
         {productName}
       </Text>
 

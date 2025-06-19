@@ -504,7 +504,7 @@ function ProductSearchPage() {
                 </Flex>
               ) : (
                 <>
-                  <Grid>
+                  <Grid className="product-search-grid">
                     {products.items.map((product) => (
                       <Grid.Col
                         key={product.id}

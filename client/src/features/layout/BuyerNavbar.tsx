@@ -74,6 +74,7 @@ export function BuyerNavbar() {
                 ref={searchInputRef}
                 placeholder="Search products..."
                 value={searchValue}
+                className='search-input'
                 onChange={(e) => setSearchValue(e.target.value)}
                 rightSectionPointerEvents="all"
                 rightSection={
