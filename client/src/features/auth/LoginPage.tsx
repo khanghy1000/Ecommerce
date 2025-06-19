@@ -62,7 +62,7 @@ function LoginPage() {
       <LogoOnlyNavbar />
       <Container size="xs" py={40}>
         <Paper radius="md" p="xl" withBorder>
-          <Title ta="center" order={2} mb="md">
+          <Title ta="center" order={2} mb="md" className="login-title">
             Welcome back
           </Title>
           <Text c="dimmed" size="sm" ta="center" mb="lg">
@@ -78,12 +78,13 @@ function LoginPage() {
 
           <Divider my="lg" />
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="login-form">
             <Stack gap="md">
               <TextInput
                 required
                 label="Email"
                 placeholder="your@email.com"
+                name="email"
                 {...form.getInputProps('email')}
               />
 
@@ -91,6 +92,8 @@ function LoginPage() {
                 required
                 label="Password"
                 placeholder="Your password"
+                name="password"
+                className="password-input"
                 {...form.getInputProps('password')}
               />
 
@@ -105,6 +108,7 @@ function LoginPage() {
                 type="submit"
                 loading={loginUser.isPending}
                 disabled={loadingUserInfo}
+                className="login-button"
               >
                 Log in
               </Button>

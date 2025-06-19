@@ -159,6 +159,7 @@ export function BuyerNavbar() {
                         color="red"
                         onClick={() => logoutUser.mutate()}
                         disabled={logoutUser.isPending}
+                        className='logout-button'
                       >
                         Log out
                       </Menu.Item>
