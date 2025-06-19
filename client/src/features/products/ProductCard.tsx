@@ -34,6 +34,8 @@ export function ProductCard({ product }: ProductCardProps) {
       style={{ width: 180, textDecoration: 'none' }}
       className="product-card"
       data-product-name={productName}
+      data-product-id={productId}
+      data-testid={`product-card-${productId}`}
     >
       {discountPercent > 0 && (
         <Badge

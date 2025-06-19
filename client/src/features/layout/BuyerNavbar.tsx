@@ -74,7 +74,7 @@ export function BuyerNavbar() {
                 ref={searchInputRef}
                 placeholder="Search products..."
                 value={searchValue}
-                className='search-input'
+                className="search-input"
                 onChange={(e) => setSearchValue(e.target.value)}
                 rightSectionPointerEvents="all"
                 rightSection={
@@ -103,6 +103,7 @@ export function BuyerNavbar() {
                       size="lg"
                       radius="xl"
                       color="gray"
+                      className="cart-nav-button"
                     >
                       <FiShoppingCart size={20} />
                     </ActionIcon>
@@ -160,7 +161,7 @@ export function BuyerNavbar() {
                         color="red"
                         onClick={() => logoutUser.mutate()}
                         disabled={logoutUser.isPending}
-                        className='logout-button'
+                        className="logout-button"
                       >
                         Log out
                       </Menu.Item>

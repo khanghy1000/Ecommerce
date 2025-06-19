@@ -247,6 +247,8 @@ function ProductPage() {
               clampBehavior="strict"
               style={{ width: 100 }}
               disabled={product.quantity <= 0}
+              className="product-quantity-input"
+              data-testid="product-quantity-input"
             />
             {product.quantity > 0 ? (
               <Text size="sm" c="dimmed">
@@ -267,6 +269,8 @@ function ProductPage() {
               disabled={product.quantity <= 0 || addToCart.isPending}
               onClick={handleAddToCart}
               loading={addToCart.isPending}
+              className="add-to-cart-button"
+              data-testid="add-to-cart-button"
             >
               Add to Cart
             </Button>
@@ -278,6 +282,8 @@ function ProductPage() {
               disabled={product.quantity <= 0 || addToCart.isPending}
               onClick={handleBuyNow}
               loading={addToCart.isPending}
+              className="buy-now-button"
+              data-testid="buy-now-button"
             >
               Buy Now
             </Button>

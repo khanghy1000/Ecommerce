@@ -203,7 +203,10 @@ function CartPage() {
               </Table.Thead>
               <Table.Tbody>
                 {group.items.map((item) => (
-                  <Table.Tr key={item.productId}>
+                  <Table.Tr
+                    key={item.productId}
+                    data-testid={`cart-item-${item.productId}`}
+                  >
                     <Table.Td>
                       <Checkbox
                         checked={!!selectedCartItems[item.productId]}
@@ -213,6 +216,8 @@ function CartPage() {
                             event.currentTarget.checked
                           )
                         }
+                        className={`cart-item-checkbox cart-item-${item.productId}-checkbox`}
+                        data-testid={`cart-checkbox-${item.productId}`}
                       />
                     </Table.Td>
                     <Table.Td>
@@ -238,6 +243,7 @@ function CartPage() {
                             lineClamp={2}
                             size="sm"
                             fw={500}
+                            className={`cart-item-name cart-item-${item.productId}-name`}
                           >
                             {item.productName}
                           </Text>
@@ -273,6 +279,8 @@ function CartPage() {
                         min={1}
                         max={item.maxQuantity}
                         style={{ width: '100px' }}
+                        className={`cart-item-quantity cart-item-${item.productId}-quantity`}
+                        data-testid={`cart-quantity-${item.productId}`}
                       />
                       {item.quantity >= item.maxQuantity && (
                         <Text size="xs" c="red" mt={4}>
@@ -291,6 +299,8 @@ function CartPage() {
                         variant="subtle"
                         onClick={() => handleRemoveItem(item.productId)}
                         aria-label="Remove item"
+                        className={`cart-item-remove cart-item-${item.productId}-remove`}
+                        data-testid={`cart-remove-${item.productId}`}
                       >
                         <FiTrash2 />
                       </ActionIcon>
@@ -324,11 +334,23 @@ function CartPage() {
             </Group>
 
             {hasSelectedItems ? (
-              <Button onClick={handleCheckout} fullWidth size="lg">
+              <Button
+                onClick={handleCheckout}
+                fullWidth
+                size="lg"
+                className="checkout-button"
+                data-testid="checkout-button"
+              >
                 Proceed to Checkout
               </Button>
             ) : (
-              <Button fullWidth size="lg" disabled>
+              <Button
+                fullWidth
+                size="lg"
+                disabled
+                className="checkout-button-disabled"
+                data-testid="checkout-button-disabled"
+              >
                 Proceed to Checkout
               </Button>
             )}

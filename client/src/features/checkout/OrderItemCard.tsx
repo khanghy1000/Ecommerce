@@ -33,6 +33,7 @@ export const OrderItemCard = ({ item, baseImageUrl }: OrderItemCardProps) => {
           lineClamp={2}
           size="sm"
           fw={500}
+          className='product-name'
         >
           {item.productName}
         </Text>
