@@ -25,13 +25,22 @@ public class PaymentController(IConfiguration config) : BaseApiController
     public async Task<ActionResult<PaymentResult>> Callback()
     {
         var result = await Mediator.Send(new PaymentCallback.Query());
-        return result.IsSuccess
-            ? Redirect(
+
+        if (result.IsSuccess && result.Value!.IsSuccess)
+        {
+            return Redirect(
                 config["ClientUrl"] + $"/payment/success?paymentId={result.Value!.PaymentId}"
-            )
-            : Redirect(
+            );
+        }
+
+        if (result.IsSuccess && !result.Value!.IsSuccess)
+        {
+            return Redirect(
                 config["ClientUrl"] + $"/payment/failure?paymentId={result.Value!.PaymentId}"
             );
+        }
+
+        return Redirect(config["ClientUrl"] + $"/payment/failure");
     }
 
     [HttpGet("{id}")]

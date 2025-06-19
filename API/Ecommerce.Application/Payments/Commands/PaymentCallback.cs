@@ -52,22 +52,13 @@ public class PaymentCallback
                 return Result<PaymentResult>.Failure("Sales orders not found", 400);
             }
 
-            if (!resultPayment.IsSuccess)
-            {
-                foreach (var salesOrder in salesOrders)
-                {
-                    salesOrder.Payments.Add(resultPayment);
-                    dbContext.SalesOrders.Update(salesOrder);
-                }
-
-                await dbContext.SaveChangesAsync(cancellationToken);
-                return Result<PaymentResult>.Failure("Payment failed", 400);
-            }
-
             foreach (var salesOrder in salesOrders)
             {
                 salesOrder.Payments.Add(resultPayment);
-                salesOrder.Status = SalesOrderStatus.PendingConfirmation;
+                if (resultPayment.IsSuccess)
+                {
+                    salesOrder.Status = SalesOrderStatus.PendingConfirmation;
+                }
                 dbContext.SalesOrders.Update(salesOrder);
             }
 
