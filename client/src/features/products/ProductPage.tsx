@@ -251,7 +251,7 @@ function ProductPage() {
               data-testid="product-quantity-input"
             />
             {product.quantity > 0 ? (
-              <Text size="sm" c="dimmed">
+              <Text size="sm" c="dimmed" className="product-quantity">
                 {product.quantity} items available
               </Text>
             ) : (

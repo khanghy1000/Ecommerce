@@ -215,6 +215,71 @@ describe('Cart Management', () => {
     expect(updatedQuantityValue).toBe('5');
   });
 
+  it('should handle maximum quantity limit', async () => {
+    // First go to homepage and select a product
+    await driver.get(`${baseUrl}/`);
+    await driver.wait(
+      until.elementLocated(By.className('product-card')),
+      10000
+    );
+
+    const productCard = await driver.findElement(By.className('product-card'));
+    await productCard.click();
+
+    // Wait for product page to load
+    await driver.wait(
+      until.elementLocated(By.className('add-to-cart-button')),
+      10000
+    );
+
+    // Get the product's stock quantity from the availability text
+    const availabilityText = await driver.findElement(
+      By.className('product-quantity')
+    );
+    const availabilityTextContent = await availabilityText.getText();
+    const stockQuantity = parseInt(availabilityTextContent.split(' ')[0]);
+
+    // Add product to cart
+    const addToCartButton = await driver.findElement(
+      By.className('add-to-cart-button')
+    );
+    await addToCartButton.click();
+
+    // Wait for success notification
+    await driver.wait(
+      until.elementLocated(
+        By.xpath('//*[contains(text(),"Product added to cart")]')
+      ),
+      10000
+    );
+
+    // Navigate to cart
+    const cartNavButton = await driver.findElement(
+      By.className('cart-nav-button')
+    );
+    await cartNavButton.click();
+
+    await driver.wait(until.urlIs(`${baseUrl}/cart`), 10000);
+
+    // Try to set quantity higher than stock
+    const cartQuantityInput = await driver.wait(
+      until.elementLocated(By.css('.cart-item-quantity input')),
+      10000
+    );
+
+    const excessiveQuantity = stockQuantity + 5;
+    await cartQuantityInput.clear();
+    await cartQuantityInput.sendKeys(excessiveQuantity.toString());
+    await cartQuantityInput.sendKeys(Key.TAB); // Trigger onChange
+
+    // Check for max quantity warning text
+    const maxQuantityWarning = await driver.wait(
+      until.elementLocated(By.xpath('//*[contains(text(),"Not enough product in stock")]')),
+      10000
+    );
+    expect(await maxQuantityWarning.isDisplayed()).toBe(true);
+  });
+
   it('should remove item from cart', async () => {
     // First add a product to cart
     await driver.get(`${baseUrl}/`);
