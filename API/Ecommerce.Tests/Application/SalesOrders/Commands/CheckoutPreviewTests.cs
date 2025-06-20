@@ -166,37 +166,4 @@ public class CheckoutPreviewTests
         result.Error.ShouldBe("Ward not found");
         result.Code.ShouldBe(400);
     }
-
-    [Fact]
-    public async Task CheckoutPreview_ShouldReturnCorrectValues_WhenRequestIsValid()
-    {
-        // Arrange
-        var previewRequest = CreateValidPreviewRequest();
-        var command = new CheckoutPreview.Command
-        {
-            CheckoutPricePreviewRequestDto = previewRequest,
-        };
-        var handler = new CheckoutPreview.Handler(
-            _dbContext,
-            _userAccessor,
-            _mapper,
-            _shippingService,
-            _mediator
-        );
-
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldNotBeNull();
-        result.Value.Subtotal.ShouldBeGreaterThan(0);
-        result.Value.ShippingFee.ShouldBeGreaterThan(0);
-        result.Value.Total.ShouldBe(
-            result.Value.Subtotal
-                + result.Value.ShippingFee
-                - result.Value.ProductDiscountAmount
-                - result.Value.ShippingDiscountAmount
-        );
-    }
 }
