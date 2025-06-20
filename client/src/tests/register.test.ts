@@ -1,6 +1,7 @@
 import { expect, describe, it, beforeAll, afterAll } from 'vitest';
 import { Builder, By, until, WebDriver, Key } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
+import { CLIENT_URL } from './testConstants';
 
 // Helper to generate a unique email for registration
 function generateUniqueEmail() {
@@ -9,7 +10,6 @@ function generateUniqueEmail() {
 
 describe('Register', () => {
   let driver: WebDriver;
-  const baseUrl = 'http://localhost:5173';
 
   beforeAll(async () => {
     const options = new chrome.Options();
@@ -25,7 +25,7 @@ describe('Register', () => {
   });
 
   it('should show error when missing input', async () => {
-    await driver.get(`${baseUrl}/register`);
+    await driver.get(`${CLIENT_URL}/register`);
     // Wait for the page to load
     await driver.wait(
       until.elementLocated(By.className('register-button')),
@@ -55,7 +55,7 @@ describe('Register', () => {
   });
 
   it('should show error when wrong email format', async () => {
-    await driver.get(`${baseUrl}/register`);
+    await driver.get(`${CLIENT_URL}/register`);
     // Wait for the page to load
     await driver.wait(
       until.elementLocated(By.className('register-button')),
@@ -81,7 +81,7 @@ describe('Register', () => {
   });
 
   it('should show error when wrong password format', async () => {
-    await driver.get(`${baseUrl}/register`);
+    await driver.get(`${CLIENT_URL}/register`);
     // Wait for the page to load
     await driver.wait(
       until.elementLocated(By.className('register-button')),
@@ -107,7 +107,7 @@ describe('Register', () => {
   });
 
   it('should show error when wrong phone number format', async () => {
-    await driver.get(`${baseUrl}/register`);
+    await driver.get(`${CLIENT_URL}/register`);
     // Wait for the page to load
     await driver.wait(
       until.elementLocated(By.className('register-button')),
@@ -136,7 +136,7 @@ describe('Register', () => {
   });
 
   it('should register successfully with valid input', async () => {
-    await driver.get(`${baseUrl}/register`);
+    await driver.get(`${CLIENT_URL}/register`);
     await driver.wait(
       until.elementLocated(By.className('register-button')),
       5000

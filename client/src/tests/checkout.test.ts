@@ -1,16 +1,15 @@
 import { expect, describe, it, beforeAll, afterAll, beforeEach } from 'vitest';
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
-import { a } from 'vitest/dist/chunks/suite.d.FvehnV49.js';
+import { CLIENT_URL } from './testConstants';
 
 describe('Checkout Process', () => {
   let driver: WebDriver;
-  const baseUrl = 'http://localhost:5173';
 
   // Helper function to clear all items from cart
   const clearCart = async () => {
     try {
-      await driver.get(`${baseUrl}/cart`);
+      await driver.get(`${CLIENT_URL}/cart`);
       await driver.sleep(2000);
 
       // Check if cart is already empty
@@ -51,7 +50,7 @@ describe('Checkout Process', () => {
 
   // Helper function to add product to cart
   const addProductToCart = async () => {
-    await driver.get(`${baseUrl}/`);
+    await driver.get(`${CLIENT_URL}/`);
 
     // Wait for homepage to load and products to appear
     await driver.wait(
@@ -92,7 +91,7 @@ describe('Checkout Process', () => {
     );
     await cartNavButton.click();
 
-    await driver.wait(until.urlIs(`${baseUrl}/cart`), 10000);
+    await driver.wait(until.urlIs(`${CLIENT_URL}/cart`), 10000);
 
     // Select the item
     const checkbox = await driver.wait(
@@ -104,6 +103,8 @@ describe('Checkout Process', () => {
     if (!isChecked) {
       await checkbox.click();
     }
+
+    await driver.sleep(2000);
 
     // Click checkout button
     const checkoutButton = await driver.wait(
@@ -135,7 +136,7 @@ describe('Checkout Process', () => {
       .build();
 
     // Login
-    await driver.get(`${baseUrl}/login`);
+    await driver.get(`${CLIENT_URL}/login`);
 
     const emailInput = await driver.findElement(By.name('email'));
     await emailInput.sendKeys('buyer@a.com');
@@ -147,7 +148,7 @@ describe('Checkout Process', () => {
     await loginButton.click();
 
     // Wait for homepage to load
-    await driver.wait(until.urlIs(`${baseUrl}/`), 10000);
+    await driver.wait(until.urlIs(`${CLIENT_URL}/`), 10000);
   });
 
   afterAll(async () => {
@@ -178,9 +179,11 @@ describe('Checkout Process', () => {
     await driver.sleep(500);
     await codLabel.click();
 
+    await driver.sleep(2000);
+
     // Click place order button
     const placeOrderButton = await driver.wait(
-      until.elementLocated(By.className('checkout-button')),
+      until.elementLocated(By.css('.checkout-button.ready-to-checkout')),
       10000
     );
 
@@ -224,7 +227,7 @@ describe('Checkout Process', () => {
 
     // Click place order button
     const placeOrderButton = await driver.wait(
-      until.elementLocated(By.className('checkout-button')),
+      until.elementLocated(By.css('.checkout-button.ready-to-checkout')),
       10000
     );
 
@@ -316,7 +319,7 @@ describe('Checkout Process', () => {
 
     // Click place order button
     const placeOrderButton = await driver.wait(
-      until.elementLocated(By.className('checkout-button')),
+      until.elementLocated(By.css('.checkout-button.ready-to-checkout')),
       10000
     );
 

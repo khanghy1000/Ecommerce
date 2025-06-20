@@ -121,7 +121,12 @@ export const OrderSummarySection = ({
           onClick={onCheckout}
           leftSection={<FiCheckCircle />}
           loading={fetchingCheckoutPreview}
-          className='checkout-button'
+          className={
+            'checkout-button ' +
+            (!fetchingCheckoutPreview && !checkoutIsPending
+              ? 'ready-to-checkout'
+              : '')
+          }
         >
           {checkoutIsPending
             ? 'Processing...'

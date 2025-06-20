@@ -1,10 +1,10 @@
 import { expect, describe, it, beforeAll, afterAll } from 'vitest';
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
+import { CLIENT_URL } from './testConstants';
 
 describe('Login', () => {
   let driver: WebDriver;
-  const baseUrl = 'http://localhost:5173'; // Vite default development server
 
   beforeAll(async () => {
     // Set up Chrome options
@@ -27,7 +27,7 @@ describe('Login', () => {
 
   it('should login successfully with correct credentials', async () => {
     // Navigate to the login page
-    await driver.get(`${baseUrl}/login`);
+    await driver.get(`${CLIENT_URL}/login`);
 
     // Wait for the page to load and verify we are on the login page
     const loginTitleElement = await driver.wait(
@@ -48,11 +48,11 @@ describe('Login', () => {
     await loginButton.click();
 
     // Wait for successful navigation to homepage after login
-    await driver.wait(until.urlIs(`${baseUrl}/`), 10000);
+    await driver.wait(until.urlIs(`${CLIENT_URL}/`), 10000);
 
     // Verify we are on the homepage
     const currentUrl = await driver.getCurrentUrl();
-    expect(currentUrl).toBe(`${baseUrl}/`);
+    expect(currentUrl).toBe(`${CLIENT_URL}/`);
 
     // Verify user is logged in by checking for user avatar/menu button
     // The user menu is a button with an avatar and display name
@@ -70,9 +70,7 @@ describe('Login', () => {
     await userProfileElement.click();
     await driver.sleep(300);
     const logoutButton = await driver.wait(
-      until.elementLocated(
-        By.className('logout-button')
-      ),
+      until.elementLocated(By.className('logout-button')),
       5000
     );
     await driver.wait(until.elementIsVisible(logoutButton), 2000);
@@ -81,7 +79,7 @@ describe('Login', () => {
 
   it('should show error message with incorrect credentials', async () => {
     // Navigate to the login page
-    await driver.get(`${baseUrl}/login`);
+    await driver.get(`${CLIENT_URL}/login`);
 
     // Wait for the page to load
     await driver.wait(until.elementLocated(By.className('login-title')), 5000);

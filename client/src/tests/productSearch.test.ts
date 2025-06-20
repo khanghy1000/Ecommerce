@@ -1,6 +1,7 @@
 import { expect, describe, it, beforeAll, afterAll } from 'vitest';
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
+import { CLIENT_URL } from './testConstants';
 
 // Helper to get random unique elements from an array
 function getRandomUnique<T>(arr: T[], count: number): T[] {
@@ -10,7 +11,6 @@ function getRandomUnique<T>(arr: T[], count: number): T[] {
 
 describe('Product Search', () => {
   let driver: WebDriver;
-  const baseUrl = 'http://localhost:5173';
 
   beforeAll(async () => {
     const options = new chrome.Options();
@@ -27,7 +27,7 @@ describe('Product Search', () => {
 
   it('should search for 3 random products from homepage', async () => {
     // Go to homepage
-    await driver.get(`${baseUrl}/`);
+    await driver.get(`${CLIENT_URL}/`);
 
     // Wait for product carousels to load
     await driver.wait(
@@ -88,7 +88,7 @@ describe('Product Search', () => {
 
   it('should show no results for non-existent product', async () => {
     // Go to homepage
-    await driver.get(`${baseUrl}/`);
+    await driver.get(`${CLIENT_URL}/`);
 
     // Wait for product carousels to load
     await driver.wait(

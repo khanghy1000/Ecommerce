@@ -1,16 +1,16 @@
 import { expect, describe, it, beforeAll, afterAll, afterEach } from 'vitest';
 import { Builder, By, until, WebDriver, Key } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
+import { CLIENT_URL } from './testConstants';
 
 describe('Cart Management', () => {
   let driver: WebDriver;
-  const baseUrl = 'http://localhost:5173';
 
   // Helper function to clear all items from cart
   const clearCart = async () => {
     try {
       // Navigate to cart page
-      await driver.get(`${baseUrl}/cart`);
+      await driver.get(`${CLIENT_URL}/cart`);
 
       // Wait for page to load
       await driver.sleep(2000);
@@ -72,7 +72,7 @@ describe('Cart Management', () => {
       .setChromeOptions(options)
       .build();
 
-    await driver.get(`${baseUrl}/login`);
+    await driver.get(`${CLIENT_URL}/login`);
 
     const emailInput = await driver.findElement(By.name('email'));
     await emailInput.sendKeys('buyer@a.com');
@@ -84,7 +84,7 @@ describe('Cart Management', () => {
     await loginButton.click();
 
     // Wait for homepage to load
-    await driver.wait(until.urlIs(`${baseUrl}/`), 10000);
+    await driver.wait(until.urlIs(`${CLIENT_URL}/`), 10000);
 
     // Clear cart before each test
     await clearCart();
@@ -99,7 +99,7 @@ describe('Cart Management', () => {
   });
 
   it('should add product to cart', async () => {
-    await driver.get(`${baseUrl}/`);
+    await driver.get(`${CLIENT_URL}/`);
 
     // Wait for homepage to load and products to appear
     await driver.wait(
@@ -151,7 +151,7 @@ describe('Cart Management', () => {
     await cartNavButton.click();
 
     // Wait for cart page to load
-    await driver.wait(until.urlIs(`${baseUrl}/cart`), 10000);
+    await driver.wait(until.urlIs(`${CLIENT_URL}/cart`), 10000);
 
     // Verify product is in cart with correct quantity
     const cartQuantityInput = await driver.wait(
@@ -164,7 +164,7 @@ describe('Cart Management', () => {
 
   it('should update cart item quantity', async () => {
     // First add a product to cart
-    await driver.get(`${baseUrl}/`);
+    await driver.get(`${CLIENT_URL}/`);
     await driver.wait(
       until.elementLocated(By.className('product-card')),
       10000
@@ -197,7 +197,7 @@ describe('Cart Management', () => {
     );
     await cartNavButton.click();
 
-    await driver.wait(until.urlIs(`${baseUrl}/cart`), 10000);
+    await driver.wait(until.urlIs(`${CLIENT_URL}/cart`), 10000);
 
     // Update quantity to 5
     const cartQuantityInput = await driver.wait(
@@ -217,7 +217,7 @@ describe('Cart Management', () => {
 
   it('should handle maximum quantity limit', async () => {
     // First go to homepage and select a product
-    await driver.get(`${baseUrl}/`);
+    await driver.get(`${CLIENT_URL}/`);
     await driver.wait(
       until.elementLocated(By.className('product-card')),
       10000
@@ -259,7 +259,7 @@ describe('Cart Management', () => {
     );
     await cartNavButton.click();
 
-    await driver.wait(until.urlIs(`${baseUrl}/cart`), 10000);
+    await driver.wait(until.urlIs(`${CLIENT_URL}/cart`), 10000);
 
     // Try to set quantity higher than stock
     const cartQuantityInput = await driver.wait(
@@ -274,7 +274,9 @@ describe('Cart Management', () => {
 
     // Check for max quantity warning text
     const maxQuantityWarning = await driver.wait(
-      until.elementLocated(By.xpath('//*[contains(text(),"Not enough product in stock")]')),
+      until.elementLocated(
+        By.xpath('//*[contains(text(),"Not enough product in stock")]')
+      ),
       10000
     );
     expect(await maxQuantityWarning.isDisplayed()).toBe(true);
@@ -282,7 +284,7 @@ describe('Cart Management', () => {
 
   it('should remove item from cart', async () => {
     // First add a product to cart
-    await driver.get(`${baseUrl}/`);
+    await driver.get(`${CLIENT_URL}/`);
     await driver.wait(
       until.elementLocated(By.className('product-card')),
       10000
@@ -315,7 +317,7 @@ describe('Cart Management', () => {
     );
     await cartNavButton.click();
 
-    await driver.wait(until.urlIs(`${baseUrl}/cart`), 10000);
+    await driver.wait(until.urlIs(`${CLIENT_URL}/cart`), 10000);
 
     // Click remove button
     const removeButton = await driver.wait(
@@ -341,7 +343,7 @@ describe('Cart Management', () => {
 
   it('should proceed to checkout with selected items', async () => {
     // Add a product to cart
-    await driver.get(`${baseUrl}/`);
+    await driver.get(`${CLIENT_URL}/`);
     await driver.wait(
       until.elementLocated(By.className('product-card')),
       10000
@@ -373,7 +375,7 @@ describe('Cart Management', () => {
     );
     await cartNavButton.click();
 
-    await driver.wait(until.urlIs(`${baseUrl}/cart`), 10000);
+    await driver.wait(until.urlIs(`${CLIENT_URL}/cart`), 10000);
 
     // Select the item
     const checkbox = await driver.wait(
