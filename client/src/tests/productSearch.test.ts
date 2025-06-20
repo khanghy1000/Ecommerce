@@ -85,4 +85,41 @@ describe('Product Search', () => {
       expect(found).toBe(true);
     }
   });
+
+  it('should show no results for non-existent product', async () => {
+    // Go to homepage
+    await driver.get(`${baseUrl}/`);
+
+    // Wait for product carousels to load
+    await driver.wait(
+      until.elementsLocated(By.className('homepage-product-carousel')),
+      10000
+    );
+
+    // Search for a non-existent product
+    const searchInput = await driver.wait(
+      until.elementLocated(By.css('.search-input input')),
+      5000
+    );
+    await searchInput.clear();
+    await searchInput.sendKeys(
+      'NonExistentProduct f768221f-309d-4b2b-968f-cf34901c2abc'
+    );
+    await searchInput.sendKeys('\n');
+
+    // Wait for no results message
+    const noResultsMessage = await driver.wait(
+      until.elementLocated(
+        By.xpath('//*[contains(text(), "No products found")]')
+      ),
+      10000
+    );
+    await driver.executeScript(
+      'arguments[0].scrollIntoView(true);',
+      noResultsMessage
+    );
+    // Check no results message is displayed
+    expect(await noResultsMessage.isDisplayed()).toBe(true);
+    await driver.sleep(2000);
+  });
 });
