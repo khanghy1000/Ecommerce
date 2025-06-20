@@ -50,6 +50,7 @@ describe('Product Search', () => {
     expect(randomNames.length).toBe(3);
 
     for (const name of randomNames) {
+      await driver.get(`${CLIENT_URL}/`);
       // Wait for search input
       const searchInput = await driver.wait(
         until.elementLocated(By.css('.search-input input')),
