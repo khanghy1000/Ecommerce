@@ -55,6 +55,7 @@ export default function ManagementSideBar() {
       label={item.label}
       leftSection={<item.icon style={{ width: rem(20), height: rem(20) }} />}
       variant="light"
+      className={item.label.toLowerCase() + '-link'}
     />
   ));
 

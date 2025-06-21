@@ -9,6 +9,7 @@ describe('Login', () => {
   beforeAll(async () => {
     // Set up Chrome options
     const options = new chrome.Options();
+    options.addArguments('--start-maximized');
     // options.addArguments('--headless'); // Run in headless mode
     // options.addArguments('--no-sandbox');
     // options.addArguments('--disable-dev-shm-usage');

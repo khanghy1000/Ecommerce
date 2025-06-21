@@ -126,6 +126,7 @@ describe('Checkout Process', () => {
 
   beforeAll(async () => {
     const options = new chrome.Options();
+    options.addArguments('--start-maximized');
     // options.addArguments('--headless');
     // options.addArguments('--no-sandbox');
     // options.addArguments('--disable-dev-shm-usage');

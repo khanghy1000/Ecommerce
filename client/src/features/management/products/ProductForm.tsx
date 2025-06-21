@@ -174,7 +174,10 @@ function ProductForm({
   };
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit, handleSubmitError)}>
+    <form
+      onSubmit={form.onSubmit(handleSubmit, handleSubmitError)}
+      className="product-form"
+    >
       <Stack gap="lg">
         {/* Basic Information */}
         <Paper p="md" withBorder>
@@ -186,11 +189,11 @@ function ProductForm({
               label="Product Name"
               placeholder="Enter product name"
               description="A clear and descriptive name for your product"
-              required
+              className="product-form-name"
               {...form.getInputProps('name')}
             />
 
-            <Box>
+            <Box className="product-form-description">
               <Text size="sm" fw={500} mb="xs">
                 Description <span style={{ color: 'red' }}>*</span>
               </Text>
@@ -287,10 +290,10 @@ function ProductForm({
                 label="Regular Price"
                 placeholder="1000 ₫"
                 description="Price in VND"
-                required
                 min={1000}
                 step={1000}
                 suffix=" ₫"
+                className="product-form-price"
                 {...form.getInputProps('regularPrice')}
               />
             </Grid.Col>
@@ -299,8 +302,8 @@ function ProductForm({
                 label="Quantity"
                 placeholder="0"
                 description="Available stock"
-                required
                 min={0}
+                className="product-form-quantity"
                 {...form.getInputProps('quantity')}
               />
             </Grid.Col>
@@ -320,8 +323,8 @@ function ProductForm({
               <NumberInput
                 label="Length (cm)"
                 placeholder="0"
-                required
                 min={1}
+                className="product-form-length"
                 {...form.getInputProps('length')}
               />
             </Grid.Col>
@@ -329,8 +332,8 @@ function ProductForm({
               <NumberInput
                 label="Width (cm)"
                 placeholder="0"
-                required
                 min={1}
+                className="product-form-width"
                 {...form.getInputProps('width')}
               />
             </Grid.Col>
@@ -338,8 +341,8 @@ function ProductForm({
               <NumberInput
                 label="Height (cm)"
                 placeholder="0"
-                required
                 min={1}
+                className="product-form-height"
                 {...form.getInputProps('height')}
               />
             </Grid.Col>
@@ -347,8 +350,8 @@ function ProductForm({
               <NumberInput
                 label="Weight (g)"
                 placeholder="0"
-                required
                 min={1}
+                className="product-form-weight"
                 {...form.getInputProps('weight')}
               />
             </Grid.Col>
@@ -388,7 +391,11 @@ function ProductForm({
 
         {/* Submit buttons */}
         <Group justify="flex-end">
-          <Button type="submit" loading={submitting}>
+          <Button
+            type="submit"
+            loading={submitting}
+            className="product-form-submit-button"
+          >
             {isEditing ? 'Update Product' : 'Create Product'}
           </Button>
         </Group>

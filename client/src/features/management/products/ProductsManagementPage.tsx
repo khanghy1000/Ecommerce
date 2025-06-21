@@ -184,6 +184,7 @@ function ProductsManagementPage() {
             component={Link}
             to="/management/products/create"
             leftSection={<FiPlus size={16} />}
+            className='create-product-button'
           >
             Add New Product
           </Button>

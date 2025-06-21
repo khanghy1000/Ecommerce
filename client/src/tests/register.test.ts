@@ -13,6 +13,7 @@ describe('Register', () => {
 
   beforeAll(async () => {
     const options = new chrome.Options();
+    options.addArguments('--start-maximized');
     // options.addArguments('--headless');
     driver = await new Builder()
       .forBrowser('chrome')
